@@ -12,6 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'https://clothesseller235.cafe24.com', 
+      '*'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
