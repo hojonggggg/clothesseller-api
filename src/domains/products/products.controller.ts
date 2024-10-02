@@ -5,7 +5,7 @@ import { WholesalerProductsService } from './wholesaler/wholesaler.service';
 import { SellerProductsService } from './seller/seller.service';
 import { WholesalerProduct } from './wholesaler/entities/wholesaler-product.entity';
 import { SellerProduct } from './seller/entities/seller-product.entity';
-import { CreateProductDto } from './seller/dto/create-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('products')
@@ -19,7 +19,7 @@ export class ProductsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 등록' })
+  @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 등록' })
   //@ApiResponse({ status: 200, type: [WholesalerProduct], description: '도매처' })
   //@ApiResponse({ status: 200, type: [SellerProduct], description: '셀러' })
   async createProduct(
@@ -44,7 +44,7 @@ export class ProductsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 목록 조회' })
+  @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 목록 조회' })
   //@ApiResponse({ status: 200, type: [WholesalerProduct], description: '도매처' })
   //@ApiResponse({ status: 200, type: [SellerProduct], description: '셀러' })
   async findAllProducts(
@@ -64,7 +64,7 @@ export class ProductsController {
   @Get('search')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 검색' })
+  @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 검색' })
   @ApiQuery({ name: 'type', description: 'my(셀러가 내꺼 검색) OR wholesaler(상품 등록할 때 도매처 상품 검색, wholesalerId 필요)' })
   @ApiQuery({ name: 'wholesalerId', required: false, description: '도매처 ID' })
   async searchProduct(

@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ProductRequest } from './entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
+//import { WholesalerProductsService } from '../wholesaler/products/wholesalerProducts.service';
+import { WholesalerProductsService } from '../products/wholesaler/wholesaler.service';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
 export class ProductRequestsService {
   constructor(
+    private readonly dataSource: DataSource,
+    private wholesalerProductsService: WholesalerProductsService,
+
     @InjectRepository(ProductRequest)
     private productRequestRepository: Repository<ProductRequest>,
   ) {}
@@ -70,5 +75,45 @@ export class ProductRequestsService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async updateProductRequestStatus(wholesalerId: number, productRequestId: number): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      await this.productRequestRepository.update(
+        {
+          id: productRequestId,
+          wholesalerId
+        },
+        {
+          status: 'CONFIRM'
+        }
+      );
+
+      const productRequest = await this.findOneProductRequestById(productRequestId);
+
+      const createWholesalerProductDto = {
+        productCode: productRequest.productCode, 
+        productName: productRequest.wholesalerProductName,
+        productPrice: productRequest.wholesalerProductPrice,
+        storeId: null, 
+        wholesalerId: null, 
+        wholesalerProductId: null, 
+        wholesalerProductPrice: null
+      };
+
+      await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

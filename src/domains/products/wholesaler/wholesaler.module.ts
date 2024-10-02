@@ -5,6 +5,7 @@ import { WholesalerProduct } from './entities/wholesaler-product.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([WholesalerProduct])],
-  providers: [WholesalerProductsService]
+  providers: [WholesalerProductsService],
+  exports: [WholesalerProductsService],
 })
 export class WholesalerProductsModule {}

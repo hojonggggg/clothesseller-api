@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
@@ -34,7 +34,7 @@ export class ProductRequestsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '등록 요청 상품 목록 조회' })
+  @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 등록 요청 상품 목록 조회' })
   @ApiResponse({ status: 200, type: [ProductRequest] })
   async findSellerRegisterProducts(
     @Query() paginationQuery: PaginationQueryDto, 
@@ -48,5 +48,19 @@ export class ProductRequestsController {
       const sellerId = uid;
       return this.productRequestsService.findAllProductRequestBySellerId(sellerId, paginationQuery);
     }
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[도매처 | 관리자] 등록 요청 상품 승인' })
+  @ApiResponse({ status: 200, type: [ProductRequest] })
+  async updateProductRequestStatus(
+    @Param('id') productRequestId: number, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    console.log({wholesalerId});
+    return this.productRequestsService.updateProductRequestStatus(wholesalerId, productRequestId);
   }
 }

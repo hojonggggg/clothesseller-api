@@ -5,7 +5,7 @@ import { SellerProduct } from './entities/seller-product.entity';
 //import { RegisterProduct } from './entities/register-product.entity';
 //import { CreateRegisterProductDto } from './dto/create-register-product.dto';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto } from '../dto/create-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 //import { PaginatedRegisterProducts } from './interfaces/paginated-register-products.interface';
 import { PaginatedSellerProducts } from './interfaces/paginated-seller-products.interface';

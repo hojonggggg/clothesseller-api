@@ -16,8 +16,9 @@ export class UsersController {
     private readonly usersService: UsersService
   ) {}
 
+  /*
   @Post()
-  @ApiOperation({ summary: '사용자 생성' })
+  @ApiOperation({ summary: '[테스트] 사용자 생성' })
   @ApiResponse({ status: 201, type: User })
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.findOneUserById(createUserDto.id);
@@ -26,11 +27,11 @@ export class UsersController {
     }
     return await this.usersService.createUser(createUserDto);
   }
-
+  */
   @Post('deleveryman')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '사입삼촌 등록' })
+  @ApiOperation({ summary: '[셀러] 사입삼촌 등록' })
   @ApiResponse({ status: 201, type: Deleveryman })
   async createDeleveryman(
     @Body() createDeleverymanDto: CreateDeleverymanDto, 
