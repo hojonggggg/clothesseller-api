@@ -12,7 +12,7 @@ export class WholesalerProductsController {
   constructor(
     private readonly wholesalerProductsService: WholesalerProductsService
   ) {}
-
+  /*
   @Get('register-products')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -25,7 +25,7 @@ export class WholesalerProductsController {
     const wholesalerId = req.user.uid;
     return this.wholesalerProductsService.findSellerRegisterProductsByWholesalerId(wholesalerId, paginationQuery);
   }
-
+  */
   @Patch('register-product/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

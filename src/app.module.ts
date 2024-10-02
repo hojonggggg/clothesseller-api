@@ -5,6 +5,8 @@ import { UsersModule } from './domains/users/users.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { WholesalerModule } from './domains/wholesaler/wholesaler.module';
 import { SellerModule } from './domains/seller/seller.module';
+import { ProductRequestsModule } from './domains/product-requests/product-requests.module';
+import { ProductsModule } from './domains/products/products.module';
 import configuration from './commons/config/configuration';
 import * as moment from 'moment-timezone';
 
@@ -36,6 +38,8 @@ import * as moment from 'moment-timezone';
     AuthModule,
     WholesalerModule,
     SellerModule,
+    ProductRequestsModule,
+    ProductsModule,
   ],
 })
 export class AppModule {}
