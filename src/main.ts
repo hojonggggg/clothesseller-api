@@ -22,8 +22,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
-    .setTitle('RICO-NRI API')
-    .setDescription('NFT&Staking Service')
+    .setTitle('clothesseller API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
