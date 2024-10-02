@@ -53,7 +53,7 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '권한별 전체 사용자 조회' })
+  @ApiOperation({ summary: '[관리자] 권한별 전체 사용자 조회' })
   @ApiResponse({ status: 200, type: [User] })
   @ApiQuery({ name: 'role', enum: Role })
   async findAllUsers(
