@@ -1,8 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { WholesalerModule } from './domains/wholesaler/wholesaler.module';
+
+
+import { MallsModule } from './domains/malls/malls.module';
+import { StoresModule } from './domains/stores/stores.module';
 import { UsersModule } from './domains/users/users.module';
-import { AuthModule } from './domains/auth/auth.module';
 import { ProductRequestsModule } from './domains/product-requests/product-requests.module';
 import { ProductsModule } from './domains/products/products.module';
 import configuration from './commons/config/configuration';
@@ -32,7 +37,11 @@ import * as moment from 'moment-timezone';
       },
       inject: [ConfigService],
     }),
-    AuthModule,
+    WholesalerModule,
+
+    
+    MallsModule,
+    StoresModule,
     UsersModule,
     ProductRequestsModule,
     ProductsModule,

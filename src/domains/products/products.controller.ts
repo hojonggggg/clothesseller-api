@@ -1,6 +1,7 @@
 import { BadRequestException, Body, ConflictException, Controller, Get, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+//import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/commons/shared/auth/guards/jwt-auth.guard';
 import { WholesalerProductsService } from './wholesaler/wholesaler.service';
 import { SellerProductsService } from './seller/seller.service';
 import { WholesalerProduct } from './wholesaler/entities/wholesaler-product.entity';

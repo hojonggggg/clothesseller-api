@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class CreateDeleverymanDto {
+export class CreateDeliverymanDto {
   @ApiProperty({ example: '사입삼촌', description: '사입삼촌명' })
   @IsString()
   name: string;

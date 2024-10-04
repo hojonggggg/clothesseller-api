@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsNumber, IsOptional, ValidateIf, IsNotEmpty } from 'class-validator';
-import { Role } from 'src/domains/users/enums/role.enum';
+import { IsString, IsEnum, IsNumber, ValidateIf } from 'class-validator';
+import { Role } from '../../enums/role.enum';
 
-export class SignupDto {
-  @ApiProperty({ example: 'seller', description: '로그인 ID' })
+export class CreateUserDto {
+  @ApiProperty({ example: '아이디', description: '로그인 ID' })
   @IsString()
   id: string;
 
@@ -32,24 +32,24 @@ export class SignupDto {
   @IsString()
   mobile: string;
 
-  @ApiProperty({ example: 1,  description: '[도매처] 상가 ID'})
+  @ApiProperty({ example: 1,  description: '상가 ID'})
   @ValidateIf(o => o.role === Role.WHOLESALER)
   @IsNumber()
   //@IsOptional()
   mallId: number;
 
-  @ApiProperty({ example: '가',  description: '[도매처] 상가 호수'})
+  @ApiProperty({ example: '가',  description: '상가 호수'})
   @ValidateIf(o => o.role === Role.WHOLESALER)
   @IsString()
   roomNo: string;
 
-  @ApiProperty({ example: '중구',  description: '[셀러] 구'})
+  @ApiProperty({ example: '중구',  description: '구'})
   @ValidateIf(o => o.role === Role.SELLER)
   @IsString()
   //@IsOptional()
   address1: string;
 
-  @ApiProperty({ example: '을지로6가',  description: '[셀러] 동'})
+  @ApiProperty({ example: '을지로6가',  description: '동'})
   @ValidateIf(o => o.role === Role.SELLER)
   @IsString()
   //@IsOptional()

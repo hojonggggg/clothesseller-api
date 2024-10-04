@@ -1,6 +1,7 @@
 import { Body, ConflictException, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+//import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/commons/shared/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
 import { ProductRequest } from './entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';

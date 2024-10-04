@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('deliveryman')
-export class Deleveryman {
+export class Deliveryman {
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
