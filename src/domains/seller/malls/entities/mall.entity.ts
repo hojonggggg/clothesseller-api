@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('mall')
@@ -7,7 +7,7 @@ export class Mall {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @ApiProperty({ example: 'APM', description: '몰 이름' })
+  @ApiProperty({ example: '쿠팡', description: '몰 이름' })
   @Column()
   name: string;
 }

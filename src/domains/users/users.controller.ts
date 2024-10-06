@@ -15,7 +15,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService
   ) {}
-
+  /*
   @Post('deliveryman')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -35,7 +35,7 @@ export class UsersController {
     }
     return await this.usersService.createDeliveryman(sellerId, createDeliverymanDto);
   }
-
+  */
 
 
   @Get()

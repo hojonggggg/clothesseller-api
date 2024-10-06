@@ -1,18 +1,18 @@
-import { Body, ConflictException, Controller, ForbiddenException, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiBody } from '@nestjs/swagger';
-import { AuthService } from 'src/commons/shared/auth/auth.service';
-import { WholesalerAuthService } from './auth.service';
+import { Body, ConflictException, Controller, Post } from '@nestjs/common';
+//import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+//import { AuthService } from 'src/commons/shared/auth/auth.service';
+import { WholesalerAuthService } from './wholesaler-auth.service';
 import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
-import { WholesalerSignupDto } from './dto/signup.dto';
-import { LoginDto } from 'src/commons/shared/auth/dto/login.dto';
+import { WholesalerSignupDto } from './dto/wholesaler-signup.dto';
+//import { LoginDto } from 'src/commons/shared/auth/dto/login.dto';
 
-@ApiTags('wholesaler')
+@ApiTags('wholesaler > auth')
 @Controller('wholesaler/auth')
 export class WholesalerAuthController {
   constructor(
-    private authService: AuthService,
+    //private authService: AuthService,
     private wholesalerAuthService: WholesalerAuthService,
     private usersService: UsersService
   ) {}
@@ -27,7 +27,7 @@ export class WholesalerAuthController {
     }
     return await this.wholesalerAuthService.signup(wholesalerSignupDto);
   }
-
+  /*
   @UseGuards(AuthGuard('local'))
   @Post('login')
   @ApiOperation({ summary: '로그인' })
@@ -37,7 +37,5 @@ export class WholesalerAuthController {
     console.log({loginDto});
     return this.authService.login(req.user);
   }
-
-
-
+  */
 }

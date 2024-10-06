@@ -9,19 +9,20 @@ import { JwtStrategy } from 'src/commons/shared/auth/strategies/jwt.strategy';
 //import { WholesalerController } from './wholesaler.controller';
 import { AuthModule } from 'src/commons/shared/auth/auth.module';
 import { AuthService } from 'src/commons/shared/auth/auth.service';
-import { WholesalerAuthService } from './auth/auth.service';
-import { WholesalerAuthController } from './auth/auth.controller';
+import { WholesalerAuthService } from './auth/wholesaler-auth.service';
+import { WholesalerAuthController } from './auth/wholesaler-auth.controller';
 //import { WholesalerAuthModule } from './auth/auth.module';
 import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
+import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { WholesalerProductsModule } from './products/products.module';
-import { MallsModule } from './malls/malls.module';
+import { StoresModule } from './stores/stores.module';
 
 @Module({
   //imports: [TypeOrmModule.forFeature([User, WholesalerProfile]), AuthModule],
   imports: [
-    TypeOrmModule.forFeature([User, WholesalerProfile]),
+    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile]),
     //UsersModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -33,7 +34,7 @@ import { MallsModule } from './malls/malls.module';
       inject: [ConfigService],
     }),
     WholesalerProductsModule,
-    MallsModule,
+    StoresModule,
   ],
   providers: [AuthService, WholesalerAuthService, UsersService],
   controllers: [WholesalerAuthController],

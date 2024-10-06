@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { WholesalerProfile } from './entities/wholesaler-profile.entity';
+import { SellerProfile } from './entities/seller-profile.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -14,6 +15,8 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(WholesalerProfile)
     private wholesalerProfileRepository: Repository<WholesalerProfile>,
+    @InjectRepository(SellerProfile)
+    private sellerProfileRepository: Repository<SellerProfile>,
   ) {}
 
   async createUser(createUserDto): Promise<User> {
@@ -25,14 +28,14 @@ export class UsersService {
 
       const user = await this.userRepository.save(createUserDto);
       delete(user.password);
-      const userId = Number(await user.uid);
+      const userId = Number(user.uid);
       const { role } = createUserDto;
       if (role === 'ADMIN') {
 
       } else if (role === 'WHOLESALER') {
         await this.createWholesalerProfile(userId, createUserDto);
       } else if (role === 'SELLER') {
-
+        await this.createSellerProfile(userId, createUserDto);
       }
 
       await queryRunner.commitTransaction();
@@ -51,6 +54,14 @@ export class UsersService {
       ...createUserDto
     });
     await this.wholesalerProfileRepository.save(wholesalerProfile);
+  }
+  
+  async createSellerProfile(userId: number, createUserDto: CreateUserDto) {
+    const sellerProfile = this.sellerProfileRepository.create({
+      userId,
+      ...createUserDto
+    });
+    await this.sellerProfileRepository.save(sellerProfile);
   }
 
   async findOneUserById(id: string): Promise<User | undefined> {
