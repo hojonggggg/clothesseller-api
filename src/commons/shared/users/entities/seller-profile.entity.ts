@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Deliveryman } from 'src/domains/seller/deliveryman/entities/deliveryman.entity';
+import { Order } from '../../entities/order.entity';
 
 @Entity('seller_profile')
 export class SellerProfile {
@@ -26,4 +28,10 @@ export class SellerProfile {
   @ApiProperty({ example: '01012345678', description: '연락처' })
   @Column()
   mobile: string;
+
+  @OneToOne(() => Deliveryman, (deliveryman) => deliveryman.sellerProfile)
+  deliveryman: Deliveryman;
+
+  @OneToMany(() => Order, (order) => order.sellerProfile)
+  orders: Order[];
 }

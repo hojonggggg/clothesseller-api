@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { WholesalerProduct } from './wholesaler-product.entity';
+import { Order } from 'src/commons/shared/entities/order.entity';
 
 @Entity('wholesaler_product_option')
 export class WholesalerProductOption {
@@ -31,6 +32,9 @@ export class WholesalerProductOption {
   @ManyToOne(() => WholesalerProduct, (product) => product.options, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'wholesaler_product_id' })  // 외래 키
   wholesalerProduct: WholesalerProduct;
+
+  @OneToMany(() => Order, (order) => order.productOption)
+  orders: Order[];
 
   name: string;
 }

@@ -13,6 +13,8 @@ import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { MallsModule } from './malls/malls.module';
 import { DeliverymanModule } from './deliveryman/deliveryman.module';
+import { ProductRequestsModule } from './product-requests/product-requests.module';
+import { SellerProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { DeliverymanModule } from './deliveryman/deliveryman.module';
     }),
     MallsModule,
     DeliverymanModule,
+    ProductRequestsModule,
+    SellerProductsModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
   controllers: [SellerAuthController],

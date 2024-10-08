@@ -1,13 +1,13 @@
 import { Body, ConflictException, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 //import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
-import { JwtAuthGuard } from 'src/commons/shared/auth/guards/jwt-auth.guard';
+import { _JwtAuthGuard } from 'src/commons/shared/auth/guards/_jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
 import { ProductRequest } from './entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
-@ApiTags('product-requests')
+@ApiTags('[삭제] product-requests')
 @Controller('product-requests')
 export class ProductRequestsController {
   constructor(
@@ -15,7 +15,7 @@ export class ProductRequestsController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[셀러] 상품 등록 요청' })
   @ApiResponse({ status: 201, type: ProductRequest })
@@ -33,7 +33,7 @@ export class ProductRequestsController {
   }
   
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 등록 요청 상품 목록 조회' })
   @ApiResponse({ status: 200, type: [ProductRequest] })
@@ -52,7 +52,7 @@ export class ProductRequestsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[도매처 | 관리자] 등록 요청 상품 승인' })
   @ApiResponse({ status: 200, type: [ProductRequest] })

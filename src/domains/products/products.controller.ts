@@ -1,7 +1,7 @@
 import { BadRequestException, Body, ConflictException, Controller, Get, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 //import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
-import { JwtAuthGuard } from 'src/commons/shared/auth/guards/jwt-auth.guard';
+import { _JwtAuthGuard } from 'src/commons/shared/auth/guards/_jwt-auth.guard';
 import { WholesalerProductsService } from './wholesaler/wholesaler.service';
 import { SellerProductsService } from './seller/seller.service';
 import { WholesalerProduct } from './wholesaler/entities/wholesaler-product.entity';
@@ -9,7 +9,7 @@ import { SellerProduct } from './seller/entities/seller-product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
-@ApiTags('products')
+@ApiTags('[삭제] products')
 @Controller('products')
 export class ProductsController {
   constructor(
@@ -18,7 +18,7 @@ export class ProductsController {
   ) {}
   
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 등록' })
   //@ApiResponse({ status: 200, type: [WholesalerProduct], description: '도매처' })
@@ -43,7 +43,7 @@ export class ProductsController {
   }
   
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 목록 조회' })
   //@ApiResponse({ status: 200, type: [WholesalerProduct], description: '도매처' })
@@ -63,7 +63,7 @@ export class ProductsController {
   }
   
   @Get('search')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(_JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[관리자 | 도매처 | 셀러] 상품 검색' })
   @ApiQuery({ name: 'type', description: 'my(셀러가 내꺼 검색) OR wholesaler(상품 등록할 때 도매처 상품 검색, wholesalerId 필요)' })

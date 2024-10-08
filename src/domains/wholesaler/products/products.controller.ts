@@ -53,7 +53,7 @@ export class WholesalerProductsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 목록 조회' })
+  @ApiOperation({ summary: '[검색 추가 필요] 상품 목록 조회' })
   @ApiResponse({ status: 200, type: [WholesalerProduct] })
   async findAllWholesalerProductByWholesalerId(
     @Query() paginationQuery: PaginationQueryDto, 

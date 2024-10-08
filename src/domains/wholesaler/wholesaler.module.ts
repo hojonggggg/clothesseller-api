@@ -18,6 +18,8 @@ import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { WholesalerProductsModule } from './products/products.module';
 import { StoresModule } from './stores/stores.module';
+import { WholesalerOrdersModule } from './orders/orders.module';
+import { WholesalerSamplesModule } from './samples/samples.module';
 
 @Module({
   //imports: [TypeOrmModule.forFeature([User, WholesalerProfile]), AuthModule],
@@ -35,6 +37,8 @@ import { StoresModule } from './stores/stores.module';
     }),
     WholesalerProductsModule,
     StoresModule,
+    WholesalerOrdersModule,
+    WholesalerSamplesModule,
   ],
   providers: [AuthService, WholesalerAuthService, UsersService],
   controllers: [WholesalerAuthController],

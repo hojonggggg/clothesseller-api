@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 
 @Entity('deliveryman')
 export class Deliveryman {
@@ -18,4 +19,8 @@ export class Deliveryman {
   @ApiProperty({ example: '01012345678', description: '사입삼촌 연락처' })
   @Column()
   mobile: string;
+
+  @OneToOne(() => SellerProfile, (sellerProfile) => sellerProfile.deliveryman)
+  @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })
+  sellerProfile: SellerProfile;
 }
