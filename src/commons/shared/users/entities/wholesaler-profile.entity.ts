@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
+//import { Order } from '../../entities/wholesaler-order.entity';
 
 @Entity('wholesaler_profile')
 export class WholesalerProfile {
@@ -16,8 +18,8 @@ export class WholesalerProfile {
   name: string;
 
   @ApiProperty({ example: 1 })
-  @Column({ type: 'int', name: 'mall_id' })
-  mallId: number;
+  @Column({ type: 'int', name: 'store_id' })
+  storeId: number;
 
   @ApiProperty({ example: '을지로6가', name: '상가 호수' })
   @Column({ name: 'room_no' })
@@ -26,4 +28,12 @@ export class WholesalerProfile {
   @ApiProperty({ example: '01012345678', description: '연락처' })
   @Column()
   mobile: string;
+
+  @OneToOne(() => Store)
+  @JoinColumn({ name: 'store_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결
+  store: Store;
+  /*
+  @OneToMany(() => Order, (order) => order.sellerProfile)
+  orders: Order[];
+  */
 }

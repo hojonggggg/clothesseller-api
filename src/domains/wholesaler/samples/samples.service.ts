@@ -15,17 +15,17 @@ export class WholesalerSamplesService {
     const { page, limit } = paginationQuery;
     const [samples, total] = await this.sampleRepository.findAndCount({
       where: { wholesalerId },
-      relations: ['productOption', 'productOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],
+      relations: ['wholesalerProductOption', 'wholesalerProductOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],
       order: { id: 'DESC' },
       take: limit,
       skip: (page - 1) * limit,
     });
     
     for (const sample of samples) {
-      sample.name = sample.productOption.wholesalerProduct.name;
-      sample.color = sample.productOption.color;
-      sample.size = sample.productOption.size;
-      sample.quantity = sample.productOption.quantity;
+      sample.name = sample.wholesalerProductOption.wholesalerProduct.name;
+      sample.color = sample.wholesalerProductOption.color;
+      sample.size = sample.wholesalerProductOption.size;
+      sample.quantity = sample.wholesalerProductOption.quantity;
       sample.sellerName = sample.sellerProfile.name;
       const sellerAddress1 = sample.sellerProfile.address1;
       const sellerAddress2 = sample.sellerProfile.address2;
@@ -39,7 +39,7 @@ export class WholesalerSamplesService {
       delete(sample.wholesalerId);
       delete(sample.wholesalerProductOptionId);
       delete(sample.sellerId);
-      delete(sample.productOption);
+      delete(sample.wholesalerProductOption);
       delete(sample.sellerProfile);
     }
     

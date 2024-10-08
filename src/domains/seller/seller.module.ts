@@ -15,6 +15,8 @@ import { MallsModule } from './malls/malls.module';
 import { DeliverymanModule } from './deliveryman/deliveryman.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 import { SellerProductsModule } from './products/products.module';
+import { SellerSamplesModule } from './samples/samples.module';
+import { SellerOrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { SellerProductsModule } from './products/products.module';
     DeliverymanModule,
     ProductRequestsModule,
     SellerProductsModule,
+    SellerOrdersModule,
+    SellerSamplesModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
   controllers: [SellerAuthController],

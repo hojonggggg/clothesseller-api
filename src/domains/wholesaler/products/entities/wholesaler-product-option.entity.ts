@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { WholesalerProduct } from './wholesaler-product.entity';
-import { Order } from 'src/commons/shared/entities/order.entity';
+import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 
 @Entity('wholesaler_product_option')
 export class WholesalerProductOption {
@@ -33,8 +33,8 @@ export class WholesalerProductOption {
   @JoinColumn({ name: 'wholesaler_product_id' })  // 외래 키
   wholesalerProduct: WholesalerProduct;
 
-  @OneToMany(() => Order, (order) => order.productOption)
-  orders: Order[];
+  @OneToMany(() => WholesalerOrder, (order) => order.productOption)
+  orders: WholesalerOrder[];
 
   name: string;
 }

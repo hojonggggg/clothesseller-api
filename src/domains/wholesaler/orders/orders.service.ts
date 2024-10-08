@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { Order } from 'src/commons/shared/entities/order.entity';
+import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
 export class WholesalerOrdersService {
   constructor(
-    @InjectRepository(Order)
-    private orderRepository: Repository<Order>,
+    @InjectRepository(WholesalerOrder)
+    private wholesalerOrderRepository: Repository<WholesalerOrder>,
   ) {}
 
   async findAllOrderByWholesalerId(wholesalerId: number, date: string, paginationQuery: PaginationQueryDto) {
@@ -17,7 +17,7 @@ export class WholesalerOrdersService {
     endOfDay.setHours(23, 59, 59, 999);
 
     const { page, limit } = paginationQuery;
-    const [orders, total] = await this.orderRepository.findAndCount({
+    const [orders, total] = await this.wholesalerOrderRepository.findAndCount({
       where: { wholesalerId, createdAt: Between(startOfDay, endOfDay)  },
       relations: ['productOption', 'productOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],
       order: { id: 'DESC' },

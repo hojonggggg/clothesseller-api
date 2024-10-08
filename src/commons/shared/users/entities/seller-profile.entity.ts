@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Deliveryman } from 'src/domains/seller/deliveryman/entities/deliveryman.entity';
-import { Order } from '../../entities/order.entity';
+//import { Order } from '../../entities/order.entity';
 
 @Entity('seller_profile')
 export class SellerProfile {
@@ -31,7 +31,8 @@ export class SellerProfile {
 
   @OneToOne(() => Deliveryman, (deliveryman) => deliveryman.sellerProfile)
   deliveryman: Deliveryman;
-
+  /*
   @OneToMany(() => Order, (order) => order.sellerProfile)
   orders: Order[];
+  */
 }

@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
 import { WholesalerProductOption } from './wholesaler-product-option.entity';
 
 @Entity('wholesaler_product')
@@ -31,6 +32,9 @@ export class WholesalerProduct {
   @ApiProperty({ example: '면 100%', description: '혼용률' })
   @Column()
   composition: string;
+
+  @OneToMany(() => SellerOrder, (order) => order.wholesalerProduct)
+  sellerOrders: SellerOrder[];
 
   @OneToMany(() => WholesalerProductOption, (option) => option.wholesalerProduct)
   options: WholesalerProductOption[];

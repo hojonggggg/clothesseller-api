@@ -40,8 +40,8 @@ import * as moment from 'moment-timezone';
       inject: [ConfigService],
     }),
     AuthModule,
-    WholesalerModule,
     SellerModule,
+    WholesalerModule,
     
     
     
