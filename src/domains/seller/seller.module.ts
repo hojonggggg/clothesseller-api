@@ -17,6 +17,7 @@ import { ProductRequestsModule } from './product-requests/product-requests.modul
 import { SellerProductsModule } from './products/products.module';
 import { SellerSamplesModule } from './samples/samples.module';
 import { SellerOrdersModule } from './orders/orders.module';
+import { SellerReturnsModule } from './returns/returns.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SellerOrdersModule } from './orders/orders.module';
     SellerProductsModule,
     SellerOrdersModule,
     SellerSamplesModule,
+    SellerReturnsModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
   controllers: [SellerAuthController],

@@ -1,8 +1,9 @@
-import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerSamplesService } from './samples.service';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
+import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > samples')
@@ -12,16 +13,34 @@ export class SellerSamplesController {
     private sellerSamplesService: SellerSamplesService
   ) {}
 
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 샘플 등록' })
+  @ApiResponse({ status: 201, type: Sample, isArray: true })
+  async createSampleBySeller(
+    @Body() sellerCreateSampleDto: SellerCreateSampleDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    return await this.sellerSamplesService.createSample(sellerId, sellerCreateSampleDto);
+  }
+
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 샘플 목록 조회' })
+  @ApiOperation({ summary: '[완료] 샘플 목록 조회' })
   @ApiResponse({ status: 200, type: [Sample] })
+  @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
+  @ApiQuery({ name: 'wholesalerName', required: false, description: '검색할 도매처명' })
   async findAllSampleBySellerId(
+    @Query('productName') productName: string,
+    @Query('wholesalerName') wholesalerName: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, paginationQuery);
+    return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
   }
 }
