@@ -1,8 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SellerProduct } from './seller-product.entity';
-import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
-//import { Order } from 'src/commons/shared/entities/order.entity';
 
 @Entity('seller_product_option')
 export class SellerProductOption {
@@ -30,12 +28,12 @@ export class SellerProductOption {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => SellerProduct, (product) => product.options, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'seller_product_id' })  // 외래 키
+  @OneToOne(() => SellerProduct)
+  @JoinColumn({ name: 'seller_product_id' })
   sellerProduct: SellerProduct;
-  /*
-  @OneToMany(() => Order, (order) => order.productOption)
-  orders: Order[];
-  */
+
   name: string;
+  sellerPrice: number;
+  wholesalerPrice: number;
+  mallName: string;
 }

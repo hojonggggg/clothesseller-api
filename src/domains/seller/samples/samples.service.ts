@@ -89,6 +89,7 @@ export class SellerSamplesService {
       sample.wholesalerStoreName = sample.wholesalerProfile.store.name;
       sample.wholesalerStoreRoomNo = sample.wholesalerProfile.roomNo;
       sample.wholesalerMobile = sample.wholesalerProfile.mobile;
+      
       delete(sample.sellerId);
       delete(sample.wholesalerId);
       delete(sample.wholesalerProfile);

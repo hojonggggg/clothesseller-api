@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
+import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
 export class DeliverymanService {

@@ -1,15 +1,19 @@
-import { Body, ConflictException, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { DeliverymanService } from './deliveryman.service';
 import { Deliveryman } from './entities/deliveryman.entity';
+import { SellerProductsService } from '../products/products.service';
+import { Mall } from '../malls/entities/mall.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
+import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > deliveryman')
 @Controller('seller/deliveryman')
 export class DeliverymanController {
   constructor(
-    private readonly deliverymanService: DeliverymanService
+    private readonly deliverymanService: DeliverymanService,
+    private readonly sellerProductsService: SellerProductsService
   ) {}
 
   @Post()
@@ -30,4 +34,20 @@ export class DeliverymanController {
     }
     return await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
   }
+
+  @Get('stores')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발중] 상가 목록 조회' })
+  @ApiResponse({ status: 200, type: [Mall] })
+  @ApiQuery({ name: 'storeName', required: false, description: '검색할 상가명' })
+  async findAllStoresBySellerId(
+    @Query('storeName') storeName: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    return await this.sellerProductsService.findAllStoresBySellerId(sellerId, storeName, paginationQuery);
+  }
+
 }

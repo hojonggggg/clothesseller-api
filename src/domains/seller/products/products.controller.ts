@@ -1,5 +1,5 @@
 import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerProductsService } from './products.service';
 import { SellerProduct } from './entities/seller-product.entity';
@@ -34,14 +34,16 @@ export class SellerProductsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 상품 목록 조회' })
+  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
   @ApiResponse({ status: 200, type: [SellerProduct] })
+  @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
   async findAllSellerProductBySellerId(
+    @Query('productName') productName: string,
     @Query() paginationQuery: PaginationQueryDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, paginationQuery);
+    return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
   }
   
 }

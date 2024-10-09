@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Mall } from '../../malls/entities/mall.entity';
+import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
-import { SellerProductOption } from './seller-product-option.entity';
 
 @Entity('seller_product')
 export class SellerProduct {
@@ -41,9 +42,17 @@ export class SellerProduct {
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
+  @OneToOne(() => Mall)
+  @JoinColumn({ name: 'mall_id' })
+  mall: Mall;
+
+  @OneToOne(() => WholesalerProfile)
+  @JoinColumn({ name: 'wholesaler_id' })
+  wholesalerProfile: WholesalerProfile;
+
   @OneToMany(() => SellerOrder, (order) => order.sellerProduct)
   sellerOrders: SellerOrder[];
 
-  @OneToMany(() => SellerProductOption, (option) => option.sellerProduct)
-  options: SellerProductOption[];
+  storeId: number;
+  storeName: string;
 }
