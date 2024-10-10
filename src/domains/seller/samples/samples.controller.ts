@@ -51,7 +51,7 @@ export class SellerSamplesController {
     const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
     return {
       statusCode: 200,
-      message: result
+      data: result
     };
   }
 }

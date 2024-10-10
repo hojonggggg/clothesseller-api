@@ -89,13 +89,10 @@ export class SellerProductsService {
     }
 
     return {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: products,
+      total,
+      page: Number(page),
+      totalPage: Math.ceil(total / limit),
     };
   }
 
@@ -131,13 +128,10 @@ export class SellerProductsService {
     }
     
     return {
-      data: stores,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: stores,
+      total,
+      page: Number(page),
+      totalPage: Math.ceil(total / limit),
     };
   }
 }

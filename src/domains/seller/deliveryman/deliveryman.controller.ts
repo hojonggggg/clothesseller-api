@@ -51,7 +51,7 @@ export class DeliverymanController {
     const result = await this.sellerProductsService.findAllStoresOfProductBySellerId(sellerId, storeName, paginationQuery);
     return {
       statusCode: 200,
-      message: result
+      data: result
     };
   }
 

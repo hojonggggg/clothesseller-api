@@ -100,13 +100,10 @@ export class SellerSamplesService {
     }
     
     return {
-      data: samples,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: samples,
+      total,
+      page: Number(page),
+      totalPage: Math.ceil(total / limit),
     };
   }
 }

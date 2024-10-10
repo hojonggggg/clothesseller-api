@@ -11,8 +11,9 @@ export class SellerReturnsService {
     private returnRepository: Repository<Return>,
   ) {}
 
-  async findAllReturnBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
+  async findAllReturnBySellerId(sellerId: number, productName: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
+    /*
     const [returns, total] = await this.returnRepository.findAndCount({
       where: { sellerId },
       //relations: ['sellerProductOption', 'sellerProductOption.sellerProduct', 'wholesalerProfile', 'wholesalerProfile.store'],
@@ -20,6 +21,20 @@ export class SellerReturnsService {
       take: limit,
       skip: (page - 1) * limit,
     });
+    */
+    const queryBuilder = this.returnRepository.createQueryBuilder('return')
+      .leftJoinAndSelect('return.sellerProduct', 'sellerProduct')
+      .where('return.sellerId = :sellerId', { sellerId });
+
+    if (productName) {
+      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${productName}%` });
+    }
+
+    const [returns, total] = await queryBuilder
+      .orderBy('return.id', 'DESC')
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
     /*
     for (const sample of samples) {
       sample.name = sample.sellerProductOption.sellerProduct.name;
@@ -39,13 +54,10 @@ export class SellerReturnsService {
     }
     */
     return {
-      data: returns,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: returns,
+      total,
+      page: Number(page),
+      totalPage: Math.ceil(total / limit),
     };
   }
 }

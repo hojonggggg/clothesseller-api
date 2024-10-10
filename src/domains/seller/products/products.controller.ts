@@ -47,7 +47,7 @@ export class SellerProductsController {
     const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
     return {
       statusCode: 200,
-      message: result
+      data: result
     };
   }
   

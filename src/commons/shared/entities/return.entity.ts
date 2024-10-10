@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
 
 @Entity('return')
 export class Return {
@@ -42,4 +43,8 @@ export class Return {
   @ApiProperty({ example: '대기', description: '주문 상태' })
   @Column()
   status: string;
+
+  @OneToOne(() => SellerProduct)
+  @JoinColumn({ name: 'seller_product_id' })
+  sellerProduct: SellerProduct;
 }

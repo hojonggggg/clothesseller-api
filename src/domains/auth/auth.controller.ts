@@ -24,7 +24,7 @@ export class AuthController {
     const result = await this.authService.login(req.user);
     return {
       statusCode: 200,
-      message: result
+      data: result
     }
   }
 
