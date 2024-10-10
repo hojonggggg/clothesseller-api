@@ -14,13 +14,19 @@ export class SellerAuthController {
   ) {}
 
   @Post('signup')
-  @ApiOperation({ summary: '회원가입' })
-  @ApiResponse({ status: 201, type: User })
+  @ApiOperation({ summary: '[완료] 회원가입' })
+  @ApiResponse({ status: 201 })
   async createUser(@Body() sellerSignupDto: SellerSignupDto) {
     const user = await this.usersService.findOneUserById(sellerSignupDto.id);
     if (user) {
       throw new ConflictException('이미 존재하는 아이디입니다.');
     }
-    return await this.sellerAuthService.signup(sellerSignupDto);
+    //return await this.sellerAuthService.signup(sellerSignupDto);
+    await this.sellerAuthService.signup(sellerSignupDto);
+
+    return {
+      statusCode: 201,
+      message: '회원가입이 완료되었습니다.'
+    };
   }
 }

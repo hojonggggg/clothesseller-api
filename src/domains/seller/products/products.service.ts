@@ -99,7 +99,7 @@ export class SellerProductsService {
     };
   }
 
-  async findAllStoresBySellerId(sellerId: number, storeName: string, paginationQuery: PaginationQueryDto) {
+  async findAllStoresOfProductBySellerId(sellerId: number, storeName: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
 
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
@@ -109,7 +109,11 @@ export class SellerProductsService {
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
       .groupBy('store.id')
       .addGroupBy('store.name');
-
+      
+    
+    if (storeName) {
+      queryBuilder.andWhere('store.name LIKE :storeName', { storeName: `%${storeName}%` });
+    }
     
     const [stores, total] = await queryBuilder
       .orderBy('sellerProduct.id', 'DESC')

@@ -17,13 +17,19 @@ export class SellerSamplesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 샘플 등록' })
-  @ApiResponse({ status: 201, type: Sample, isArray: true })
+  //@ApiResponse({ status: 201, type: Sample, isArray: true })
+  @ApiResponse({ status: 201 })
   async createSampleBySeller(
     @Body() sellerCreateSampleDto: SellerCreateSampleDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    return await this.sellerSamplesService.createSample(sellerId, sellerCreateSampleDto);
+    //return await this.sellerSamplesService.createSample(sellerId, sellerCreateSampleDto);
+    const result = await this.sellerSamplesService.createSample(sellerId, sellerCreateSampleDto);
+    return {
+      statusCode: 201,
+      message: result
+    };
   }
 
 
@@ -31,7 +37,7 @@ export class SellerSamplesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 샘플 목록 조회' })
-  @ApiResponse({ status: 200, type: [Sample] })
+  @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
   @ApiQuery({ name: 'wholesalerName', required: false, description: '검색할 도매처명' })
   async findAllSampleBySellerId(
@@ -41,6 +47,11 @@ export class SellerSamplesController {
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
+    //return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
+    const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
+    return {
+      statusCode: 200,
+      message: result
+    };
   }
 }

@@ -35,7 +35,7 @@ export class SellerProductsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 목록 조회' })
-  @ApiResponse({ status: 200, type: [SellerProduct] })
+  @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
   async findAllSellerProductBySellerId(
     @Query('productName') productName: string,
@@ -43,7 +43,12 @@ export class SellerProductsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
+    //return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
+    const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
+    return {
+      statusCode: 200,
+      message: result
+    };
   }
   
 }

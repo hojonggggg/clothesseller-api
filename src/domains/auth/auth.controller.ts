@@ -15,12 +15,17 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  @ApiOperation({ summary: '로그인' })
+  @ApiOperation({ summary: '[완료] 로그인' })
   @ApiResponse({ status: 200 })
   @ApiBody({ type: LoginDto })
   async login(@Request() req, @Body() loginDto: LoginDto) {
     console.log({loginDto});
-    return this.authService.login(req.user);
+    //return this.authService.login(req.user);
+    const result = await this.authService.login(req.user);
+    return {
+      statusCode: 200,
+      message: result
+    }
   }
 
 

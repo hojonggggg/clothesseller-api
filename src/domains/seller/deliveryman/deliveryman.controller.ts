@@ -38,8 +38,8 @@ export class DeliverymanController {
   @Get('stores')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발중] 상가 목록 조회' })
-  @ApiResponse({ status: 200, type: [Mall] })
+  @ApiOperation({ summary: '[완료] 상가 목록 조회' })
+  @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'storeName', required: false, description: '검색할 상가명' })
   async findAllStoresBySellerId(
     @Query('storeName') storeName: string,
@@ -47,7 +47,12 @@ export class DeliverymanController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    return await this.sellerProductsService.findAllStoresBySellerId(sellerId, storeName, paginationQuery);
+    //return await this.sellerProductsService.findAllStoresOfProductBySellerId(sellerId, storeName, paginationQuery);
+    const result = await this.sellerProductsService.findAllStoresOfProductBySellerId(sellerId, storeName, paginationQuery);
+    return {
+      statusCode: 200,
+      message: result
+    };
   }
 
 }
