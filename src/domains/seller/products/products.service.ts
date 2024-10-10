@@ -49,7 +49,7 @@ export class SellerProductsService {
     return this.sellerProductRepository.findOne({ where: { sellerId, wholesalerProductId } });
   }
 
-  async findAllSellerProductBySellerId(sellerId: number, productName: string, paginationQuery: PaginationQueryDto) {
+  async findAllSellerProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
     /*
     const [products, total] = await this.sellerProductOptionRepository.findAndCount({
@@ -66,8 +66,8 @@ export class SellerProductsService {
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId });
     
-    if (productName) {
-      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${productName}%` });
+    if (query) {
+      queryBuilder.andWhere('sellerProduct.name LIKE :query', { query: `%${query}%` });
     }
 
     const [products, total] = await queryBuilder
@@ -75,7 +75,6 @@ export class SellerProductsService {
       .take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
-     
       
     for (const product of products) {
       product.name = product.sellerProduct.name;
@@ -96,7 +95,7 @@ export class SellerProductsService {
     };
   }
 
-  async findAllStoresOfProductBySellerId(sellerId: number, storeName: string, paginationQuery: PaginationQueryDto) {
+  async findAllStoresOfProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
 
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
@@ -108,8 +107,8 @@ export class SellerProductsService {
       .addGroupBy('store.name');
       
     
-    if (storeName) {
-      queryBuilder.andWhere('store.name LIKE :storeName', { storeName: `%${storeName}%` });
+    if (query) {
+      queryBuilder.andWhere('store.name LIKE :query', { query: `%${query}%` });
     }
     
     const [stores, total] = await queryBuilder

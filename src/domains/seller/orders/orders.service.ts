@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -14,8 +14,25 @@ export class SellerOrdersService {
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
   ) {}
 
-  async findAllSellerOrderBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
+  async findAllSellerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.mall', 'mall')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
+      .where('order.sellerId = :sellerId', { sellerId });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+    /*
     const [orders, total] = await this.sellerOrderRepository.findAndCount({
       where: { sellerId },
       relations: ['sellerProduct', 'sellerProductOption', 'wholesalerProduct', 'mall'],
@@ -23,14 +40,21 @@ export class SellerOrdersService {
       take: limit,
       skip: (page - 1) * limit,
     });
+    */
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
     
     for (const order of orders) {
-      order.sellerProductName = order.sellerProduct.name;
-      order.sellerProductColor = order.sellerProductOption.color;
-      order.sellerProductSize = order.sellerProductOption.size;
+      order.name = order.sellerProduct.name;
+      order.color = order.sellerProductOption.color;
+      order.size = order.sellerProductOption.size;
       order.wholesalerProductName = order.wholesalerProduct.name;
       order.mallName = order.mall.name;
-
+      
       delete(order.sellerId);
       delete(order.sellerProductId);
       delete(order.sellerProduct);
@@ -42,16 +66,14 @@ export class SellerOrdersService {
       delete(order.wholesalerProduct);
       delete(order.mallId);
       delete(order.mall);
+      
     }
     
     return {
-      data: orders,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: orders,
+      total,
+      page: Number(page),
+      totalPage: Math.ceil(total / limit),
     };
   }
 

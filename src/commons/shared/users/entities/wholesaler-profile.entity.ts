@@ -30,7 +30,7 @@ export class WholesalerProfile {
   mobile: string;
 
   @OneToOne(() => Store)
-  @JoinColumn({ name: 'store_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결
+  @JoinColumn({ name: 'store_id' })
   store: Store;
   /*
   @OneToMany(() => Order, (order) => order.sellerProfile)

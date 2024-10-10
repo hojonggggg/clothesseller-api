@@ -11,7 +11,7 @@ export class SellerReturnsService {
     private returnRepository: Repository<Return>,
   ) {}
 
-  async findAllReturnBySellerId(sellerId: number, productName: string, paginationQuery: PaginationQueryDto) {
+  async findAllReturnBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
     /*
     const [returns, total] = await this.returnRepository.findAndCount({
@@ -24,10 +24,13 @@ export class SellerReturnsService {
     */
     const queryBuilder = this.returnRepository.createQueryBuilder('return')
       .leftJoinAndSelect('return.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('return.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('return.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('return.sellerId = :sellerId', { sellerId });
 
-    if (productName) {
-      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${productName}%` });
+    if (query) {
+      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
     }
 
     const [returns, total] = await queryBuilder
@@ -35,24 +38,28 @@ export class SellerReturnsService {
       .take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
-    /*
-    for (const sample of samples) {
-      sample.name = sample.sellerProductOption.sellerProduct.name;
-      sample.color = sample.sellerProductOption.color;
-      sample.size = sample.sellerProductOption.size;
-      sample.quantity = sample.sellerProductOption.quantity;
-      sample.wholesalerName = sample.wholesalerProfile.name;
-      sample.wholesalerStoreName = sample.wholesalerProfile.store.name;
-      sample.wholesalerStoreRoomNo = sample.wholesalerProfile.roomNo;
-      sample.wholesalerMobile = sample.wholesalerProfile.mobile;
-      delete(sample.wholesalerId);
-      delete(sample.wholesalerProductOptionId);
-      delete(sample.sellerId);
-      delete(sample.sellerProductOptionId);
-      delete(sample.sellerProductOption);
-      delete(sample.wholesalerProfile);
+    
+    for (const _return of returns) {
+      _return.name = _return.sellerProduct.name;
+      _return.color = _return.sellerProductOption.color;
+      _return.size = _return.sellerProductOption.size;
+      _return.wholesalerName = _return.wholesalerProfile.name;
+      _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
+      _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
+      _return.wholesalerMobile = _return.wholesalerProfile.mobile;
+     
+      delete(_return.status);
+      delete(_return.wholesalerId);
+      delete(_return.wholesalerProfile);
+      delete(_return.wholesalerProductId);
+      delete(_return.wholesalerProductOptionId);
+      delete(_return.sellerId);
+      delete(_return.sellerProductId);
+      delete(_return.sellerProductOptionId);
+      delete(_return.sellerProductOption);
+      delete(_return.sellerProduct);
     }
-    */
+    
     return {
       list: returns,
       total,

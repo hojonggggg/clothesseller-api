@@ -65,9 +65,9 @@ export class SellerOrder {
   @JoinColumn({ name: 'mall_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결
   mall: Mall;
 
-  sellerProductName: string;
-  sellerProductColor: string;
-  sellerProductSize: string;
+  name: string;
+  color: string;
+  size: string;
   wholesalerProductName: string;
   mallName: string;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, Like } from 'typeorm';
+import { DataSource, Repository, Brackets } from 'typeorm';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -44,7 +44,7 @@ export class SellerSamplesService {
     }
   }
 
-  async findAllSampleBySellerId(sellerId: number, productName: string, wholesalerName: string, paginationQuery: PaginationQueryDto) {
+  async findAllSampleBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { page, limit } = paginationQuery;
     /*
     const whereConditions: any = { sellerId };
@@ -68,11 +68,13 @@ export class SellerSamplesService {
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
       .where('sample.sellerId = :sellerId', { sellerId });
 
-    if (productName) {
-      queryBuilder.andWhere('wholesalerProduct.name LIKE :productName', { productName: `%${productName}%` });
-    }
-    if (wholesalerName) {
-      queryBuilder.andWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${wholesalerName}%` });
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
     }
 
     const [samples, total] = await queryBuilder

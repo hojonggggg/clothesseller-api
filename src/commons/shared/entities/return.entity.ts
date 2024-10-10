@@ -1,6 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
+import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
+import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
 
 @Entity('return')
 export class Return {
@@ -47,4 +49,20 @@ export class Return {
   @OneToOne(() => SellerProduct)
   @JoinColumn({ name: 'seller_product_id' })
   sellerProduct: SellerProduct;
+
+  @OneToOne(() => SellerProductOption)
+  @JoinColumn({ name: 'seller_product_option_id' })
+  sellerProductOption: SellerProductOption;
+
+  @OneToOne(() => WholesalerProfile)
+  @JoinColumn({ name: 'wholesaler_id' })
+  wholesalerProfile: WholesalerProfile;
+
+  name: string;
+  color: string;
+  size: string;
+  wholesalerName: string;
+  wholesalerStoreName: string;
+  wholesalerStoreRoomNo: string;
+  wholesalerMobile: string;
 }

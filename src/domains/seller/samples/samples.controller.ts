@@ -38,17 +38,15 @@ export class SellerSamplesController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 샘플 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
-  @ApiQuery({ name: 'wholesalerName', required: false, description: '검색할 도매처명' })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllSampleBySellerId(
-    @Query('productName') productName: string,
-    @Query('wholesalerName') wholesalerName: string,
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
     //return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
-    const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
+    const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

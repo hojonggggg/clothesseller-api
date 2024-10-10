@@ -17,15 +17,15 @@ export class SellerReturnsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 반품 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'productName', required: false, description: '검색할 상품명' })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllReturnBySellerId(
-    @Query('productName') productName: string,
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
     //return await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, productName, paginationQuery);
-    const result = await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, productName, paginationQuery);
+    const result = await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

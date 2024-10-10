@@ -15,14 +15,21 @@ export class SellerOrdersController {
   @Get('received')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 쇼핑몰에서 들어온 주문 내역 조회' })
-  @ApiResponse({ status: 200, type: [SellerOrder] })
+  @ApiOperation({ summary: '[완료] 쇼핑몰에서 들어온 주문 내역 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllSellerOrderBySellerId(
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    return await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, paginationQuery);
+    //return await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
   }
 
   @Get('auto-ordering')
