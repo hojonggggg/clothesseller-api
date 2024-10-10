@@ -10,7 +10,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.enableCors({
-    
+    /*
     origin: [
       'https://clothesseller235.cafe24.com',
       'http://172.30.1.21:3099', 
@@ -18,14 +18,14 @@ async function bootstrap() {
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     //credentials: true,
+    */
     
-    /*
     origin: (origin, callback) => {
       callback(null, true); // 모든 도메인 허용
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
-    */
+    
   });
 
   app.useGlobalPipes(new ValidationPipe());
