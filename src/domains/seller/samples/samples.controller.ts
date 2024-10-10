@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerSamplesService } from './samples.service';
@@ -19,7 +19,7 @@ export class SellerSamplesController {
   @ApiOperation({ summary: '[완료] 샘플 등록' })
   //@ApiResponse({ status: 201, type: Sample, isArray: true })
   @ApiResponse({ status: 201 })
-  async createSampleBySeller(
+  async createSample(
     @Body() sellerCreateSampleDto: SellerCreateSampleDto, 
     @Request() req
   ) {
@@ -31,7 +31,6 @@ export class SellerSamplesController {
       message: '샘플 등록이 완료되었습니다.'
     };
   }
-
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -50,6 +49,23 @@ export class SellerSamplesController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Patch(':id/delete')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 샘플 삭제' })
+  @ApiResponse({ status: 200 })
+  async deleteSample(
+    @Param('id') sampleId: number, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.sellerSamplesService.deleteSample(sellerId, sampleId);
+    return {
+      statusCode: 200,
+      message: '샘플 삭제가 완료되었습니다.'
     };
   }
 }

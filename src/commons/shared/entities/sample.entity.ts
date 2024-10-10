@@ -44,6 +44,10 @@ export class Sample {
   @Column()
   status: string;
 
+  @ApiProperty({ example: false, description: '삭제 여부' })
+  @Column({ name: 'is_deleted', default: true })
+  isDeleted: boolean;
+
   @OneToOne(() => SellerProfile)
   @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })
   sellerProfile: SellerProfile;

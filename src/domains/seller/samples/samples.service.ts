@@ -66,7 +66,8 @@ export class SellerSamplesService {
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
-      .where('sample.sellerId = :sellerId', { sellerId });
+      .where('sample.sellerId = :sellerId', { sellerId })
+      .andWhere('sample.isDeleted = 0');
 
     if (query) {
       queryBuilder.andWhere(
@@ -107,5 +108,16 @@ export class SellerSamplesService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async deleteSample(sellerId: number, sampleId: number) {
+    await this.sampleRepository.update(
+      {
+        id: sampleId,
+        sellerId
+      }, {
+        isDeleted: true
+      }
+    );
   }
 }
