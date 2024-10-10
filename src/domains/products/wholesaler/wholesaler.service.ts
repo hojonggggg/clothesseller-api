@@ -22,24 +22,21 @@ export class WholesalerProductsService {
   }
 
   async searchWholesalerProductByWholesalerId(wholesalerId: number, productName: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [products, total] = await this.wholesalerProductRepository.findAndCount({
       where: { wholesalerId, productName: Like(`%${productName}%`) },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 

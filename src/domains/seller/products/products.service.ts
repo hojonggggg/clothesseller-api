@@ -50,7 +50,7 @@ export class SellerProductsService {
   }
 
   async findAllSellerProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     /*
     const [products, total] = await this.sellerProductOptionRepository.findAndCount({
       where: { sellerId },
@@ -72,8 +72,8 @@ export class SellerProductsService {
 
     const [products, total] = await queryBuilder
       .orderBy('sellerProduct.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit)
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
       
     for (const product of products) {
@@ -90,13 +90,13 @@ export class SellerProductsService {
     return {
       list: products,
       total,
-      page: Number(page),
-      totalPage: Math.ceil(total / limit),
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 
   async findAllStoresOfProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
       .select(['sellerProduct.id', 'sellerProduct.wholesalerId', 'COUNT(sellerProduct.id) AS productCount'])
@@ -113,8 +113,8 @@ export class SellerProductsService {
     
     const [stores, total] = await queryBuilder
       .orderBy('sellerProduct.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit)
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
       
     for (const store of stores) {
@@ -129,8 +129,8 @@ export class SellerProductsService {
     return {
       list: stores,
       total,
-      page: Number(page),
-      totalPage: Math.ceil(total / limit),
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

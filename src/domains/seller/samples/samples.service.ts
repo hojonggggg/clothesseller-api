@@ -45,7 +45,7 @@ export class SellerSamplesService {
   }
 
   async findAllSampleBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     /*
     const whereConditions: any = { sellerId };
     if (productName) {
@@ -79,8 +79,8 @@ export class SellerSamplesService {
 
     const [samples, total] = await queryBuilder
       .orderBy('sample.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit)
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
     
     for (const sample of samples) {
@@ -104,8 +104,8 @@ export class SellerSamplesService {
     return {
       list: samples,
       total,
-      page: Number(page),
-      totalPage: Math.ceil(total / limit),
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

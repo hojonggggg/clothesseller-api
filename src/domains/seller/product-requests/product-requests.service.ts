@@ -29,22 +29,19 @@ export class ProductRequestsService {
   }
 
   async findAllProductRequestBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     const [ProductRequests, total] = await this.productRequestRepository.findAndCount({
       where: { sellerId },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: ProductRequests,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: ProductRequests,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

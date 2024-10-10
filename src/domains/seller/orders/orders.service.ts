@@ -15,7 +15,7 @@ export class SellerOrdersService {
   ) {}
 
   async findAllSellerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
       .leftJoinAndSelect('order.mall', 'mall')
@@ -44,8 +44,8 @@ export class SellerOrdersService {
 
     const [orders, total] = await queryBuilder
       .orderBy('order.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit)
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
     
     for (const order of orders) {
@@ -72,19 +72,19 @@ export class SellerOrdersService {
     return {
       list: orders,
       total,
-      page: Number(page),
-      totalPage: Math.ceil(total / limit),
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 
   async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     const [orders, total] = await this.wholesalerOrderRepository.findAndCount({
       where: { sellerId, orderType },
       relations: ['sellerProduct', 'sellerProductOption', 'wholesalerProduct', 'wholesalerProfile', 'wholesalerProfile.store'],
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
     
     for (const order of orders) {
@@ -115,9 +115,9 @@ export class SellerOrdersService {
       data: orders,
       meta: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        pageNumber,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
       },
     };
   }

@@ -16,13 +16,13 @@ export class WholesalerOrdersService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     const [orders, total] = await this.wholesalerOrderRepository.findAndCount({
       where: { wholesalerId, createdAt: Between(startOfDay, endOfDay)  },
       relations: ['productOption', 'productOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
     
     for (const order of orders) {
@@ -45,13 +45,10 @@ export class WholesalerOrdersService {
     }
     
     return {
-      data: orders,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

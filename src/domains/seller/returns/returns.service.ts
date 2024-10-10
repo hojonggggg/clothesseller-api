@@ -12,7 +12,7 @@ export class SellerReturnsService {
   ) {}
 
   async findAllReturnBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     /*
     const [returns, total] = await this.returnRepository.findAndCount({
       where: { sellerId },
@@ -35,8 +35,8 @@ export class SellerReturnsService {
 
     const [returns, total] = await queryBuilder
       .orderBy('return.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit)
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
     
     for (const _return of returns) {
@@ -63,8 +63,8 @@ export class SellerReturnsService {
     return {
       list: returns,
       total,
-      page: Number(page),
-      totalPage: Math.ceil(total / limit),
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

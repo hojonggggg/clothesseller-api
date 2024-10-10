@@ -34,46 +34,40 @@ export class ProductRequestsService {
   }
 
   async findAllProductRequestByWholesalerId(wholesalerId: number, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [ProductRequests, total] = await this.productRequestRepository.findAndCount({
       where: { wholesalerId },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: ProductRequests,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: ProductRequests,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 
   async findAllProductRequestBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [ProductRequests, total] = await this.productRequestRepository.findAndCount({
       where: { sellerId },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: ProductRequests,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: ProductRequests,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 

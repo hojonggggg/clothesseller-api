@@ -29,47 +29,41 @@ export class SellerProductsService {
     return this.sellerProductRepository.findOne({ where: { sellerId, wholesalerProductId } });
   }
 
-  async findAllSellerProductBySellerId(sellerId: number, paginationQuery: PaginationQueryDto): Promise<PaginatedSellerProducts> {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+  async findAllSellerProductBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [products, total] = await this.sellerProductRepository.findAndCount({
       where: { sellerId },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 
   async searchSellerProductBySellerId(sellerId: number, productName: string, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [products, total] = await this.sellerProductRepository.findAndCount({
       where: { sellerId, productName: Like(`%${productName}%`) },
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
 
     return {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

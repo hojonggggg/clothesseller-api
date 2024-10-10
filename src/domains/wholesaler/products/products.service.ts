@@ -56,13 +56,13 @@ export class WholesalerProductsService {
   }
 
   async findAllWholesalerProductByWholesalerId(wholesalerId: number, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     const [products, total] = await this.wholesalerProductOptionRepository.findAndCount({
       where: { wholesalerId },
       relations: ['wholesalerProduct'],
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
     
     /*
@@ -88,15 +88,12 @@ export class WholesalerProductsService {
       product.name = product.wholesalerProduct.name;
       delete(product.wholesalerProduct);
     }
-
+    
     return {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

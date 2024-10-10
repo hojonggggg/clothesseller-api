@@ -12,13 +12,13 @@ export class WholesalerSamplesService {
   ) {}
 
   async findAllSampleByWholesalerId(wholesalerId: number, paginationQuery: PaginationQueryDto) {
-    const { page, limit } = paginationQuery;
+    const { pageNumber, pageSize } = paginationQuery;
     const [samples, total] = await this.sampleRepository.findAndCount({
       where: { wholesalerId },
       relations: ['wholesalerProductOption', 'wholesalerProductOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],
       order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
     
     for (const sample of samples) {
@@ -44,13 +44,10 @@ export class WholesalerSamplesService {
     }
     
     return {
-      data: samples,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: samples,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 }

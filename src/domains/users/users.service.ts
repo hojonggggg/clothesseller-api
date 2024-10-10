@@ -78,26 +78,23 @@ export class UsersService {
     await this.sellerProfileRepository.save(sellerProfile);
   }
 
-  async findAllUsers(role: string, paginationQuery: PaginationQueryDto): Promise<PaginatedUsers> {
-    const { page, limit } = paginationQuery;
-    const skip = (page - 1) * limit;
+  async findAllUsers(role: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+    const skip = (pageNumber - 1) * pageSize;
 
     const [users, total] = await this.userRepository.findAndCount({
       select: ['id'], 
       where: { role },
       order: { uid: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
     });
-
+    
     return {
-      data: users,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      list: users,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 
