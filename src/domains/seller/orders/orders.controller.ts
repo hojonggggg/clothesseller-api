@@ -59,4 +59,23 @@ export class SellerOrdersController {
     const orderType = '수동';
     return await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, paginationQuery);
   }
+
+  @Get('pre-payment')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 미송 내역 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllPrePaymentOfWholesalerOrderBySellerId(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    //const result = await this.sellerOrdersService.findAllPrePaymentOfWholesalerOrderBySellerId(sellerrId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      //data: result
+    };
+  }
 }

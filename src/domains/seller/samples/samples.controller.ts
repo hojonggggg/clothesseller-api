@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerSamplesService } from './samples.service';
-import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
+import { SellerDeleteSampleDto } from './dto/seller-delete-sample.dto';
+import { SellerReturnSampleDto } from './dto/seller-return-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > samples')
@@ -52,20 +53,59 @@ export class SellerSamplesController {
     };
   }
 
-  @Patch(':id/delete')  
+  @Patch('delete')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 샘플 삭제' })
   @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+        },
+      },
+    },
+  })
   async deleteSample(
-    @Param('id') sampleId: number, 
+    @Body() sellerDeleteSampleDtos: SellerDeleteSampleDto[], 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerSamplesService.deleteSample(sellerId, sampleId);
+    await this.sellerSamplesService.deleteSample(sellerId, sellerDeleteSampleDtos);
     return {
       statusCode: 200,
       message: '샘플 삭제가 완료되었습니다.'
+    };
+  }
+
+  @Patch('return')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 샘플 반납' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+        },
+      },
+    },
+  })
+  async returnSample(
+    @Body() sellerReturnSampleDtos: SellerReturnSampleDto[], 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.sellerSamplesService.returnSample(sellerId, sellerReturnSampleDtos);
+    return {
+      statusCode: 200,
+      message: '샘플 반납 신청이 완료되었습니다.'
     };
   }
 }

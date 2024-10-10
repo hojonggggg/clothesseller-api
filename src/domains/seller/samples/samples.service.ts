@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
+import { SellerDeleteSampleDto } from './dto/seller-delete-sample.dto';
+import { SellerReturnSampleDto } from './dto/seller-return-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
@@ -110,14 +112,33 @@ export class SellerSamplesService {
     };
   }
 
-  async deleteSample(sellerId: number, sampleId: number) {
-    await this.sampleRepository.update(
-      {
-        id: sampleId,
-        sellerId
-      }, {
-        isDeleted: true
-      }
-    );
+  async deleteSample(sellerId: number, sellerDeleteSampleDtos: SellerDeleteSampleDto[]): Promise<void> {
+    for (const sellerDeleteSampleDto of sellerDeleteSampleDtos) {
+      const sampleId = sellerDeleteSampleDto.id;
+
+      await this.sampleRepository.update(
+        {
+          id: sampleId,
+          sellerId
+        }, {
+          isDeleted: true
+        }
+      );
+    }
+  }
+
+  async returnSample(sellerId: number, sellerReturnSampleDtos: SellerReturnSampleDto[]): Promise<void> {
+    for (const sellerReturnSampleDto of sellerReturnSampleDtos) {
+      const sampleId = sellerReturnSampleDto.id;
+
+      await this.sampleRepository.update(
+        {
+          id: sampleId,
+          sellerId
+        }, {
+          status: '반납'
+        }
+      );
+    }
   }
 }

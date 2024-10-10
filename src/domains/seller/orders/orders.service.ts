@@ -121,4 +121,60 @@ export class SellerOrdersService {
       },
     };
   }
+
+  async findAllPrePaymentOfWholesalerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      //.leftJoinAndSelect('order.mall', 'mall')
+      //.leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
+      //.leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.status = :status', { status: '미송' });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+    
+    for (const order of orders) {
+      //order.name = order.sellerProduct.name;
+      //order.color = order.sellerProductOption.color;
+      //order.size = order.sellerProductOption.size;
+      //order.wholesalerProductName = order.wholesalerProduct.name;
+      //order.mallName = order.mall.name;
+      order.sellerProductName = order.sellerProduct.name;
+      /*
+      delete(order.sellerId);
+      delete(order.sellerProductId);
+      delete(order.sellerProduct);
+      delete(order.sellerProductOptionId);
+      delete(order.sellerProductOption);
+      delete(order.wholesalerId);
+      delete(order.wholesalerProductId);
+      delete(order.wholesalerProductOptionId);
+      delete(order.wholesalerProduct);
+      delete(order.mallId);
+      delete(order.mall);
+      */
+    }
+    
+    return {
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
 }
