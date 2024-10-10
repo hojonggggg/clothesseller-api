@@ -4,7 +4,7 @@ import { MallsService } from './malls.service';
 import { Mall } from './entities/mall.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
-@ApiTags('seller > malls')
+@ApiTags('seller > malls - 상품 등록할 때 사용')
 @Controller('seller/malls')
 export class MallsController {
   constructor(

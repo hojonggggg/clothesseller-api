@@ -19,8 +19,8 @@ export class DeliverymanController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '사입삼촌 등록' })
-  @ApiResponse({ status: 201, type: Deliveryman })
+  @ApiOperation({ summary: '[완료] 사입삼촌 등록' })
+  @ApiResponse({ status: 201 })
   async createDeliveryman(
     @Body() createDeliverymanDto: CreateDeliverymanDto, 
     @Request() req
@@ -32,7 +32,12 @@ export class DeliverymanController {
     if (deliveryman) {
       throw new ConflictException('이미 등록된 사입삼촌입니다.');
     }
-    return await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
+    //return await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
+    const result = await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
+    return {
+      statusCode: 201,
+      message: '사입삼촌 등록이 완료되었습니다.'
+    };
   }
 
   @Get('stores')

@@ -1,10 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+
+class CreateSellerProductOptionDto {
+  @IsString()
+  color: string;
+
+  @IsString()
+  size: string;
+
+  @IsNumber()
+  quantity: number;
+}
 
 export class CreateSellerProductDto {
   @ApiProperty({ example: '1', description: '판매몰 ID' })
   @IsNumber()
-  storeId: number;
+  mallId: number;
 
   @ApiProperty({ example: '1', description: '도매처 ID' })
   @IsNumber()
@@ -20,13 +32,25 @@ export class CreateSellerProductDto {
 
   @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '셀러 상품명' })
   @IsString()
-  sellerProductName: string;
+  name: string;
 
   @ApiProperty({ example: '20000', description: '퍈매 가격' })
   @IsNumber()
-  sellerProductPrice: number;
+  price: number;
 
   @ApiProperty({ example: false, description: '상품 판매 상태' })
   @IsBoolean()
   isActive: boolean;
+
+  @ApiProperty({ 
+    example: [
+      { color: 'Black', size: '100', quantity: 20 },
+      { color: 'Blue', size: '95', quantity: 10 }
+    ], 
+    description: '옵션' 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateSellerProductOptionDto)
+  options: CreateSellerProductOptionDto[];
 }

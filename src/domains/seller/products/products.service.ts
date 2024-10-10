@@ -31,9 +31,15 @@ export class SellerProductsService {
       });
 
       const sellerProductId = Number(sellerProduct.id);
-      /*
-       * 옵션 추가
-       */
+      const { options } = createSellerProductDto;
+      for (const option of options) {
+        const productOption = this.sellerProductOptionRepository.create(option);
+        await this.sellerProductOptionRepository.save({
+          sellerId, 
+          sellerProductId, 
+          ...productOption
+        });
+      }
 
       await queryRunner.commitTransaction();
       return sellerProduct;
@@ -45,8 +51,8 @@ export class SellerProductsService {
     }
   }
 
-  async findOneSellerProductBySellerIdAndWholesalerProductId(sellerId: number, wholesalerProductId: number): Promise<SellerProduct | undefined> {
-    return this.sellerProductRepository.findOne({ where: { sellerId, wholesalerProductId } });
+  async findOneSellerProductBySellerIdAndMallIdAndWholesalerProductId(sellerId: number, mallId: number, wholesalerProductId: number): Promise<SellerProduct | undefined> {
+    return this.sellerProductRepository.findOne({ where: { sellerId, mallId, wholesalerProductId } });
   }
 
   async findAllSellerProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {

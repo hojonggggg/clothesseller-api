@@ -1,7 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-export class CreateProductRequestDto {
+class _CreateProductRequestOptionDto {
+  @IsString()
+  color: string;
+
+  @IsString()
+  size: string;
+
+  @IsNumber()
+  quantity: number;
+}
+
+export class _CreateProductRequestDto {
   @ApiProperty({ example: '2', description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
@@ -25,4 +37,16 @@ export class CreateProductRequestDto {
   @ApiProperty({ example: '10000', description: '판매 가격' })
   @IsNumber()
   sellerProductPrice: number;
+
+  @ApiProperty({ 
+    example: [
+      { color: 'Black', size: '100', quantity: 20 },
+      { color: 'Blue', size: '95', quantity: 10 }
+    ], 
+    description: '옵션' 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => _CreateProductRequestOptionDto)
+  options: _CreateProductRequestOptionDto[];
 }

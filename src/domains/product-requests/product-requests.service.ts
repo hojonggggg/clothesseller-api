@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { ProductRequest } from './entities/product-request.entity';
-import { CreateProductRequestDto } from './dto/create-product-request.dto';
+import { _CreateProductRequestDto } from './dto/create-product-request.dto';
 //import { WholesalerProductsService } from '../wholesaler/products/wholesalerProducts.service';
 import { WholesalerProductsService } from '../products/wholesaler/wholesaler.service';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -17,7 +17,7 @@ export class ProductRequestsService {
     private productRequestRepository: Repository<ProductRequest>,
   ) {}
 
-  async createProductRequest(sellerId: number, createProductRequestDto: CreateProductRequestDto): Promise<ProductRequest> {
+  async createProductRequest(sellerId: number, createProductRequestDto: _CreateProductRequestDto): Promise<ProductRequest> {
     const registerProduct = this.productRequestRepository.create({
       sellerId,
       ...createProductRequestDto
@@ -54,9 +54,8 @@ export class ProductRequestsService {
 
   async findAllProductRequestBySellerId(sellerId: number, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
-    const skip = (pageNumber - 1) * pageSize;
 
-    const [ProductRequests, total] = await this.productRequestRepository.findAndCount({
+    const [productRequests, total] = await this.productRequestRepository.findAndCount({
       where: { sellerId },
       order: { id: 'DESC' },
       take: pageSize,
@@ -64,7 +63,7 @@ export class ProductRequestsService {
     });
 
     return {
-      list: ProductRequests,
+      list: productRequests,
       total,
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),

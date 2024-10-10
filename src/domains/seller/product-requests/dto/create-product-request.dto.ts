@@ -1,8 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
+
+class CreateProductRequestOptionDto {
+  @IsString()
+  color: string;
+
+  @IsString()
+  size: string;
+
+  @IsNumber()
+  quantity: number;
+}
 
 export class CreateProductRequestDto {
-  @ApiProperty({ example: '2', description: '도매처 ID' })
+  @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
 
@@ -14,7 +26,7 @@ export class CreateProductRequestDto {
   @IsString()
   wholesalerProductName: string;
 
-  @ApiProperty({ example: '10000', description: '도매 가격' })
+  @ApiProperty({ example: 10000, description: '도매 가격' })
   @IsNumber()
   wholesalerProductPrice: number;
 
@@ -22,7 +34,19 @@ export class CreateProductRequestDto {
   @IsString()
   sellerProductName: string;
 
-  @ApiProperty({ example: '10000', description: '판매 가격' })
+  @ApiProperty({ example: 20000, description: '판매 가격' })
   @IsNumber()
   sellerProductPrice: number;
+
+  @ApiProperty({ 
+    example: [
+      { color: 'Black', size: '100', quantity: 20 },
+      { color: 'Blue', size: '95', quantity: 10 }
+    ], 
+    description: '옵션' 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductRequestOptionDto)
+  options: CreateProductRequestOptionDto[];
 }

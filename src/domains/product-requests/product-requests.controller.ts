@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@ne
 import { _JwtAuthGuard } from 'src/commons/shared/auth/guards/_jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
 import { ProductRequest } from './entities/product-request.entity';
-import { CreateProductRequestDto } from './dto/create-product-request.dto';
+import { _CreateProductRequestDto } from './dto/create-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('[삭제] product-requests')
@@ -20,7 +20,7 @@ export class ProductRequestsController {
   @ApiOperation({ summary: '[셀러] 상품 등록 요청' })
   @ApiResponse({ status: 201, type: ProductRequest })
   async createProductRequest(
-    @Body() createProductRequestDto: CreateProductRequestDto,
+    @Body() createProductRequestDto: _CreateProductRequestDto,
     @Request() req
   ) {
     const sellerId = req.user.uid;

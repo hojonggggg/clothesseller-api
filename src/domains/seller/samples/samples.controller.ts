@@ -28,7 +28,7 @@ export class SellerSamplesController {
     const result = await this.sellerSamplesService.createSample(sellerId, sellerCreateSampleDto);
     return {
       statusCode: 201,
-      message: result
+      message: '샘플 등록이 완료되었습니다.'
     };
   }
 

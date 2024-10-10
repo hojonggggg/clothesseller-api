@@ -16,19 +16,23 @@ export class SellerProductsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[옵션 추가 필요] 상품 등록' })
-  @ApiResponse({ status: 201, type: SellerProduct })
+  @ApiOperation({ summary: '[완료] 상품 등록' })
+  @ApiResponse({ status: 201 })
   async createSellerProduct(
     @Body() createSellerProductDto: CreateSellerProductDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const { wholesalerProductId } = createSellerProductDto;
-    const product = await this.sellerProductsService.findOneSellerProductBySellerIdAndWholesalerProductId(sellerId, wholesalerProductId);
+    const { mallId, wholesalerProductId } = createSellerProductDto;
+    const product = await this.sellerProductsService.findOneSellerProductBySellerIdAndMallIdAndWholesalerProductId(sellerId, mallId, wholesalerProductId);
     if (product) {
       throw new ConflictException('이미 등록된 상품입니다.');
     }
-    return await this.sellerProductsService.createSellerProduct(sellerId, createSellerProductDto);
+    await this.sellerProductsService.createSellerProduct(sellerId, createSellerProductDto);
+    return {
+      statusCode: 201,
+      message: '상품 등록이 완료되었습니다.'
+    };
   }
 
   @Get()
