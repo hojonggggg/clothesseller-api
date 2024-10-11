@@ -35,7 +35,7 @@ export class SellerOrdersController {
   @Get('auto-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 자동 발주 내역 조회' })
+  @ApiOperation({ summary: '[완료] 자동 발주 내역 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllAutoWholesalerOrderBySellerId(
@@ -55,7 +55,7 @@ export class SellerOrdersController {
   @Get('manual-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 수동 발주 내역 조회' })
+  @ApiOperation({ summary: '[완료] 수동 발주 내역 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllManualWholesalerOrderBySellerId(
