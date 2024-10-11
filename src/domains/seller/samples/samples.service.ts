@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
+import { Return } from 'src/commons/shared/entities/return.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
 import { SellerDeleteSampleDto } from './dto/seller-delete-sample.dto';
 import { SellerReturnSampleDto } from './dto/seller-return-sample.dto';
@@ -14,6 +15,8 @@ export class SellerSamplesService {
 
     @InjectRepository(Sample)
     private sampleRepository: Repository<Sample>,
+    @InjectRepository(Return)
+    private returnRepository: Repository<Return>,
   ) {}
 
   async createSample(sellerId: number, sellerCreateSampleDto: SellerCreateSampleDto): Promise<Sample[]> {
@@ -128,17 +131,50 @@ export class SellerSamplesService {
   }
 
   async returnSample(sellerId: number, sellerReturnSampleDtos: SellerReturnSampleDto[]): Promise<void> {
-    for (const sellerReturnSampleDto of sellerReturnSampleDtos) {
-      const sampleId = sellerReturnSampleDto.id;
+    const queryRunner = this.dataSource.createQueryRunner();
 
-      await this.sampleRepository.update(
-        {
-          id: sampleId,
-          sellerId
-        }, {
-          status: '반납'
-        }
-      );
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+    
+      for (const sellerReturnSampleDto of sellerReturnSampleDtos) {
+        const sampleId = sellerReturnSampleDto.id;
+
+        await this.sampleRepository.update(
+          {
+            id: sampleId,
+            sellerId
+          }, {
+            status: '반납'
+          }
+        );
+
+        const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
+          .where('sample.id = :sampleId', { sampleId });
+        const sample = await queryBuilder.getOne();
+        const { wholesalerId, wholesalerProductId, wholesalerProductOptionId, quantity } = sample;
+
+        const returnProduct = this.returnRepository.create({
+          type: '샘플상품',
+          wholesalerId,
+          wholesalerProductId,
+          wholesalerProductOptionId,
+          sellerId,
+          sellerProductId: 0,
+          sellerProductOptionId: 0,
+          quantity,
+          price: 0
+        });
+
+        await this.returnRepository.save(returnProduct);
+
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 }

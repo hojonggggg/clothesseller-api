@@ -6,9 +6,10 @@ import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
 import { SellerProduct } from '../products/entities/seller-product.entity';
 import { SellerProductOption } from '../products/entities/seller-product-option.entity';
+import { Return } from 'src/commons/shared/entities/return.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Deliveryman, SellerProduct, SellerProductOption])],
+  imports: [TypeOrmModule.forFeature([Deliveryman, SellerProduct, SellerProductOption, Return])],
   providers: [DeliverymanService, SellerProductsService],
   controllers: [DeliverymanController]
 })

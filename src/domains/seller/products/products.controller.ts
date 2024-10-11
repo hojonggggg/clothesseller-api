@@ -1,9 +1,9 @@
-import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, ConflictException, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerProductsService } from './products.service';
-import { SellerProduct } from './entities/seller-product.entity';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
+import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > products')
@@ -54,5 +54,32 @@ export class SellerProductsController {
       data: result
     };
   }
-  
+
+  @Patch('return')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 반품' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+        },
+      },
+    },
+  })
+  async returnSellerProduct(
+    @Body() returnSellerProductDtos: ReturnSellerProductDto[], 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.sellerProductsService.returnSellerProduct(sellerId, returnSellerProductDtos);
+    return {
+      statusCode: 200,
+      message: '상품 반납 신청이 완료되었습니다.'
+    };
+  }
 }

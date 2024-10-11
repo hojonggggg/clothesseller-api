@@ -1,14 +1,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
-import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
+//import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
+//import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
 import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
+import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
+import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 
 @Entity('return')
 export class Return {
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
+  
+  @ApiProperty({ example: '재고상품', description: '재고상품 OR 샘플상품' })
+  @Column()
+  type: string;
 
   @ApiProperty({ example: '1', description: '도매처 ID' })
   @Column({ name: 'wholesaler_id' })
@@ -38,14 +44,14 @@ export class Return {
   @Column()
   quantity: number;
   
-  @ApiProperty({ example: '20000', description: '금액' })
+  @ApiProperty({ example: 10000, description: '도매처 상품 금액' })
   @Column()
-  price: string;
+  price: number;
   
-  @ApiProperty({ example: '대기', description: '주문 상태' })
+  @ApiProperty({ example: '반품신청', description: '반품 상태' })
   @Column()
   status: string;
-
+  /*
   @OneToOne(() => SellerProduct)
   @JoinColumn({ name: 'seller_product_id' })
   sellerProduct: SellerProduct;
@@ -53,10 +59,18 @@ export class Return {
   @OneToOne(() => SellerProductOption)
   @JoinColumn({ name: 'seller_product_option_id' })
   sellerProductOption: SellerProductOption;
-
+  */
   @OneToOne(() => WholesalerProfile)
   @JoinColumn({ name: 'wholesaler_id' })
   wholesalerProfile: WholesalerProfile;
+
+  @OneToOne(() => WholesalerProduct)
+  @JoinColumn({ name: 'wholesaler_product_id' })
+  wholesalerProduct: WholesalerProduct;
+
+  @OneToOne(() => WholesalerProductOption)
+  @JoinColumn({ name: 'wholesaler_product_option_id' })
+  wholesalerProductOption: WholesalerProductOption;
 
   name: string;
   color: string;

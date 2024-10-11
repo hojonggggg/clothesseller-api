@@ -3,6 +3,9 @@ import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 class CreateSellerProductOptionDto {
+  @IsNumber()
+  wholesalerProductOptionId: number;
+
   @IsString()
   color: string;
 
@@ -14,7 +17,7 @@ class CreateSellerProductOptionDto {
 }
 
 export class CreateSellerProductDto {
-  @ApiProperty({ example: '1', description: '판매몰 ID' })
+  @ApiProperty({ example: 1, description: '판매몰 ID' })
   @IsNumber()
   mallId: number;
 
@@ -44,8 +47,8 @@ export class CreateSellerProductDto {
 
   @ApiProperty({ 
     example: [
-      { color: 'Black', size: '100', quantity: 20 },
-      { color: 'Blue', size: '95', quantity: 10 }
+      { wholesalerProductOptionId: 1, color: 'Black', size: '100', quantity: 20 },
+      { wholesalerProductOptionId: 2, color: 'Blue', size: '95', quantity: 10 }
     ], 
     description: '옵션' 
   })

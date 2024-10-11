@@ -23,14 +23,16 @@ export class SellerReturnsService {
     });
     */
     const queryBuilder = this.returnRepository.createQueryBuilder('return')
-      .leftJoinAndSelect('return.sellerProduct', 'sellerProduct')
-      .leftJoinAndSelect('return.sellerProductOption', 'sellerProductOption')
+      //.leftJoinAndSelect('return.sellerProduct', 'sellerProduct')
+      //.leftJoinAndSelect('return.sellerProductOption', 'sellerProductOption')
       .leftJoinAndSelect('return.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .leftJoinAndSelect('return.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('return.wholesalerProductOption', 'wholesalerProductOption')
       .where('return.sellerId = :sellerId', { sellerId });
 
     if (query) {
-      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+      queryBuilder.andWhere('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` });
     }
 
     const [returns, total] = await queryBuilder
@@ -40,9 +42,9 @@ export class SellerReturnsService {
       .getManyAndCount();
     
     for (const _return of returns) {
-      _return.name = _return.sellerProduct.name;
-      _return.color = _return.sellerProductOption.color;
-      _return.size = _return.sellerProductOption.size;
+      _return.name = _return.wholesalerProduct.name;
+      _return.color = _return.wholesalerProductOption.color;
+      _return.size = _return.wholesalerProductOption.size;
       _return.wholesalerName = _return.wholesalerProfile.name;
       _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
@@ -53,11 +55,13 @@ export class SellerReturnsService {
       delete(_return.wholesalerProfile);
       delete(_return.wholesalerProductId);
       delete(_return.wholesalerProductOptionId);
+      delete(_return.wholesalerProductOption);
+      delete(_return.wholesalerProduct);
       delete(_return.sellerId);
       delete(_return.sellerProductId);
       delete(_return.sellerProductOptionId);
-      delete(_return.sellerProductOption);
-      delete(_return.sellerProduct);
+      //delete(_return.sellerProductOption);
+      //delete(_return.sellerProduct);
     }
     
     return {

@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
+import { Return } from 'src/commons/shared/entities/return.entity';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
+import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
@@ -16,6 +18,8 @@ export class SellerProductsService {
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
     private sellerProductOptionRepository: Repository<SellerProductOption>,
+    @InjectRepository(Return)
+    private returnRepository: Repository<Return>,
   ) {}
 
   async createSellerProduct(sellerId: number, createSellerProductDto: CreateSellerProductDto): Promise<SellerProduct> {
@@ -77,7 +81,7 @@ export class SellerProductsService {
     }
 
     const [products, total] = await queryBuilder
-      .orderBy('sellerProduct.id', 'DESC')
+      .orderBy('sellerProductOption.id', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
@@ -138,5 +142,57 @@ export class SellerProductsService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async returnSellerProduct(sellerId: number, returnSellerProductDtos: ReturnSellerProductDto[]): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      for (const returnSellerProductDto of returnSellerProductDtos) {
+        const sellerProductOptionId = returnSellerProductDto.id;
+        
+        await this.sellerProductOptionRepository.update(
+          {
+            id: sellerProductOptionId,
+            sellerId
+          }, {
+            status: '반품',
+            isShow: false,
+            isReturn: true
+          }
+        );
+        
+        const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
+          .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
+          .where('sellerProductOption.id = :sellerProductOptionId', { sellerProductOptionId });
+        const sellerProductOption = await queryBuilder.getOne();
+        const sellerProduct = sellerProductOption.sellerProduct;
+        const { wholesalerId, wholesalerProductId, wholesalerProductPrice } = sellerProduct;
+        const { sellerProductId, wholesalerProductOptionId, quantity } = sellerProductOption;
+        
+        const returnProduct = this.returnRepository.create({
+          type: '재고상품',
+          wholesalerId,
+          wholesalerProductId,
+          wholesalerProductOptionId,
+          sellerId,
+          sellerProductId,
+          sellerProductOptionId,
+          quantity,
+          price: wholesalerProductPrice
+        });
+
+        await this.returnRepository.save(returnProduct);
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
