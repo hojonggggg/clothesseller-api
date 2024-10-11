@@ -58,6 +58,14 @@ export class WholesalerOrder {
   @ApiProperty({ example: '대기', description: '주문 상태' })
   @Column()
   status: string;
+  
+  @ApiProperty({ example: '2024/08/15', description: '미송일자' })
+  @Column({ name: 'pre_payment_date' })
+  prePaymentDate: string;
+  
+  @ApiProperty({ example: '2024/09/07', description: '출고예정일' })
+  @Column({ name: 'delivery_date' })
+  deliveryDate: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -95,6 +103,7 @@ export class WholesalerOrder {
   sellerProductName: string;
   sellerProductColor: string;
   sellerProductSize: string;
+  wholesalerName: string;
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;
   wholesalerMobile: string;
