@@ -77,8 +77,19 @@ export class SellerOrdersService {
     };
   }
 
-  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.orderType = :orderType', { orderType });
+
+    /*
     const [orders, total] = await this.wholesalerOrderRepository.findAndCount({
       where: { sellerId, orderType },
       relations: ['sellerProduct', 'sellerProductOption', 'wholesalerProduct', 'wholesalerProfile', 'wholesalerProfile.store'],
@@ -86,6 +97,13 @@ export class SellerOrdersService {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
+    */
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
     
     for (const order of orders) {
       order.sellerProductName = order.sellerProduct.name;
@@ -112,13 +130,10 @@ export class SellerOrdersService {
     }
     
     return {
-      data: orders,
-      meta: {
-        total,
-        pageNumber,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      },
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
     };
   }
 

@@ -36,28 +36,40 @@ export class SellerOrdersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[검색 추가 필요] 자동 발주 내역 조회' })
-  @ApiResponse({ status: 200, type: [SellerOrder] })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllAutoWholesalerOrderBySellerId(
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
     const orderType = '자동';
-    return await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, paginationQuery);
+    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
   }
 
   @Get('manual-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[검색 추가 필요] 수동 발주 내역 조회' })
-  @ApiResponse({ status: 200, type: [SellerOrder] })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllManualWholesalerOrderBySellerId(
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
     const orderType = '수동';
-    return await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, paginationQuery);
+    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
   }
 
   @Get('pre-payment')
