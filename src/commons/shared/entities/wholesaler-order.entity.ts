@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
 import { SellerProfile } from '../users/entities/seller-profile.entity';
-import { Deliveryman } from 'src/domains/seller/deliveryman/entities/deliveryman.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';

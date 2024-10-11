@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
 @Injectable()
 export class SellerReturnsService {
@@ -45,6 +46,7 @@ export class SellerReturnsService {
       _return.name = _return.wholesalerProduct.name;
       _return.color = _return.wholesalerProductOption.color;
       _return.size = _return.wholesalerProductOption.size;
+      _return.price = formatCurrency(_return.price);
       _return.wholesalerName = _return.wholesalerProfile.name;
       _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;

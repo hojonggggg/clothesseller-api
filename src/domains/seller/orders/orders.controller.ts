@@ -32,6 +32,26 @@ export class SellerOrdersController {
     };
   }
 
+  @Get('ordering-wait')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 도매처로 주문하기 전 내역 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllSellerOrderWaitBySellerId(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    //return await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.sellerOrdersService.findAllSellerOrderWaitBySellerId(sellerrId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Get('auto-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
