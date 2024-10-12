@@ -40,9 +40,13 @@ export class SellerProductOption {
   @Column({ name: 'is_show', default: true })
   isShow: boolean;
 
-  @ApiProperty({ example: false, description: '상품 반품 상태' })
-  @Column({ name: 'is_return', default: false })
-  isReturn: boolean;
+  @ApiProperty({ example: false, description: '상품 반품 여부' })
+  @Column({ name: 'is_returned', default: false })
+  isReturned: boolean;
+
+  @ApiProperty({ example: false, description: '상품 삭제 여부' })
+  @Column({ name: 'is_deleted', default: false })
+  isDeleted: boolean;
 
   @OneToOne(() => SellerProduct)
   @JoinColumn({ name: 'seller_product_id' })

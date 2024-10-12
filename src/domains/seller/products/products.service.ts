@@ -7,6 +7,7 @@ import { Return } from 'src/commons/shared/entities/return.entity';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
 import { UpdateSellerProductDto } from './dto/update-seller-product.dto';
 import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
+import { DeleteSellerProductDto } from './dto/delete-seller-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
@@ -227,7 +228,7 @@ export class SellerProductsService {
           }, {
             status: '반품',
             isShow: false,
-            isReturn: true
+            isReturned: true
           }
         );
         
@@ -259,6 +260,23 @@ export class SellerProductsService {
       throw error;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async deleteSellerProduct(sellerId: number, deleteSellerProductDtos: DeleteSellerProductDto[]): Promise<void> {
+    for (const deleteSellerProductDto of deleteSellerProductDtos) {
+      const sellerProductOptionId = deleteSellerProductDto.id;
+      
+      await this.sellerProductOptionRepository.update(
+        {
+          id: sellerProductOptionId,
+          sellerId
+        }, {
+          status: '삭제',
+          isShow: false,
+          isDeleted: true
+        }
+      );
     }
   }
 }
