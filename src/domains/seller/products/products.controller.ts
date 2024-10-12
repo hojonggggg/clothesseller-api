@@ -1,8 +1,9 @@
-import { Body, ConflictException, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerProductsService } from './products.service';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
+import { UpdateSellerProductDto } from './dto/update-seller-product.dto';
 import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -52,6 +53,41 @@ export class SellerProductsController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 조회' })
+  @ApiResponse({ status: 200 })
+  async findOneSellerProductBySellerProductId(
+    @Param('id') sellerProductId: number, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.sellerProductsService.findOneSellerProductBySellerProductId(sellerId, sellerProductId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 수정' })
+  @ApiResponse({ status: 200 })
+  async updateSellerProduct(
+    @Param('id') sellerProductId: number, 
+    @Body() updateSellerProductDto: UpdateSellerProductDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.sellerProductsService.updateSellerProduct(sellerId, sellerProductId, updateSellerProductDto);
+    return {
+      statusCode: 200,
+      message: '상품 수정이 완료되었습니다.'
     };
   }
 

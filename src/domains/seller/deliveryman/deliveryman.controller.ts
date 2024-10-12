@@ -1,11 +1,12 @@
-import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, ConflictException, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { DeliverymanService } from './deliveryman.service';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
 import { Mall } from '../malls/entities/mall.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
+import { CreatePickupRequestDto } from './dto/create-pickup-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > deliveryman')
@@ -59,5 +60,33 @@ export class DeliverymanController {
       data: result
     };
   }
-
+/*
+  @Patch('pickup')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 픽업 요청' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+        },
+      },
+    },
+  })
+  async returnSample(
+    @Body() createPickupRequestDtos: CreatePickupRequestDto[], 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.sellerSamplesService.returnSample(sellerId, sellerReturnSampleDtos);
+    return {
+      statusCode: 200,
+      message: '샘플 반납 신청이 완료되었습니다.'
+    };
+  }
+*/
 }

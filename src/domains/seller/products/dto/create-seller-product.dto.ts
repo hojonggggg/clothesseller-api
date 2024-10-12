@@ -40,11 +40,11 @@ export class CreateSellerProductDto {
   @ApiProperty({ example: '20000', description: '퍈매 가격' })
   @IsNumber()
   price: number;
-
+  /*
   @ApiProperty({ example: false, description: '상품 판매 상태' })
   @IsBoolean()
   isActive: boolean;
-
+  */
   @ApiProperty({ 
     example: [
       { wholesalerProductOptionId: 1, color: 'Black', size: '100', quantity: 20 },

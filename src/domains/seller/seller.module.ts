@@ -18,7 +18,6 @@ import { SellerProductsModule } from './products/products.module';
 import { SellerSamplesModule } from './samples/samples.module';
 import { SellerOrdersModule } from './orders/orders.module';
 import { SellerReturnsModule } from './returns/returns.module';
-import { PrePaymentModule } from './pre-payment/pre-payment.module';
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { PrePaymentModule } from './pre-payment/pre-payment.module';
     SellerOrdersModule,
     SellerSamplesModule,
     SellerReturnsModule,
-    PrePaymentModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
   controllers: [SellerAuthController],

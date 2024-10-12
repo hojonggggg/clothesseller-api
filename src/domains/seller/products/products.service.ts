@@ -5,6 +5,7 @@ import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
+import { UpdateSellerProductDto } from './dto/update-seller-product.dto';
 import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -105,6 +106,71 @@ export class SellerProductsService {
     };
   }
 
+  async findOneSellerProductBySellerProductId(sellerId: number, sellerProductId: number) {
+    
+    const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
+      .leftJoinAndSelect('sellerProduct.sellerProductOptions', 'sellerProductOptions')
+      .where('sellerProduct.id = :sellerProductId', { sellerProductId });
+    
+    const sellerProduct = await queryBuilder.getOne();
+    const sellerProductOptions = sellerProduct.sellerProductOptions;
+    for (const sellerProductOption of sellerProductOptions) {
+      delete(sellerProductOption.sellerId);
+      delete(sellerProductOption.sellerProductId);
+    }
+
+    sellerProduct.price = formatCurrency(sellerProduct.price);
+    sellerProduct.wholesalerProductPrice = formatCurrency(sellerProduct.wholesalerProductPrice);
+
+    delete(sellerProduct.sellerId);
+    delete(sellerProduct.mallId);
+    delete(sellerProduct.wholesalerId);
+    delete(sellerProduct.wholesalerProductId);
+
+    return sellerProduct;
+  }
+
+  async updateSellerProduct(sellerId: number, sellerProductId: number, updateSellerProductDto: UpdateSellerProductDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      await this.sellerProductRepository.update(
+        {
+          id: sellerProductId,
+          sellerId
+        }, {
+          wholesalerProductPrice: updateSellerProductDto.wholesalerProductPrice,
+          name: updateSellerProductDto.name,
+          price: updateSellerProductDto.price
+        }
+      );
+
+      const { options } = updateSellerProductDto;
+      for (const option of options) {
+        const sellerProductOptionId = option.id;
+
+        await this.sellerProductOptionRepository.update(
+          {
+            id: sellerProductOptionId,
+            sellerId
+          }, {
+            ...option
+          }
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async findAllStoresOfProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
@@ -128,10 +194,10 @@ export class SellerProductsService {
       .getManyAndCount();
       
     for (const store of stores) {
-      store.storeId = store.wholesalerProfile.store.id;
-      store.storeName = store.wholesalerProfile.store.name;
+      store.id = store.wholesalerId;
+      store.wholesalerName = store.wholesalerProfile.name;
+      store.wholesalerStoreName = store.wholesalerProfile.store.name;
 
-      delete(store.id);
       delete(store.wholesalerId);
       delete(store.wholesalerProfile);
     }
