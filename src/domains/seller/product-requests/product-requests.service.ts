@@ -69,7 +69,7 @@ export class ProductRequestsService {
     }
 
     const [requests, total] = await queryBuilder
-      .orderBy('productRequest.id', 'DESC')
+      .orderBy('productRequestOption.id', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
@@ -91,5 +91,16 @@ export class ProductRequestsService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async findOneProductRequestByProductReguestId(sellerId: number, productReguestId: number) {
+    const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
+      .where('productRequest.id = :productReguestId', { productReguestId });
+
+    const productRequest = await queryBuilder.getOne();
+    productRequest.sellerProductPrice = formatCurrency(productRequest.sellerProductPrice);
+    productRequest.wholesalerProductPrice = formatCurrency(productRequest.wholesalerProductPrice);
+
+    return productRequest;
   }
 }

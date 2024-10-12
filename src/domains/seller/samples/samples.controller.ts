@@ -108,4 +108,24 @@ export class SellerSamplesController {
       message: '샘플 반납 신청이 완료되었습니다.'
     };
   }
+
+  @Get('month')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 월간 샘플 반납 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'startDate', required: true, description: '조회 시작 날짜' })
+  @ApiQuery({ name: 'endDate', required: true, description: '조회 마지막 날짜' })
+  async findAllSampleOfMonthBySellerId(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.sellerSamplesService.findAllSampleOfMonthBySellerId(sellerrId, startDate, endDate);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 }

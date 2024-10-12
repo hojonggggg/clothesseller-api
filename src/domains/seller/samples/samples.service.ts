@@ -177,4 +177,45 @@ export class SellerSamplesService {
       await queryRunner.release();
     }
   }
+
+  async findAllSampleOfMonthBySellerId(sellerId: number, startDate: string, endDate: string) {
+    const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
+      .select([
+        'sample.id AS sampleId',
+        'sample.quantity AS quantity',
+        'sample.sampleDate AS sampleDate',
+        'sample.returnDate AS returnDate',
+        'wholesalerProduct.name AS wholesalerProductName',
+
+      ])
+      .leftJoin('sample.wholesalerProduct', 'wholesalerProduct') // leftJoin 사용
+      .where('sample.sellerId = :sellerId', { sellerId })
+      .andWhere('STR_TO_DATE(sample.returnDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+        startDate,
+        endDate
+      });
+
+    const rawSamples = await queryBuilder.getRawMany(); // 원시 데이터 가져오기
+    //return results;
+    
+    const samples = rawSamples.reduce((acc, result) => {
+      const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName } = result;
+    
+      // 이미 그룹이 존재하는지 확인
+      let dateGroup = acc.find(group => group.returnDate === returnDate);
+      
+      if (!dateGroup) {
+        // 그룹이 없으면 새로 생성
+        dateGroup = { returnDate, samples: [] };
+        acc.push(dateGroup);
+      }
+    
+      // 샘플 추가
+      dateGroup.samples.push({ id: sampleId, name: wholesalerProductName, quantity, sampleDate, returnDate });
+    
+      return acc;
+    }, []);
+    
+    return samples;
+  }
 }
