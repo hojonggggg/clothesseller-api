@@ -3,13 +3,13 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from 'src/commons/shared/users/users.service';
 
 @ApiTags('seller > users')
-@Controller('seller/users')
+@Controller('seller')
 export class SellerUsersController {
   constructor(
     private readonly usersService: UsersService
   ) {}
 
-  @Get()
+  @Get('wholesalers')
   @ApiOperation({ summary: '[완료] 도매처 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
