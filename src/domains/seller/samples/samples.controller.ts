@@ -120,8 +120,7 @@ export class SellerSamplesController {
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    const { startDate, endDate } = await this.sellerSamplesService.getStartAndEndDate(month);
-    const result = await this.sellerSamplesService.findAllSampleOfMonthlyBySellerId(sellerrId, startDate, endDate);
+    const result = await this.sellerSamplesService.findAllSampleOfMonthlyBySellerId(sellerrId, month);
     return {
       statusCode: 200,
       data: result

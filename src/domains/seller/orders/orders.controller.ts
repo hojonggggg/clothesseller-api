@@ -110,4 +110,40 @@ export class SellerOrdersController {
       data: result
     };
   }
+
+  @Get('pre-payment/monthly')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 월간 미송 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'month', required: true, description: '조회하려는 달' })
+  async findAllPrePaymentOfMonthlyBySellerId(
+    @Query('month') month: string,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.sellerOrdersService.findAllPrePaymentOfMonthlyBySellerId(sellerrId, month);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Get('pre-payment/daily')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 일간 미송 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'day', required: true, description: '조회하려는 날' })
+  async findAllPrePaymentOfDailyBySellerId(
+    @Query('day') day: string,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.sellerOrdersService.findAllPrePaymentOfDailyBySellerId(sellerrId, day);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 }

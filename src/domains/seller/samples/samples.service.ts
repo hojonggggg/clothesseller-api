@@ -7,6 +7,7 @@ import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
 import { SellerDeleteSampleDto } from './dto/seller-delete-sample.dto';
 import { SellerReturnSampleDto } from './dto/seller-return-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { getStartAndEndDate } from 'src/commons/shared/functions/date';
 
 @Injectable()
 export class SellerSamplesService {
@@ -178,7 +179,8 @@ export class SellerSamplesService {
     }
   }
 
-  async findAllSampleOfMonthlyBySellerId(sellerId: number, startDate: string, endDate: string) {
+  async findAllSampleOfMonthlyBySellerId(sellerId: number, month: string) {
+    const { startDate, endDate } = getStartAndEndDate(month);
     const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
       .select([
         'sample.id AS sampleId',
@@ -204,11 +206,11 @@ export class SellerSamplesService {
       const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName } = result;
     
       // 이미 그룹이 존재하는지 확인
-      let dateGroup = acc.find(group => group.returnDate === returnDate);
+      let dateGroup = acc.find(group => group.sampleDate === sampleDate);
       
       if (!dateGroup) {
         // 그룹이 없으면 새로 생성
-        dateGroup = { returnDate, samples: [] };
+        dateGroup = { sampleDate, samples: [] };
         acc.push(dateGroup);
       }
     
@@ -224,38 +226,19 @@ export class SellerSamplesService {
   async findAllSampleOfDailyBySellerId(sellerId: number, day: string) {
       const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
         .select([
-          'sample.id AS sampleId',
+          'sample.id AS id',
           'sample.quantity AS quantity',
           'sample.sampleDate AS sampleDate',
           'sample.returnDate AS returnDate',
-          'wholesalerProduct.name AS wholesalerProductName'
+          'wholesalerProduct.name AS name'
         ])
         .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
         .where('sample.sellerId = :sellerId', { sellerId })
-        .andWhere('sample.returnDate = :day', { day });
+        .andWhere('sample.sampleDate = :day', { day });
 
     const samples = await queryBuilder
       .orderBy('sample.id', 'DESC')
       .getRawMany();
     return samples;
-  }
-
-  async getStartAndEndDate(monthString) {
-    const [year, month] = monthString.split('/').map(Number);
-  
-    // 시작 날짜와 마지막 날짜를 문자열 형식으로 생성
-    let startDate = `${year}/${month.toString().padStart(2, '0')}/01`; // 시작 날짜
-    let endDate = `${year}/${month.toString().padStart(2, '0')}/31`; // 기본 마지막 날짜
-  
-    // 10월의 경우 마지막 날짜가 31일
-    if (month === 2) {
-      // 2월의 경우 윤년 고려
-      endDate = `${year}/${month.toString().padStart(2, '0')}/${(year % 4 === 0 ? 29 : 28)}`;
-    } else if ([4, 6, 9, 11].includes(month)) {
-      // 4, 6, 9, 11월의 경우 30일
-      endDate = `${year}/${month.toString().padStart(2, '0')}/30`;
-    }
-  
-    return { startDate, endDate };
   }
 }

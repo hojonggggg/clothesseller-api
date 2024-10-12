@@ -4,6 +4,8 @@ import { Repository, Brackets } from 'typeorm';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { getStartAndEndDate } from 'src/commons/shared/functions/date';
+import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
 @Injectable()
 export class SellerOrdersService {
@@ -208,11 +210,11 @@ export class SellerOrdersService {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
-    .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
-    .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
-    .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
-    .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
-    .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.status = :status', { status: '미송' });
 
@@ -263,4 +265,78 @@ export class SellerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+
+  async findAllPrePaymentOfMonthlyBySellerId(sellerId: number, month: string) {
+    const { startDate, endDate } = getStartAndEndDate(month);
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS orderId',
+        'order.quantity AS quantity',
+        'order.prePaymentDate AS prePaymentDate',
+        'order.deliveryDate AS deliveryDate',
+        'sellerProduct.name AS sellerProductName',
+
+      ])
+      .leftJoin('order.sellerProduct', 'sellerProduct')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('STR_TO_DATE(order.prePaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+        startDate,
+        endDate
+      });
+
+    const rawOrders = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .getRawMany();
+    
+    const orders = rawOrders.reduce((acc, result) => {
+      const { orderId, price, prePaymentDate, sellerProductName, deliveryDate } = result;
+    
+      // 이미 그룹이 존재하는지 확인
+      let dateGroup = acc.find(group => group.prePaymentDate === prePaymentDate);
+      
+      if (!dateGroup) {
+        // 그룹이 없으면 새로 생성
+        dateGroup = { prePaymentDate, orders: [] };
+        acc.push(dateGroup);
+      }
+    
+      // 샘플 추가
+      dateGroup.orders.push({ id: orderId, name: sellerProductName, price, prePaymentDate, deliveryDate });
+    
+      return acc;
+    }, []);
+    
+    return orders;
+  }
+
+  async findAllPrePaymentOfDailyBySellerId(sellerId: number, day: string) {
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS id',
+        'order.quantity AS quantity',
+        'order.prePaymentDate AS prePaymentDate',
+        'order.deliveryDate AS deliveryDate',
+        'sellerProduct.name AS name',
+        'sellerProduct.wholesalerProductPrice AS wholesalerProductPrice',
+        'sellerProductOption.color AS color',
+        'sellerProductOption.size AS size'
+      ])
+      .leftJoin('order.sellerProduct', 'sellerProduct')
+      .leftJoin('order.sellerProductOption', 'sellerProductOption')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.status = :status', { status: '미송' })
+      .andWhere('order.prePaymentDate = :day', { day });
+
+  const orders = await queryBuilder
+    .orderBy('order.id', 'DESC')
+    .getRawMany();
+
+  for (const order of orders) {
+    order.price = formatCurrency((order.quantity) * (order.wholesalerProductPrice));
+
+    delete(order.quantity);
+    delete(order.wholesalerProductPrice);
+  }
+  return orders;
+}
 }
