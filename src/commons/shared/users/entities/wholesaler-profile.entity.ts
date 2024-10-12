@@ -32,6 +32,8 @@ export class WholesalerProfile {
   @OneToOne(() => Store)
   @JoinColumn({ name: 'store_id' })
   store: Store;
+  
+  wholesalerId: number;
   /*
   @OneToMany(() => Order, (order) => order.sellerProfile)
   orders: Order[];

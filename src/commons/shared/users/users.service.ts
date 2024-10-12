@@ -68,4 +68,23 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id } });
   }
 
+  async findAllWholesaler(query: string) {
+    const queryBuilder = this.wholesalerProfileRepository.createQueryBuilder('wholesalerProfile');
+
+    if (query) {
+      queryBuilder.andWhere('wholesalerProfile.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const wholesalers = await queryBuilder.getMany();
+    
+    for (const wholesaler of wholesalers) {
+      wholesaler.wholesalerId = wholesaler.userId;
+
+      delete(wholesaler.userId);
+      delete(wholesaler.licenseNumber);
+    }
+
+    return wholesalers;
+  }
+
 }

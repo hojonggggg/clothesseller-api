@@ -18,6 +18,7 @@ import { SellerProductsModule } from './products/products.module';
 import { SellerSamplesModule } from './samples/samples.module';
 import { SellerOrdersModule } from './orders/orders.module';
 import { SellerReturnsModule } from './returns/returns.module';
+import { SellerUsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SellerReturnsModule } from './returns/returns.module';
     }),
     MallsModule,
     DeliverymanModule,
+    SellerUsersModule,
     ProductRequestsModule,
     SellerProductsModule,
     SellerOrdersModule,
