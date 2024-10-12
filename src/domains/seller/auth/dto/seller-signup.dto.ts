@@ -10,7 +10,7 @@ export class SellerSignupDto {
   @IsString()
   password: string;
 
-  @ApiProperty({ example: true, description: '알람 수신동의 여부' })
+  @ApiProperty({ example: true, description: '알람 수신 여부' })
   @IsBoolean()
   agreeAlarm: string;
 

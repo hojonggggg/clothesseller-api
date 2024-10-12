@@ -21,4 +21,8 @@ export class User {
   @Column()
   @IsEnum(Role)
   role: string;
+
+  @ApiProperty({ example: true, description: '알람 수신 여부' })
+  @Column({ name: 'agree_alarm' })
+  agreeAlarm: boolean;
 }
