@@ -21,6 +21,7 @@ export class DeliverymanController {
     private readonly sellerReturnsService: SellerReturnsService
   ) {}
 
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -42,6 +43,22 @@ export class DeliverymanController {
     return {
       statusCode: 201,
       message: '사입삼촌 등록이 완료되었습니다.'
+    };
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 사입삼촌 조회' })
+  @ApiResponse({ status: 200 })
+  async findOneDeliverymanBySellerId(
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.deliverymanService.findOneDeliverymanBySellerId(sellerId);
+    return {
+      statusCode: 200,
+      data: result
     };
   }
 

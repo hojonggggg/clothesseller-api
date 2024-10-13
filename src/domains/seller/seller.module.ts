@@ -19,6 +19,7 @@ import { SellerSamplesModule } from './samples/samples.module';
 import { SellerOrdersModule } from './orders/orders.module';
 import { SellerReturnsModule } from './returns/returns.module';
 import { SellerUsersModule } from './users/users.module';
+import { SellerAccountBooksModule } from './account-books/account-books.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SellerUsersModule } from './users/users.module';
     SellerOrdersModule,
     SellerSamplesModule,
     SellerReturnsModule,
+    SellerAccountBooksModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
   controllers: [SellerAuthController],

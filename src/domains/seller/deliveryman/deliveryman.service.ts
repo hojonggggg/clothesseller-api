@@ -23,4 +23,8 @@ export class DeliverymanService {
   async findOneDeliverymanBySellerIdAndMobile(sellerId: number, mobile: string): Promise<Deliveryman | undefined> {
     return await this.deliverymanRepository.findOne({ where: {sellerId, mobile} });
   }
+
+  async findOneDeliverymanBySellerId(sellerId: number): Promise<Deliveryman | undefined> {
+    return await this.deliverymanRepository.findOne({ where: {sellerId} });
+  }
 }

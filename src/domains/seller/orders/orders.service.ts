@@ -287,7 +287,6 @@ export class SellerOrdersService {
         'order.prePaymentDate AS prePaymentDate',
         'order.deliveryDate AS deliveryDate',
         'sellerProduct.name AS sellerProductName',
-
       ])
       .leftJoin('order.sellerProduct', 'sellerProduct')
       .where('order.sellerId = :sellerId', { sellerId })

@@ -16,3 +16,16 @@ export const getStartAndEndDate = (monthString) => {
   
     return { startDate, endDate };
 }
+
+export const _getStartAndEndDate = (monthString) => {
+  const [year, month] = monthString.split('/').map(Number);
+  
+  // 시작 날짜는 항상 첫째 날로 설정
+  const startDate = `${year}/${month.toString().padStart(2, '0')}/01`;
+
+  // 마지막 날짜 계산: Date 객체를 사용하여 해당 월의 마지막 날짜를 구함
+  const lastDay = new Date(year, month, 0).getDate(); // month는 0부터 시작하므로
+  const endDate = `${year}/${month.toString().padStart(2, '0')}/${lastDay}`;
+
+  return { startDate, endDate };
+}
