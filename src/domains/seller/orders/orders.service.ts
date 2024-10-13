@@ -232,7 +232,8 @@ export class SellerOrdersService {
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('order.prePaymentDate = :date', { date: query });
         })
       );
     }
@@ -330,10 +331,12 @@ export class SellerOrdersService {
         'sellerProduct.name AS name',
         'sellerProduct.wholesalerProductPrice AS wholesalerProductPrice',
         'sellerProductOption.color AS color',
-        'sellerProductOption.size AS size'
+        'sellerProductOption.size AS size',
+        'wholesalerProfile.name AS wholesalerName'
       ])
       .leftJoin('order.sellerProduct', 'sellerProduct')
       .leftJoin('order.sellerProductOption', 'sellerProductOption')
+      .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.status = :status', { status: '미송' })
       .andWhere('order.prePaymentDate = :day', { day });

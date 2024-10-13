@@ -79,7 +79,9 @@ export class SellerSamplesService {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
-            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` })
+            .orWhere('sample.sampleDate = :date', { date: query })
+            .orWhere('sample.returnDate = :date', { date: query });
         })
       );
     }
@@ -241,9 +243,11 @@ export class SellerSamplesService {
           'sample.quantity AS quantity',
           'sample.sampleDate AS sampleDate',
           'sample.returnDate AS returnDate',
-          'wholesalerProduct.name AS name'
+          'wholesalerProduct.name AS name',
+          'wholesalerProfile.name AS wholesalerName',
         ])
         .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
+        .leftJoin('sample.wholesalerProfile', 'wholesalerProfile')
         .where('sample.sellerId = :sellerId', { sellerId })
         .andWhere('sample.sampleDate = :day', { day });
 

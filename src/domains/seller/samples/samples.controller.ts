@@ -38,7 +38,7 @@ export class SellerSamplesController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 샘플 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명 or 날짜' })
   async findAllSampleBySellerId(
     @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
