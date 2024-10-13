@@ -188,9 +188,10 @@ export class SellerSamplesService {
         'sample.sampleDate AS sampleDate',
         'sample.returnDate AS returnDate',
         'wholesalerProduct.name AS wholesalerProductName',
-
+        'wholesalerProfile.name AS wholesalerName',
       ])
-      .leftJoin('sample.wholesalerProduct', 'wholesalerProduct') // leftJoin 사용
+      .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('sample.wholesalerProfile', 'wholesalerProfile')
       .where('sample.sellerId = :sellerId', { sellerId })
       .andWhere('STR_TO_DATE(sample.returnDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
         startDate,
@@ -203,7 +204,7 @@ export class SellerSamplesService {
     //return results;
     
     const samples = rawSamples.reduce((acc, result) => {
-      const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName } = result;
+      const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName, wholesalerName } = result;
     
       // 이미 그룹이 존재하는지 확인
       let dateGroup = acc.find(group => group.sampleDate === sampleDate);
@@ -215,7 +216,7 @@ export class SellerSamplesService {
       }
     
       // 샘플 추가
-      dateGroup.samples.push({ id: sampleId, name: wholesalerProductName, quantity, sampleDate, returnDate });
+      dateGroup.samples.push({ id: sampleId, name: wholesalerProductName, quantity, wholesalerName, sampleDate, returnDate });
     
       return acc;
     }, []);
