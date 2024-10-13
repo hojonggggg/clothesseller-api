@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { DeliverymanService } from './deliveryman.service';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
+import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { Mall } from '../malls/entities/mall.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
 import { CreatePickupRequestDto } from './dto/create-pickup-request.dto';
@@ -14,7 +15,8 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 export class DeliverymanController {
   constructor(
     private readonly deliverymanService: DeliverymanService,
-    private readonly sellerProductsService: SellerProductsService
+    private readonly sellerProductsService: SellerProductsService,
+    private readonly wholesalerOrdersService: WholesalerOrdersService
   ) {}
 
   @Post()
@@ -44,7 +46,7 @@ export class DeliverymanController {
   @Get('stores')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상가 목록 조회' })
+  @ApiOperation({ summary: '[완료] 거래 상가 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상가명' })
   async findAllStoresBySellerId(
@@ -60,6 +62,26 @@ export class DeliverymanController {
       data: result
     };
   }
+
+  @Get('pickup/from-wholesaler')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 픽업 내역 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
+  async findAllPickupsOfFromWholesalerBySellerId(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.findAllPickupsOfFromWholesalerBySellerId(sellerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
 /*
   @Patch('pickup')  
   @UseGuards(JwtAuthGuard)

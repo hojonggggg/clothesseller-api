@@ -327,16 +327,16 @@ export class SellerOrdersService {
       .andWhere('order.status = :status', { status: '미송' })
       .andWhere('order.prePaymentDate = :day', { day });
 
-  const orders = await queryBuilder
-    .orderBy('order.id', 'DESC')
-    .getRawMany();
+    const orders = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .getRawMany();
 
-  for (const order of orders) {
-    order.price = formatCurrency((order.quantity) * (order.wholesalerProductPrice));
+    for (const order of orders) {
+      order.price = formatCurrency((order.quantity) * (order.wholesalerProductPrice));
 
-    delete(order.quantity);
-    delete(order.wholesalerProductPrice);
+      delete(order.quantity);
+      delete(order.wholesalerProductPrice);
+    }
+    return orders;
   }
-  return orders;
-}
 }
