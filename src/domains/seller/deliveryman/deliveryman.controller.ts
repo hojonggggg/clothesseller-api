@@ -5,6 +5,7 @@ import { DeliverymanService } from './deliveryman.service';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
+import { SellerReturnsService } from '../returns/returns.service';
 import { Mall } from '../malls/entities/mall.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
 import { CreatePickupRequestDto } from './dto/create-pickup-request.dto';
@@ -16,7 +17,8 @@ export class DeliverymanController {
   constructor(
     private readonly deliverymanService: DeliverymanService,
     private readonly sellerProductsService: SellerProductsService,
-    private readonly wholesalerOrdersService: WholesalerOrdersService
+    private readonly wholesalerOrdersService: WholesalerOrdersService,
+    private readonly sellerReturnsService: SellerReturnsService
   ) {}
 
   @Post()
@@ -69,13 +71,32 @@ export class DeliverymanController {
   @ApiOperation({ summary: '[완료] 픽업 내역 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
-  async findAllPickupsOfFromWholesalerBySellerId(
+  async findAllPickupOfFromWholesalerBySellerId(
     @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.wholesalerOrdersService.findAllPickupsOfFromWholesalerBySellerId(sellerId, query, paginationQuery);
+    const result = await this.wholesalerOrdersService.findAllPickupOfFromWholesalerBySellerId(sellerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Get('pickup/from-seller')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 반품 내역 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
+  async findAllPickupOfFromSellerBySellerId(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.sellerReturnsService.findAllPickupOfFromSellerBySellerId(sellerId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

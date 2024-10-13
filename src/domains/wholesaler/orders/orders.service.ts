@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, Brackets } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -54,7 +54,9 @@ export class WholesalerOrdersService {
 
 
   //삭제하지 말 것
-  async findAllPickupsOfFromWholesalerBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllPickupOfFromWholesalerBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
       .select([
         'order.id AS orderId',
@@ -70,10 +72,26 @@ export class WholesalerOrdersService {
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.status != :status', { status: '미송' });
     
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
     const pickups = await queryBuilder
       .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
       .getRawMany();
     
+    const total = await this.wholesalerOrderRepository
+      .createQueryBuilder('order')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.status != :status', { status: '미송' })
+      .getCount();
+
     const groupedPickups = pickups.reduce((acc, current) => {
       const storeId = current.wholesalerStoreId;
       if (!acc[storeId]) {
@@ -85,7 +103,7 @@ export class WholesalerOrdersService {
       }
       const isPickup = (current.status === '픽업') ? 'O' : 'X';
       acc[storeId].orders.push({
-        orderId: current.orderId,
+        id: current.orderId,
         wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
         wholesalerName: current.wholesalerName,
         orderDate: current.orderDate,
@@ -96,7 +114,13 @@ export class WholesalerOrdersService {
   
     const result = Object.values(groupedPickups);
 
-    return result;
+    //return result;
+    return {
+      list: result,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
   }
 }
 

@@ -51,6 +51,9 @@ export class Return {
   @ApiProperty({ example: '반품신청', description: '반품 상태' })
   @Column()
   status: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
   /*
   @OneToOne(() => SellerProduct)
   @JoinColumn({ name: 'seller_product_id' })

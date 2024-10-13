@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -68,6 +68,72 @@ export class SellerReturnsService {
     
     return {
       list: returns,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findAllPickupOfFromSellerBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.returnRepository.createQueryBuilder('return')
+      .select([
+        'return.id AS returnId',
+        'wholesalerProfile.storeId AS wholesalerStoreId',
+        'wholesalerProfile.name AS wholesalerName',
+        'wholesalerStore.name AS wholesalerStoreName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
+        'return.status AS status',
+        'DATE_FORMAT(return.createdAt, "%y/%m/%d/%H:%i") AS returnDate',
+      ])
+      .leftJoin('return.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'wholesalerStore')
+      .where('return.sellerId = :sellerId', { sellerId })
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    const pickups = await queryBuilder
+      .orderBy('return.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getRawMany();
+    
+    const total = await this.returnRepository
+      .createQueryBuilder('return')
+      .where('return.sellerId = :sellerId', { sellerId })
+      .getCount();
+
+    const groupedPickups = pickups.reduce((acc, current) => {
+      const storeId = current.wholesalerStoreId;
+      if (!acc[storeId]) {
+        acc[storeId] = {
+          wholesalerStoreId: storeId,
+          wholesalerStoreName: current.wholesalerStoreName,
+          returns: []
+        };
+      }
+      const isPickup = (current.status === '픽업') ? 'O' : 'X';
+      acc[storeId].returns.push({
+        id: current.returnId,
+        wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
+        wholesalerName: current.wholesalerName,
+        returnDate: current.returnDate,
+        isPickup
+      });
+      return acc;
+    }, {});
+  
+    const result = Object.values(groupedPickups);
+
+    return {
+      list: result,
       total,
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
