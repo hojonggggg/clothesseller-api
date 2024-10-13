@@ -24,7 +24,7 @@ export class DeliverymanService {
     return await this.deliverymanRepository.findOne({ where: {sellerId, mobile} });
   }
 
-  async findOneDeliverymanBySellerId(sellerId: number): Promise<Deliveryman | undefined> {
-    return await this.deliverymanRepository.findOne({ where: {sellerId} });
+  async findOneDeliverymanBySellerId(sellerId: number) {
+    return await this.deliverymanRepository.find({ where: {sellerId}, order: {'id': 'DESC'} })
   }
 }
