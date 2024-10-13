@@ -1,9 +1,10 @@
-import { Body, ConflictException, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, ConflictException, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
+import { DeleteProductRequestDto } from './dto/delete-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > product-requests')
@@ -70,6 +71,34 @@ export class ProductRequestsController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Delete()  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 삭제' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+        },
+      },
+    },
+  })
+  async deleteSellerProduct(
+    @Body() deleteProductRequestDtos: DeleteProductRequestDto[], 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.productRequestsService.deleteProductRequest(sellerId, deleteProductRequestDtos);
+    return {
+      statusCode: 200,
+      message: '등록 요청 상품 삭제가 완료되었습니다.'
     };
   }
 }

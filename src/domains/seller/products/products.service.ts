@@ -24,6 +24,16 @@ export class SellerProductsService {
     private returnRepository: Repository<Return>,
   ) {}
 
+  async summarySellerProduct(sellerId: number, mallId: number) {
+    const result = {
+      totalProduct: 100,
+      soldoutProduct: 10,
+      needOrderProduct: 5,
+      totalProductQuantity: 500
+    };
+    return result;
+  }
+
   async createSellerProduct(sellerId: number, createSellerProductDto: CreateSellerProductDto): Promise<SellerProduct> {
     const queryRunner = this.dataSource.createQueryRunner();
 

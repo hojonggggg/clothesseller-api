@@ -14,6 +14,24 @@ export class SellerProductsController {
   constructor(
     private readonly sellerProductsService: SellerProductsService
   ) {}
+
+  @Get('summary/:mallId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 상품 요약' })
+  @ApiResponse({ status: 200 })
+  async summarySellerProduct(
+    @Param('mallId') mallId: number, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.sellerProductsService.summarySellerProduct(sellerId, mallId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   
   @Post()
   @UseGuards(JwtAuthGuard)

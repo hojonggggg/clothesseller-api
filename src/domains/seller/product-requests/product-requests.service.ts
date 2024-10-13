@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { ProductRequestOption } from 'src/commons/shared/entities/product-request-option.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
+import { DeleteProductRequestDto } from './dto/delete-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
@@ -102,5 +103,20 @@ export class ProductRequestsService {
     productRequest.wholesalerProductPrice = formatCurrency(productRequest.wholesalerProductPrice);
 
     return productRequest;
+  }
+
+  async deleteProductRequest(sellerId: number, deleteProductRequestDtos: DeleteProductRequestDto[]): Promise<void> {
+    for (const deleteProductRequestDto of deleteProductRequestDtos) {
+      const productRequestId = deleteProductRequestDto.id;
+      
+      await this.productRequestRepository.update(
+        {
+          id: productRequestId,
+          sellerId
+        }, {
+          status: '삭제'
+        }
+      );
+    }
   }
 }
