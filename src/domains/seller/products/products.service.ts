@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, In } from 'typeorm';
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { Return } from 'src/commons/shared/entities/return.entity';
@@ -274,7 +274,8 @@ export class SellerProductsService {
     }
   }
 
-  async deleteSellerProduct(sellerId: number, deleteSellerProductDtos: DeleteSellerProductDto[]): Promise<void> {
+  async deleteSellerProduct(sellerId: number, ids: number[]): Promise<void> {
+    /*
     for (const deleteSellerProductDto of deleteSellerProductDtos) {
       const sellerProductOptionId = deleteSellerProductDto.id;
       
@@ -289,5 +290,16 @@ export class SellerProductsService {
         }
       );
     }
+    */
+    await this.sellerProductOptionRepository.update(
+      {
+        id: In(ids),
+        sellerId
+      }, {
+        status: '삭제',
+        isShow: false,
+        isDeleted: true
+      }
+    );
   }
 }

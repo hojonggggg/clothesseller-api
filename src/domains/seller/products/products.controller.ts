@@ -18,7 +18,7 @@ export class SellerProductsController {
   @Get('summary/:mallId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 상품 요약' })
+  @ApiOperation({ summary: '[완료] 상품 요약' })
   @ApiResponse({ status: 200 })
   async summarySellerProduct(
     @Param('mallId') mallId: number, 
@@ -145,21 +145,22 @@ export class SellerProductsController {
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', example: 1 },
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
         },
       },
     },
   })
   async deleteSellerProduct(
-    @Body() deleteSellerProductDtos: DeleteSellerProductDto[], 
+    @Body() deleteSellerProductDto: DeleteSellerProductDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerProductsService.deleteSellerProduct(sellerId, deleteSellerProductDtos);
+    await this.sellerProductsService.deleteSellerProduct(sellerId, deleteSellerProductDto.ids);
     return {
       statusCode: 200,
       message: '상품 삭제가 완료되었습니다.'

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, In } from 'typeorm';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { ProductRequestOption } from 'src/commons/shared/entities/product-request-option.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
@@ -149,7 +149,8 @@ export class ProductRequestsService {
     }
   }
 
-  async deleteProductRequest(sellerId: number, deleteProductRequestDtos: DeleteProductRequestDto[]): Promise<void> {
+  async deleteProductRequest(sellerId: number, ids: number[]): Promise<void> {
+    /*
     for (const deleteProductRequestDto of deleteProductRequestDtos) {
       const productRequestOptionId = deleteProductRequestDto.id;
       
@@ -163,5 +164,14 @@ export class ProductRequestsService {
         }
       );
     }
+    */
+    await this.productRequestOptionRepository.update(
+      {
+        id: In(ids)
+      }, {
+        status: '삭제',
+        isDeleted: true
+      }
+    )
   }
 }

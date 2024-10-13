@@ -100,21 +100,22 @@ export class ProductRequestsController {
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', example: 1 },
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
         },
       },
     },
   })
   async deleteSellerProduct(
-    @Body() deleteProductRequestDtos: DeleteProductRequestDto[], 
+    @Body() deleteProductRequestDto: DeleteProductRequestDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.productRequestsService.deleteProductRequest(sellerId, deleteProductRequestDtos);
+    await this.productRequestsService.deleteProductRequest(sellerId, deleteProductRequestDto.ids);
     return {
       statusCode: 200,
       message: '등록 요청 상품 삭제가 완료되었습니다.'
