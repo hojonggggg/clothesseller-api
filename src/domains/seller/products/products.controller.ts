@@ -75,13 +75,13 @@ export class SellerProductsController {
     };
   }
 
-  @Get(':id')
+  @Get(':sellerProductId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 조회' })
   @ApiResponse({ status: 200 })
   async findOneSellerProductBySellerProductId(
-    @Param('id') sellerProductId: number, 
+    @Param('sellerProductId') sellerProductId: number, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
@@ -92,13 +92,13 @@ export class SellerProductsController {
     };
   }
 
-  @Patch(':id')
+  @Patch(':sellerProductId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 수정' })
   @ApiResponse({ status: 200 })
   async updateSellerProduct(
-    @Param('id') sellerProductId: number, 
+    @Param('sellerProductId') sellerProductId: number, 
     @Body() updateSellerProductDto: UpdateSellerProductDto, 
     @Request() req
   ) {

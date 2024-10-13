@@ -1,9 +1,10 @@
-import { Body, ConflictException, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
+import { UpdateProductRequestDto } from './dto/update-product-request.dto';
 import { DeleteProductRequestDto } from './dto/delete-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -57,20 +58,38 @@ export class ProductRequestsController {
     };
   }
 
-  @Get(':id')
+  @Get(':productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 등록 요청 상품 조회' })
   @ApiResponse({ status: 200 })
   async findOneProductRequestByProductReguestId(
-    @Param('id') productReguestId: number, 
+    @Param('productRequestId') productReguestId: number, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.productRequestsService.findOneProductRequestByProductReguestId(sellerId, productReguestId);
+    const result = await this.productRequestsService.findOneProductRequestByProductRequestId(sellerId, productReguestId);
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Patch(':productRequestId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 수정' })
+  @ApiResponse({ status: 200 })
+  async updateProductRequest(
+    @Param('productRequestId') productRequestId: number, 
+    @Body() updateProductRequestDto: UpdateProductRequestDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.productRequestsService.updateProductRequest(sellerId, productRequestId, updateProductRequestDto);
+    return {
+      statusCode: 200,
+      message: '등록 요청 상품 수정이 완료되었습니다.'
     };
   }
 

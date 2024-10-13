@@ -105,8 +105,9 @@ export class SellerProductsService {
       product.mallName = product.sellerProduct.mall.name;
 
       delete(product.sellerId);
-      delete(product.sellerProductId);
+      //delete(product.sellerProductId);
       delete(product.sellerProduct);
+      delete(product.wholesalerProductOptionId);
     }
 
     return {

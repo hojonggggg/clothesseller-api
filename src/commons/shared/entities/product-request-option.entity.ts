@@ -24,6 +24,14 @@ export class ProductRequestOption {
   @Column()
   quantity: number;
 
+  @ApiProperty({ example: '등록요청', description: '상품 등록 요청 상태' })
+  @Column()
+  status: string;
+
+  @ApiProperty({ example: false, description: '상품 삭제 여부' })
+  @Column({ name: 'is_deleted', default: false })
+  isDeleted: boolean;
+
   @OneToOne(() => ProductRequest)
   @JoinColumn({ name: 'product_request_id' })
   productRequest: ProductRequest;
@@ -33,5 +41,4 @@ export class ProductRequestOption {
   wholesalerProductPrice: number;
   sellerProductName: string;
   sellerProductPrice: number;
-  status: string;
 }

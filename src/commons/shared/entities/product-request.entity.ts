@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductRequestOption } from './product-request-option.entity';
 
 @Entity('product_request')
 export class ProductRequest {
@@ -35,7 +36,11 @@ export class ProductRequest {
   @Column({ name: 'seller_product_price' })
   sellerProductPrice: number;
 
+  @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
+  productRequestOptions: ProductRequestOption[];
+  /*
   @ApiProperty({ example: 'WAIT', description: '상품 등록 승인 상태' })
   @Column()
   status: string;
+  */
 }
