@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, Brackets } from 'typeorm';
+import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
@@ -116,7 +116,8 @@ export class SellerSamplesService {
     };
   }
 
-  async deleteSample(sellerId: number, sellerDeleteSampleDtos: SellerDeleteSampleDto[]): Promise<void> {
+  async deleteSample(sellerId: number, ids: number[]): Promise<void> {
+    /*
     for (const sellerDeleteSampleDto of sellerDeleteSampleDtos) {
       const sampleId = sellerDeleteSampleDto.id;
 
@@ -129,17 +130,26 @@ export class SellerSamplesService {
         }
       );
     }
+    */
+    await this.sampleRepository.update(
+      {
+        id: In(ids),
+        sellerId
+      }, {
+        isDeleted: true
+      }
+    );
   }
 
-  async returnSample(sellerId: number, sellerReturnSampleDtos: SellerReturnSampleDto[]): Promise<void> {
+  async returnSample(sellerId: number, ids: number[]): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
     
-      for (const sellerReturnSampleDto of sellerReturnSampleDtos) {
-        const sampleId = sellerReturnSampleDto.id;
+      for (const sampleId of ids) {
+        //const sampleId = sellerReturnSampleDto.id;
 
         await this.sampleRepository.update(
           {

@@ -12,6 +12,23 @@ export class SellerOrdersController {
     private sellerOrdersService: SellerOrdersService
   ) {}
 
+  @Get('summary')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 주문 현황' })
+  @ApiResponse({ status: 200 })
+  async summarySellerProduct(
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.sellerOrdersService.summarySellerOrder(sellerId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+
   @Get('received')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

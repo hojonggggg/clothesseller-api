@@ -60,21 +60,22 @@ export class SellerSamplesController {
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', example: 1 },
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
         },
       },
     },
   })
   async deleteSample(
-    @Body() sellerDeleteSampleDtos: SellerDeleteSampleDto[], 
+    @Body() sellerDeleteSampleDto: SellerDeleteSampleDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerSamplesService.deleteSample(sellerId, sellerDeleteSampleDtos);
+    await this.sellerSamplesService.deleteSample(sellerId, sellerDeleteSampleDto.ids);
     return {
       statusCode: 200,
       message: '샘플 삭제가 완료되었습니다.'
@@ -88,21 +89,22 @@ export class SellerSamplesController {
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', example: 1 },
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
         },
       },
     },
   })
   async returnSample(
-    @Body() sellerReturnSampleDtos: SellerReturnSampleDto[], 
+    @Body() sellerReturnSampleDto: SellerReturnSampleDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerSamplesService.returnSample(sellerId, sellerReturnSampleDtos);
+    await this.sellerSamplesService.returnSample(sellerId, sellerReturnSampleDto.ids);
     return {
       statusCode: 200,
       message: '샘플 반납 신청이 완료되었습니다.'

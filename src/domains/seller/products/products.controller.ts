@@ -117,21 +117,22 @@ export class SellerProductsController {
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', example: 1 },
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
         },
       },
     },
   })
   async returnSellerProduct(
-    @Body() returnSellerProductDtos: ReturnSellerProductDto[], 
+    @Body() returnSellerProductDto: ReturnSellerProductDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerProductsService.returnSellerProduct(sellerId, returnSellerProductDtos);
+    await this.sellerProductsService.returnSellerProduct(sellerId, returnSellerProductDto.ids);
     return {
       statusCode: 200,
       message: '상품 반납 신청이 완료되었습니다.'

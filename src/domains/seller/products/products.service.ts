@@ -222,15 +222,15 @@ export class SellerProductsService {
     };
   }
 
-  async returnSellerProduct(sellerId: number, returnSellerProductDtos: ReturnSellerProductDto[]): Promise<void> {
+  async returnSellerProduct(sellerId: number, ids: number[]): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      for (const returnSellerProductDto of returnSellerProductDtos) {
-        const sellerProductOptionId = returnSellerProductDto.id;
+      for (const sellerProductOptionId of ids) {
+        //const sellerProductOptionId = returnSellerProductDto.id;
         
         await this.sellerProductOptionRepository.update(
           {

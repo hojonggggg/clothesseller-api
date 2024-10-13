@@ -16,6 +16,17 @@ export class SellerOrdersService {
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
   ) {}
 
+  async summarySellerOrder(sellerId: number) {
+    const result = {
+      newOrder: 15,
+      matchingPending: 7,
+      matchingCompleted: 23,
+      orderPending: 7,
+      orderCompleted: 13
+    };
+    return result;
+  }
+
   async findAllSellerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
