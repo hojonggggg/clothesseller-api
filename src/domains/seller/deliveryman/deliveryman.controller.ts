@@ -87,7 +87,7 @@ export class DeliverymanController {
   @Get('pickup/from-seller')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 반품 내역 목록 조회' })
+  @ApiOperation({ summary: '[완료] 반품 내역 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
   async findAllPickupOfFromSellerBySellerId(
