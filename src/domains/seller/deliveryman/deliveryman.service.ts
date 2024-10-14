@@ -12,7 +12,7 @@ export class DeliverymanService {
     private deliverymanRepository: Repository<Deliveryman>,
   ) {}
 
-  async createDeliveryman(sellerId: number, createDeliverymanDto: CreateDeliverymanDto): Promise<Deliveryman> {
+  async createDeliveryman(sellerId: number, createDeliverymanDto: CreateDeliverymanDto) {
     console.log({sellerId, createDeliverymanDto});
     return await this.deliverymanRepository.save({
       sellerId,
@@ -20,11 +20,24 @@ export class DeliverymanService {
     });
   }
 
+  async updateDeliveryman(sellerId: number, createDeliverymanDto: CreateDeliverymanDto) {
+    console.log({sellerId, createDeliverymanDto});
+
+    return await this.deliverymanRepository.update(
+      {
+        sellerId
+      }, 
+      {
+        ...createDeliverymanDto
+      }
+    );
+  }
+
   async findOneDeliverymanBySellerIdAndMobile(sellerId: number, mobile: string): Promise<Deliveryman | undefined> {
     return await this.deliverymanRepository.findOne({ where: {sellerId, mobile} });
   }
 
-  async findOneDeliverymanBySellerId(sellerId: number) {
-    return await this.deliverymanRepository.find({ where: {sellerId}, order: {'id': 'DESC'} })
+  async findOneDeliverymanBySellerId(sellerId: number): Promise<Deliveryman | undefined> {
+    return await this.deliverymanRepository.findOne({ where: {sellerId} });
   }
 }

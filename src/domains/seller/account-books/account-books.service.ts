@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { TaxInvoice } from 'src/commons/shared/entities/tax-invoice.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { _getStartAndEndDate } from 'src/commons/shared/functions/date';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -13,6 +14,8 @@ export class SellerAccountBooksService {
 
     @InjectRepository(WholesalerOrder)
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
+    @InjectRepository(TaxInvoice)
+    private taxInvoiceRepository: Repository<TaxInvoice>,
   ) {}
 
   async findAllAccountBookBySellerId(sellerId: number, month: string, wholesalerName: string, paginationQuery: PaginationQueryDto) {
@@ -100,6 +103,80 @@ export class SellerAccountBooksService {
       totalPage: Math.ceil(total / pageSize),
     };
     */
+  }
+
+  async findAllTaxInvoiceBySellerId(sellerId: number, wholesalerName: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.taxInvoiceRepository.createQueryBuilder('taxInvoice')
+      .select([
+        'taxInvoice.id AS id',
+        'DATE_FORMAT(taxInvoice.createdAt, "%Y/%m/%d") AS createdAt',
+        'wholesalerProfile.name AS wholesalerName',
+        'taxInvoice.amount AS amount',
+        'taxInvoice.license_number AS licenseNumber',
+        'taxInvoice.email AS email',
+        'taxInvoice.status AS status'
+      ])
+      .leftJoin('taxInvoice.wholesalerProfile', 'wholesalerProfile')
+      .where('taxInvoice.sellerId = :sellerId', { sellerId })
+    
+
+    if (wholesalerName) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${wholesalerName}%` });
+        })
+      );
+    }
+    /*
+    const [taxInvoices, total] = await queryBuilder
+      .orderBy('taxInvoice.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+    */
+
+    const taxInvoices = await queryBuilder
+      .orderBy('taxInvoice.id', 'DESC')
+      .getRawMany();
+    
+
+    
+    const totalQuery = await this.taxInvoiceRepository
+      .createQueryBuilder('taxInvoice')
+      .select([
+        'taxInvoice.id AS id',
+        'DATE_FORMAT(taxInvoice.createdAt, "%Y/%m/%d") AS createdAt',
+        'wholesalerProfile.name AS wholesalerName',
+        'taxInvoice.amount AS amount',
+        'taxInvoice.license_number AS licenseNumber',
+        'taxInvoice.email AS email',
+        'taxInvoice.status AS status'
+      ])
+      .leftJoin('taxInvoice.wholesalerProfile', 'wholesalerProfile')
+      .where('taxInvoice.sellerId = :sellerId', { sellerId });
+
+    if (wholesalerName) {
+      totalQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${wholesalerName}%` });
+        })
+      );
+    }
+
+    const total = await totalQuery.getCount();
+
+    for (const taxInvoice of taxInvoices) {
+      taxInvoice.amount = formatCurrency(taxInvoice.amount);
+    }
+    
+    return {
+      list: taxInvoices,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
   }
 
 }

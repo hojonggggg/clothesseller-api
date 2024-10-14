@@ -14,7 +14,7 @@ export class SellerAccountBooksController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 장부 목록 조회' })
+  @ApiOperation({ summary: '[완료] 장부 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'month', required: true, description: '조회 월' })
   @ApiQuery({ name: 'wholesalerName', required: false, description: '도매처명' })
@@ -33,4 +33,22 @@ export class SellerAccountBooksController {
     };
   }
 
+  @Get('tax-invoice')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 세금계산 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'wholesalerName', required: false, description: '도매처명' })
+  async findAllTaxInvoiceBySellerId(
+    @Query('wholesalerName') wholesalerName: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.sellerAccountBooksService.findAllTaxInvoiceBySellerId(sellerrId, wholesalerName, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 }
