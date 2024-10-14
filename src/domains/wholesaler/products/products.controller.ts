@@ -56,10 +56,11 @@ export class WholesalerProductsController {
   @ApiOperation({ summary: '[검색 추가 필요] 상품 목록 조회' })
   @ApiResponse({ status: 200, type: [WholesalerProduct] })
   async findAllWholesalerProductByWholesalerId(
+    @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto, 
     @Request() req
   ) {
     const wholesalerId = req.user.uid;
-    return await this.wholesalerProductsService.findAllWholesalerProductByWholesalerId(wholesalerId, paginationQuery);
+    return await this.wholesalerProductsService.findAllWholesalerProductByWholesalerId(wholesalerId, query, paginationQuery);
   }
 }

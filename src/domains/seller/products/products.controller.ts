@@ -2,6 +2,7 @@ import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Q
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerProductsService } from './products.service';
+import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
 import { UpdateSellerProductDto } from './dto/update-seller-product.dto';
 import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
@@ -12,7 +13,8 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('seller/products')
 export class SellerProductsController {
   constructor(
-    private readonly sellerProductsService: SellerProductsService
+    private readonly sellerProductsService: SellerProductsService,
+    private readonly wholesalerProductsService: WholesalerProductsService
   ) {}
 
   @Get('summary/:mallId')
@@ -69,6 +71,25 @@ export class SellerProductsController {
     const sellerId = req.user.uid;
     //return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
     const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Get('wholesaler/:wholesalerId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 도매처 상품 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerProductByWholesalerId(
+    @Param('wholesalerId') wholesalerId: number, 
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto, 
+    @Request() req
+  ) {
+    const result = await this.wholesalerProductsService.findAllWholesalerProductByWholesalerId(wholesalerId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

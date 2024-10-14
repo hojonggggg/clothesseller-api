@@ -34,6 +34,7 @@ export class WholesalerProfile {
   store: Store;
   
   wholesalerId: number;
+  storeName: string;
   /*
   @OneToMany(() => Order, (order) => order.sellerProfile)
   orders: Order[];
