@@ -86,7 +86,9 @@ export class SellerProductsService {
     const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
       .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
-      .where('sellerProduct.sellerId = :sellerId', { sellerId });
+      .where('sellerProduct.sellerId = :sellerId', { sellerId })
+      .andWhere('sellerProductOption.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('sellerProductOption.isReturned = :isReturned', { isReturned: false });
     
     if (query) {
       queryBuilder.andWhere('sellerProduct.name LIKE :query', { query: `%${query}%` });
