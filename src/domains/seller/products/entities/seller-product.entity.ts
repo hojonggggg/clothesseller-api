@@ -59,4 +59,6 @@ export class SellerProduct {
 
   wholesalerName: string;
   wholesalerStoreName: string;
+  wholesalerStoreRoomNo: string;
+  wholesalerMobile: string;
 }

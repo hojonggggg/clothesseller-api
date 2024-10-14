@@ -122,6 +122,7 @@ export class SellerProductsService {
     
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
       .leftJoinAndSelect('sellerProduct.sellerProductOptions', 'sellerProductOptions')
+      .leftJoinAndSelect('sellerProduct.wholesalerProfile', 'wholesalerProfile')
       .where('sellerProduct.id = :sellerProductId', { sellerProductId });
     
     const sellerProduct = await queryBuilder.getOne();
@@ -131,6 +132,10 @@ export class SellerProductsService {
       delete(sellerProductOption.sellerProductId);
     }
 
+    sellerProduct.wholesalerName = sellerProduct.wholesalerProfile.name;
+    sellerProduct.wholesalerStoreName = sellerProduct.wholesalerProfile.storeName;
+    sellerProduct.wholesalerStoreRoomNo = sellerProduct.wholesalerProfile.roomNo;
+    sellerProduct.wholesalerMobile = sellerProduct.wholesalerProfile.mobile;
     sellerProduct.price = formatCurrency(sellerProduct.price);
     sellerProduct.wholesalerProductPrice = formatCurrency(sellerProduct.wholesalerProductPrice);
 
@@ -138,6 +143,7 @@ export class SellerProductsService {
     delete(sellerProduct.mallId);
     delete(sellerProduct.wholesalerId);
     delete(sellerProduct.wholesalerProductId);
+    delete(sellerProduct.wholesalerProfile);
 
     return sellerProduct;
   }
