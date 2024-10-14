@@ -1,17 +1,20 @@
-import { Body, Controller, Get, Delete, Query, Request, UseGuards, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Delete, Query, Request, UseGuards, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerOrdersService } from './orders.service';
+import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { DeleteSellerOrderDto } from './dto/delete-seller-order.dto';
 import { DeleteWholesalerOrderDto } from './dto/delete-wholesaler-order.dto';
-import { PrepaymentWholesalerOrderDto } from './dto/prepayment-wholesaler-order.dto';
+import { CreatePrepaymentDto } from './dto/create-prepayent.dto';
+//import { PrepaymentWholesalerOrderDto } from './dto/prepayment-wholesaler-order.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > orders')
 @Controller('seller/orders')
 export class SellerOrdersController {
   constructor(
-    private sellerOrdersService: SellerOrdersService
+    private sellerOrdersService: SellerOrdersService,
+    private wholesalerOrdersService: WholesalerOrdersService
   ) {}
 
   @Get('summary')
@@ -169,32 +172,20 @@ export class SellerOrdersController {
     };
   }
 
-  @Patch('ordering/pre-payment')  
+  @Post('pre-payment')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 미송 처리' })
-  @ApiResponse({ status: 200 })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        ids: {
-          type: 'array',
-          items: { type: 'integer' },
-          example: [1, 2],
-        },
-      },
-    },
-  })
-  async prepaymentWholesalerOrder(
-    @Body() prepaymentWholesalerOrderDto: PrepaymentWholesalerOrderDto, 
+  @ApiOperation({ summary: '[완료] 미송 요청' })
+  @ApiResponse({ status: 201 })
+  async createPrepayment(
+    @Body() createPrepaymentDto: CreatePrepaymentDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerOrdersService.prepaymentWholesalerOrder(sellerId, prepaymentWholesalerOrderDto.ids);
+    await this.wholesalerOrdersService.createPrepayment(sellerId, createPrepaymentDto);
     return {
-      statusCode: 200,
-      message: '미송 처리가 완료되었습니다.'
+      statusCode: 201,
+      message: '미송 요청이 완료되었습니다.'
     };
   }
 

@@ -113,6 +113,7 @@ export class WholesalerProductsService {
     const [products, total] = await query.getManyAndCount();
     */
     for (const product of products) {
+      product.wholesalerProductOptionId = product.id;
       product.name = product.wholesalerProduct.name;
       delete(product.wholesalerProduct);
     }

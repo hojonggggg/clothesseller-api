@@ -37,4 +37,5 @@ export class WholesalerProductOption {
   orders: WholesalerOrder[];
 
   name: string;
+  wholesalerProductOptionId: number;
 }

@@ -26,13 +26,13 @@ export class WholesalerOrder {
   @Column({ name: 'wholesaler_product_option_id' })
   wholesalerProductOptionId: number;
   
-  @ApiProperty({ example: '1', description: '셀러 주문 내역 ID' })
-  @Column({ name: 'seller_order_id' })
-  sellerOrderId: number;
-  
   @ApiProperty({ example: '1', description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;
+  
+  @ApiProperty({ example: '1', description: '셀러 주문 내역 ID' })
+  @Column({ name: 'seller_order_id' })
+  sellerOrderId: number;
   
   @ApiProperty({ example: 1, description: '셀러 상품 ID' })
   @Column({ name: 'seller_product_id' })
