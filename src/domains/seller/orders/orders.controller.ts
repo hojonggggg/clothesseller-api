@@ -5,6 +5,7 @@ import { SellerOrdersService } from './orders.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { DeleteSellerOrderDto } from './dto/delete-seller-order.dto';
 import { DeleteWholesalerOrderDto } from './dto/delete-wholesaler-order.dto';
+import { CreateManualOrderingDto } from './dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from './dto/create-prepayent.dto';
 //import { PrepaymentWholesalerOrderDto } from './dto/prepayment-wholesaler-order.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -169,6 +170,23 @@ export class SellerOrdersController {
     return {
       statusCode: 200,
       message: '주문 내역 삭제가 완료되었습니다.'
+    };
+  }
+
+  @Post('manual-ordering')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 수등 발주 요청' })
+  @ApiResponse({ status: 201 })
+  async createManualOrdering(
+    @Body() createManualOrderingDto: CreateManualOrderingDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.wholesalerOrdersService.createManualOrdering(sellerId, createManualOrderingDto);
+    return {
+      statusCode: 201,
+      message: '수동 발주 요청이 완료되었습니다.'
     };
   }
 

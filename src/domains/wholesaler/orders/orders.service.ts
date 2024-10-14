@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, Brackets } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayent.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { getToday } from 'src/commons/shared/functions/date';
@@ -123,6 +124,16 @@ export class WholesalerOrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async createManualOrdering(sellerId: number, createManualOrderingDto: CreateManualOrderingDto) {
+    const ordering = this.wholesalerOrderRepository.create({
+      ...createManualOrderingDto,
+      sellerId,
+      orderType: '수동',
+      status: '발주요청',
+    });
+    return await this.wholesalerOrderRepository.save(ordering);
   }
 
   async createPrepayment(sellerId: number, createPrepaymentDto: CreatePrepaymentDto) {
