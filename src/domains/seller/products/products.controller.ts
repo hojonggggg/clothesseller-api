@@ -114,6 +114,25 @@ export class SellerProductsController {
     };
   }
 
+  @Get('wholesaler/:wholesalerId/pagination')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 도매처 상품 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerProductByWholesalerIdWithPagination(
+    @Param('wholesalerId') wholesalerId: number, 
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto, 
+    @Request() req
+  ) {
+    const result = await this.wholesalerProductsService.findAllWholesalerProductByWholesalerIdWithPagination(wholesalerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Get(':sellerProductId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

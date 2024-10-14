@@ -82,7 +82,7 @@ export class WholesalerProductsService {
     return products;
   }
 
-  async _findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerProductByWholesalerIdWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     
     const [products, total] = await this.wholesalerProductOptionRepository.findAndCount({

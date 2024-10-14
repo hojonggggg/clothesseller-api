@@ -54,7 +54,7 @@ export class SellerOrdersController {
   @Delete('received/delete')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 쇼핑몰에서 들어온 주문 내역 삭제' })
+  @ApiOperation({ summary: '[완료] 쇼핑몰에서 들어온 주문 내역 삭제' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -119,7 +119,7 @@ export class SellerOrdersController {
       data: result
     };
   }
-
+/*
   @Get('manual-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -139,7 +139,7 @@ export class SellerOrdersController {
       data: result
     };
   }
-
+*/
   @Delete('ordering/delete')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
