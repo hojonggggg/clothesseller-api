@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Brackets } from 'typeorm';
+import { Repository, Brackets, In } from 'typeorm';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -88,6 +88,18 @@ export class SellerOrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async deleteSellerOrder(sellerId: number, ids: number[]): Promise<void> {
+    await this.sellerOrderRepository.update(
+      {
+        id: In(ids),
+        sellerId
+      }, {
+        status: '삭제',
+        isDeleted: true
+      }
+    );
   }
 
   async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
