@@ -15,10 +15,11 @@ export class MallsController {
   @ApiOperation({ summary: '[완료] 판매몰 전체 조회' })
   @ApiResponse({ status: 200 })
   async findAllMall(
-    @Query() paginationQuery: PaginationQueryDto,
+    //@Query() paginationQuery: PaginationQueryDto,
   ) {
     //return await this.mallsService.findAllMall();
-    const result = await this.mallsService.findAllMall(paginationQuery);
+   //const result = await this.mallsService.findAllMall(paginationQuery);
+   const result = await this.mallsService.findAllMall();
     return {
       statusCode: 200,
       data: result

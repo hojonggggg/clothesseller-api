@@ -11,20 +11,11 @@ export class MallsService {
     private mallRepository: Repository<Mall>,
   ) {}
 
-  async findAllMall(paginationQuery: PaginationQueryDto) {
-    const { pageNumber, pageSize } = paginationQuery;
+  async findAllMall() {
 
-    const [malls, total] = await this.mallRepository.findAndCount({
-      order: { id: 'DESC' },
-      take: pageSize,
-      skip: (pageNumber - 1) * pageSize,
+    const malls = await this.mallRepository.find({
+      order: { id: 'DESC' }
     });
-
-    return {
-      list: malls,
-      total,
-      page: Number(pageNumber),
-      totalPage: Math.ceil(total / pageSize),
-    };
+    return malls;
   }
 }
