@@ -6,6 +6,7 @@ import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.en
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { getStartAndEndDate } from 'src/commons/shared/functions/date';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
+import { getToday } from 'src/commons/shared/functions/date';
 
 @Injectable()
 export class SellerOrdersService {
@@ -167,7 +168,8 @@ export class SellerOrdersService {
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.orderType = :orderType', { orderType })
-      .andWhere('order.status != :status', { status: '미송' });
+      .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false });
 
     if (query) {
       queryBuilder.andWhere(
@@ -241,6 +243,20 @@ export class SellerOrdersService {
     );
   }
 
+  async prepaymentWholesalerOrder(sellerId: number, ids: number[]): Promise<void> {
+    const today = getToday();
+    await this.wholesalerOrderRepository.update(
+      {
+        id: In(ids),
+        sellerId
+      }, {
+        status: '미송요청',
+        isPrepayment: true,
+        prePaymentDate: today
+      }
+    );
+  }
+
   async findAllPrePaymentOfWholesalerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
@@ -251,7 +267,7 @@ export class SellerOrdersService {
       .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.status = :status', { status: '미송' });
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true });
 
     if (query) {
       queryBuilder.andWhere(
@@ -314,6 +330,7 @@ export class SellerOrdersService {
       ])
       .leftJoin('order.sellerProduct', 'sellerProduct')
       .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true })
       .andWhere('STR_TO_DATE(order.prePaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
         startDate,
         endDate
@@ -361,7 +378,7 @@ export class SellerOrdersService {
       .leftJoin('order.sellerProductOption', 'sellerProductOption')
       .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
       .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.status = :status', { status: '미송' })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true })
       .andWhere('order.prePaymentDate = :day', { day });
 
     const orders = await queryBuilder

@@ -73,6 +73,10 @@ export class WholesalerOrder {
   @Column({ name: 'is_deleted', default: true })
   isDeleted: boolean;
 
+  @ApiProperty({ example: false, description: '삭제 여부' })
+  @Column({ name: 'is_prepayment', default: true })
+  isPrepayment: boolean;
+
   @ManyToOne(() => WholesalerProductOption, (productOption) => productOption.orders)
   @JoinColumn({ name: 'wholesaler_product_option_id' })
   productOption: WholesalerProductOption;
