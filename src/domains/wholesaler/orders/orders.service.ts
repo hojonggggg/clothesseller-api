@@ -67,6 +67,7 @@ export class WholesalerOrdersService {
         'wholesalerStore.name AS wholesalerStoreName',
         'wholesalerProfile.id AS wholesalerId',
         'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'DATE_FORMAT(order.createdAt, "%y/%m/%d/%H:%i") AS orderDate',
         'IF(order.status = "픽업", "O", "X") AS isPickup'
       ])
@@ -127,6 +128,7 @@ export class WholesalerOrdersService {
         'wholesalerStore.name AS wholesalerStoreName',
         'wholesalerProfile.id AS wholesalerId',
         'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'DATE_FORMAT(order.createdAt, "%y/%m/%d/%H:%i") AS orderDate',
         'IF(order.status = "픽업", "O", "X") AS isPickup'
       ])
@@ -165,6 +167,7 @@ export class WholesalerOrdersService {
         acc[storeId].wholesalers.push({
           wholesalerId: wholesalerId,
           wholesalerName: current.wholesalerName,
+          wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
           //orders: []
           orderDate: '24/10/08/22:00',
           isPickup: 'X'

@@ -150,6 +150,7 @@ export class SellerReturnsService {
         'wholesalerStore.name AS wholesalerStoreName',
         'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'return.status AS status',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'DATE_FORMAT(return.createdAt, "%y/%m/%d/%H:%i") AS returnDate'
       ])
       .leftJoin('return.wholesalerProfile', 'wholesalerProfile')
@@ -215,6 +216,7 @@ export class SellerReturnsService {
         acc[storeId].wholesalers.push({
           wholesalerId: wholesalerId,
           wholesalerName: current.wholesalerName,
+          wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
           //orders: []
           orderDate: '24/10/08/22:00',
           isPickup: 'X'
