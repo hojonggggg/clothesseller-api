@@ -33,7 +33,7 @@ export class SellerAccountBooksController {
     };
   }
 
-  @Get('tax-invoice')
+  @Get('tax-invoices')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 세금계산 목록 조회' })
