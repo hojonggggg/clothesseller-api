@@ -60,9 +60,40 @@ export class WholesalerOrdersService {
   async findAllPickupOfFromWholesalerBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
+    const _queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS orderId',
+        'wholesalerProfile.storeId AS wholesalerStoreId',
+        'wholesalerStore.name AS wholesalerStoreName',
+        'wholesalerProfile.id AS wholesalerId',
+        'wholesalerProfile.name AS wholesalerName',
+        'DATE_FORMAT(order.createdAt, "%y/%m/%d/%H:%i") AS orderDate',
+        'IF(order.status = "픽업", "O", "X") AS isPickup'
+      ])
+      .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'wholesalerStore')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false })
+
+    if (query) {
+      _queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    const pickups = await _queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getRawMany();
+
+    /*
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
       .select([
         'order.id AS orderId',
+        'wholesalerProfile.id AS wholesalerId',
         'wholesalerProfile.storeId AS wholesalerStoreId',
         'wholesalerProfile.name AS wholesalerName',
         'wholesalerStore.name AS wholesalerStoreName',
@@ -88,22 +119,77 @@ export class WholesalerOrdersService {
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getRawMany();
-    
-    const total = await this.wholesalerOrderRepository
-      .createQueryBuilder('order')
+    */
+    const totalQuery = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS orderId',
+        'wholesalerProfile.storeId AS wholesalerStoreId',
+        'wholesalerStore.name AS wholesalerStoreName',
+        'wholesalerProfile.id AS wholesalerId',
+        'wholesalerProfile.name AS wholesalerName',
+        'DATE_FORMAT(order.createdAt, "%y/%m/%d/%H:%i") AS orderDate',
+        'IF(order.status = "픽업", "O", "X") AS isPickup'
+      ])
+      .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'wholesalerStore')
       .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.status != :status', { status: '미송' })
-      .getCount();
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false })
+
+    if (query) {
+      totalQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    const total = await totalQuery.getCount();
 
     const groupedPickups = pickups.reduce((acc, current) => {
       const storeId = current.wholesalerStoreId;
+      const wholesalerId = current.wholesalerId;
+
+      // 첫 번째 그룹화 (wholesalerStoreId)
       if (!acc[storeId]) {
         acc[storeId] = {
           wholesalerStoreId: storeId,
           wholesalerStoreName: current.wholesalerStoreName,
-          orders: []
+          wholesalers: []
         };
       }
+
+      // 두 번째 그룹화 (wholesalerId)
+      const wholesalerGroup = acc[storeId].wholesalers.find(w => w.wholesalerId === wholesalerId);
+      if (!wholesalerGroup) {
+        acc[storeId].wholesalers.push({
+          wholesalerId: wholesalerId,
+          wholesalerName: current.wholesalerName,
+          //orders: []
+          orderDate: '24/10/08/22:00',
+          isPickup: 'X'
+        });
+      }
+
+      /******
+      const groupIndex = acc[storeId].wholesalers.findIndex(w => w.wholesalerId === wholesalerId);
+      acc[storeId].wholesalers[groupIndex].orders.push({
+        orderDate: current.orderDate,
+        totalPrice: current.totalPrice,
+        isPickup: current.isPickup,
+      });
+      ********/
+
+
+      /*
+      if (!acc[storeId].wholesalers[wholesalerId]) {
+        acc[storeId].wholesalers[wholesalerId] = {
+          wholesalerId,
+          wholesalerName: current.wholesalerName,
+          orders: [],  // 주문 목록을 담을 배열 생성
+        };
+      }
+      */
+      /*
       const isPickup = (current.status === '픽업') ? 'O' : 'X';
       acc[storeId].orders.push({
         id: current.orderId,
@@ -112,6 +198,17 @@ export class WholesalerOrdersService {
         orderDate: current.orderDate,
         isPickup
       });
+      */
+      /*
+      const isPickup = current.status === '픽업' ? 'O' : 'X';
+
+      acc[storeId].wholesalers[wholesalerId].orders.push({
+        id: current.orderId,
+        wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
+        orderDate: current.orderDate,
+        isPickup,
+      });
+      */
       return acc;
     }, {});
   
