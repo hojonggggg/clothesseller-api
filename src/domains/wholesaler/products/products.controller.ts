@@ -49,7 +49,7 @@ export class WholesalerProductsController {
     }
     return await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
   }
-
+/*
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -63,4 +63,5 @@ export class WholesalerProductsController {
     const wholesalerId = req.user.uid;
     return await this.wholesalerProductsService.findAllWholesalerProductByWholesalerId(wholesalerId, query, paginationQuery);
   }
+  */
 }

@@ -54,8 +54,33 @@ export class WholesalerProductsService {
   async findOneWholesalerProductByWholesalerIdAndCode(wholesalerId: number, code: string): Promise<WholesalerProduct | undefined> {
     return await this.wholesalerProductRepository.findOne({ where: {wholesalerId, code} });
   }
+  
+  async findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string) {
+    const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('option')
+      .leftJoinAndSelect('option.wholesalerProduct', 'product')
+      .where('option.wholesalerId = :wholesalerId', { wholesalerId })
+      .select([
+        'option.id',
+        'option.wholesalerId',
+        'option.color',
+        'option.size',
+        'option.quantity',
+        'product.name',
+      ]);
+      //.orderBy('option.id', 'DESC')
+    
+    if (query) {
+      queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
+    }
 
-  async findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+    const products = await queryBuilder
+      .orderBy('option.id', 'DESC')
+      .getMany();
+    
+    return products;
+  }
+
+  async _findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     
     const [products, total] = await this.wholesalerProductOptionRepository.findAndCount({
