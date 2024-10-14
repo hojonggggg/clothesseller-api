@@ -5,6 +5,7 @@ import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
 import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
 @Injectable()
 export class WholesalerProductsService {
@@ -56,16 +57,13 @@ export class WholesalerProductsService {
   }
   
   async findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string) {
-    const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('option')
-      .leftJoinAndSelect('option.wholesalerProduct', 'product')
-      .where('option.wholesalerId = :wholesalerId', { wholesalerId })
+    const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
+      .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId })
       .select([
-        'option.id',
-        'option.wholesalerId',
-        'option.color',
-        'option.size',
-        'option.quantity',
-        'product.name',
+        'wholesalerProduct.id',
+        'wholesalerProduct.code',
+        'wholesalerProduct.name',
+        'wholesalerProduct.price',
       ]);
       //.orderBy('option.id', 'DESC')
     
@@ -74,8 +72,12 @@ export class WholesalerProductsService {
     }
 
     const products = await queryBuilder
-      .orderBy('option.id', 'DESC')
+      .orderBy('wholesalerProduct.id', 'DESC')
       .getMany();
+    
+    for (const product of products) {
+      product.price = formatCurrency(product.price);
+    }
     
     return products;
   }
