@@ -229,6 +229,18 @@ export class SellerOrdersService {
     };
   }
 
+  async deleteWholesalerOrder(sellerId: number, ids: number[]): Promise<void> {
+    await this.wholesalerOrderRepository.update(
+      {
+        id: In(ids),
+        sellerId
+      }, {
+        status: '삭제',
+        isDeleted: true
+      }
+    );
+  }
+
   async findAllPrePaymentOfWholesalerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 

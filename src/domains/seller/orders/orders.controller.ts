@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } 
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerOrdersService } from './orders.service';
 import { DeleteSellerOrderDto } from './dto/delete-seller-order.dto';
+import { DeleteWholesalerOrderDto } from './dto/delete-wholesaler-order.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > orders')
@@ -66,7 +67,7 @@ export class SellerOrdersController {
       },
     },
   })
-  async deleteSample(
+  async deleteSellerOrder(
     @Body() deleteSellerOrderDto: DeleteSellerOrderDto, 
     @Request() req
   ) {
@@ -115,6 +116,35 @@ export class SellerOrdersController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Delete('ordering/delete')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 자동 발주 내역 삭제' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async deleteWholesalerOrder(
+    @Body() deleteWholesalerOrderDto: DeleteWholesalerOrderDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    await this.sellerOrdersService.deleteWholesalerOrder(sellerId, deleteWholesalerOrderDto.ids);
+    return {
+      statusCode: 200,
+      message: '주문 내역 삭제가 완료되었습니다.'
     };
   }
 
