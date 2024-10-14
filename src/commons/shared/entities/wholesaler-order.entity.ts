@@ -69,6 +69,10 @@ export class WholesalerOrder {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @ApiProperty({ example: false, description: '삭제 여부' })
+  @Column({ name: 'is_deleted', default: true })
+  isDeleted: boolean;
+
   @ManyToOne(() => WholesalerProductOption, (productOption) => productOption.orders)
   @JoinColumn({ name: 'wholesaler_product_option_id' })
   productOption: WholesalerProductOption;

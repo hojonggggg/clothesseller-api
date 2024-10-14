@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Delete, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { SellerOrdersService } from './orders.service';
@@ -49,7 +49,7 @@ export class SellerOrdersController {
     };
   }
 
-  @Patch('received/delete')  
+  @Delete('received/delete')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[개발] 쇼핑몰에서 들어온 주문 내역 삭제' })
