@@ -99,7 +99,7 @@ export class SellerProductsController {
   @Get('wholesaler/:wholesalerId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 도매처 상품 목록 조회' })
+  @ApiOperation({ summary: '[완료]] 도매처 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllWholesalerProductByWholesalerId(
@@ -117,7 +117,7 @@ export class SellerProductsController {
   @Get('wholesaler/:wholesalerId/pagination')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 도매처 상품 목록 조회' })
+  @ApiOperation({ summary: '[완료] 도매처 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllWholesalerProductByWholesalerIdWithPagination(

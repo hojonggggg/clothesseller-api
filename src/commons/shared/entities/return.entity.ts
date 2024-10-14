@@ -52,6 +52,10 @@ export class Return {
   @Column()
   status: string;
 
+  @ApiProperty({ example: false, description: '잔존 여부' })
+  @Column({ name: 'is_credit', default: true })
+  isCredit: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   /*
