@@ -146,15 +146,16 @@ export class SellerReturnsService {
         'return.id AS returnId',
         'wholesalerProfile.storeId AS wholesalerStoreId',
         'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProfile.id AS wholesalerId',
         'wholesalerStore.name AS wholesalerStoreName',
         'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'return.status AS status',
-        'DATE_FORMAT(return.createdAt, "%y/%m/%d/%H:%i") AS returnDate',
+        'DATE_FORMAT(return.createdAt, "%y/%m/%d/%H:%i") AS returnDate'
       ])
       .leftJoin('return.wholesalerProfile', 'wholesalerProfile')
       .leftJoin('wholesalerProfile.store', 'wholesalerStore')
       .where('return.sellerId = :sellerId', { sellerId })
-
+      
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
@@ -169,32 +170,72 @@ export class SellerReturnsService {
       .skip((pageNumber - 1) * pageSize)
       .getRawMany();
     
-    const total = await this.returnRepository
-      .createQueryBuilder('return')
+    const totalQuery = this.returnRepository.createQueryBuilder('return')
+      .select([
+        'return.id AS returnId',
+        'wholesalerProfile.storeId AS wholesalerStoreId',
+        'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProfile.id AS wholesalerId',
+        'wholesalerStore.name AS wholesalerStoreName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
+        'return.status AS status',
+        'DATE_FORMAT(return.createdAt, "%y/%m/%d/%H:%i") AS returnDate'
+      ])
+      .leftJoin('return.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'wholesalerStore')
       .where('return.sellerId = :sellerId', { sellerId })
-      .getCount();
+      
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    //const total = await totalQuery.getCount();
+    let totalWholesalerIds = new Set();
 
     const groupedPickups = pickups.reduce((acc, current) => {
       const storeId = current.wholesalerStoreId;
+      const wholesalerId = current.wholesalerId;
+
+      // 첫 번째 그룹화 (wholesalerStoreId)
       if (!acc[storeId]) {
         acc[storeId] = {
           wholesalerStoreId: storeId,
           wholesalerStoreName: current.wholesalerStoreName,
-          returns: []
+          wholesalers: []
         };
       }
-      const isPickup = (current.status === '픽업') ? 'O' : 'X';
-      acc[storeId].returns.push({
-        id: current.returnId,
+
+      // 두 번째 그룹화 (wholesalerId)
+      const wholesalerGroup = acc[storeId].wholesalers.find(w => w.wholesalerId === wholesalerId);
+      if (!wholesalerGroup) {
+        acc[storeId].wholesalers.push({
+          wholesalerId: wholesalerId,
+          wholesalerName: current.wholesalerName,
+          //orders: []
+          orderDate: '24/10/08/22:00',
+          isPickup: 'X'
+        });
+      }
+      /*
+      const groupIndex = acc[storeId].wholesalers.findIndex(w => w.wholesalerId === wholesalerId);
+      acc[storeId].wholesalers[groupIndex].orders.push({
+        returnId: current.returnId,
         wholesalerStoreRoomNo: current.wholesalerStoreRoomNo,
-        wholesalerName: current.wholesalerName,
-        returnDate: current.returnDate,
-        isPickup
+        status: current.status,
+        returnDate: current.returnDate
       });
+      */
+      totalWholesalerIds.add(wholesalerId);
+
       return acc;
     }, {});
   
     const result = Object.values(groupedPickups);
+    const total = totalWholesalerIds.size;
 
     return {
       list: result,

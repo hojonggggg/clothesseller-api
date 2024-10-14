@@ -143,7 +143,8 @@ export class WholesalerOrdersService {
       );
     }
     
-    const total = await totalQuery.getCount();
+    //const total = await totalQuery.getCount();
+    let totalWholesalerIds = new Set();
 
     const groupedPickups = pickups.reduce((acc, current) => {
       const storeId = current.wholesalerStoreId;
@@ -209,10 +210,13 @@ export class WholesalerOrdersService {
         isPickup,
       });
       */
+      totalWholesalerIds.add(wholesalerId);
+
       return acc;
     }, {});
   
     const result = Object.values(groupedPickups);
+    const total = totalWholesalerIds.size;
 
     //return result;
     return {
