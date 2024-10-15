@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn
 import { ApiProperty } from '@nestjs/swagger';
 import { Mall } from '../../malls/entities/mall.entity';
 import { SellerProductOption } from './seller-product-option.entity';
+import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
 
@@ -51,6 +52,10 @@ export class SellerProduct {
   @JoinColumn({ name: 'wholesaler_id' })
   wholesalerProfile: WholesalerProfile;
 
+  @OneToOne(() => WholesalerProduct)
+  @JoinColumn({ name: 'wholesaler_product_id' })
+  wholesalerProduct: WholesalerProduct;
+
   @OneToMany(() => SellerOrder, (order) => order.sellerProduct)
   sellerOrders: SellerOrder[];
 
@@ -61,4 +66,6 @@ export class SellerProduct {
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;
   wholesalerMobile: string;
+  mallName: string;
+  wholesalerProductCode: string;
 }

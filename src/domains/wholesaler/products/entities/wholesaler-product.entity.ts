@@ -38,4 +38,5 @@ export class WholesalerProduct {
 
   @OneToMany(() => WholesalerProductOption, (option) => option.wholesalerProduct)
   wholesalerProductOptions: WholesalerProductOption[];
+  
 }
