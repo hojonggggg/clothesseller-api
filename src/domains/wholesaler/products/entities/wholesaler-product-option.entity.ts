@@ -29,7 +29,7 @@ export class WholesalerProductOption {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => WholesalerProduct, (product) => product.options, { onDelete: 'CASCADE' })
+  @ManyToOne(() => WholesalerProduct, (product) => product.wholesalerProductOptions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'wholesaler_product_id' })  // 외래 키
   wholesalerProduct: WholesalerProduct;
 

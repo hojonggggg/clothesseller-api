@@ -125,4 +125,19 @@ export class WholesalerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+
+  async findOneWholesalerProductByWholesalerProductId(sellerId: number, wholesalerProductId: number) {
+    
+    const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
+      .leftJoinAndSelect('wholesalerProduct.wholesalerProductOptions', 'wholesalerProductOptions')
+      .where('wholesalerProduct.id = :wholesalerProductId', { wholesalerProductId });
+
+    const wholesalerProduct = await queryBuilder.getOne();
+    const wholesalerProductOptions = wholesalerProduct.wholesalerProductOptions;
+    for (const wholesalerProductOption of wholesalerProductOptions) {
+      //delete(sellerProductOption.sellerId);
+      //delete(sellerProductOption.sellerProductId);
+    }
+    return wholesalerProduct;
+  }
 }

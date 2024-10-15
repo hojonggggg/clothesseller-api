@@ -37,5 +37,5 @@ export class WholesalerProduct {
   sellerOrders: SellerOrder[];
 
   @OneToMany(() => WholesalerProductOption, (option) => option.wholesalerProduct)
-  options: WholesalerProductOption[];
+  wholesalerProductOptions: WholesalerProductOption[];
 }

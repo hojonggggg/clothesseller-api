@@ -133,10 +133,27 @@ export class SellerProductsController {
     };
   }
 
+  @Get('wholesaler/product/:wholesalerProductId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 도매처 상품 조회' })
+  @ApiResponse({ status: 200 })
+  async findOneWholesalerProductByWholesalerProductId(
+    @Param('wholesalerProductId') wholesalerProductId: number, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.wholesalerProductsService.findOneWholesalerProductByWholesalerProductId(sellerId, wholesalerProductId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Get(':sellerProductId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 조회' })
+  @ApiOperation({ summary: '[완료] 셀러 상품 조회' })
   @ApiResponse({ status: 200 })
   async findOneSellerProductBySellerProductId(
     @Param('sellerProductId') sellerProductId: number, 
@@ -153,7 +170,7 @@ export class SellerProductsController {
   @Patch(':sellerProductId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 수정' })
+  @ApiOperation({ summary: '[완료] 셀러 상품 수정' })
   @ApiResponse({ status: 200 })
   async updateSellerProduct(
     @Param('sellerProductId') sellerProductId: number, 
