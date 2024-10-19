@@ -36,6 +36,7 @@ export class WholesalerProductOption {
   @OneToMany(() => WholesalerOrder, (order) => order.productOption)
   orders: WholesalerOrder[];
 
+  code: string;
   name: string;
   wholesalerProductOptionId: number;
 }

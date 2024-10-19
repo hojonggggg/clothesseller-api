@@ -11,7 +11,6 @@ import { SellerModule } from './domains/seller/seller.module';
 
 import { UsersModule } from './domains/users/users.module';
 import { ProductRequestsModule } from './domains/product-requests/product-requests.module';
-import { ProductsModule } from './domains/products/products.module';
 import configuration from './commons/config/configuration';
 import * as moment from 'moment-timezone';
 
@@ -47,7 +46,6 @@ import * as moment from 'moment-timezone';
     
     UsersModule,
     ProductRequestsModule,
-    ProductsModule,
   ],
 })
 export class AppModule {}

@@ -4,14 +4,14 @@ import { DataSource, Repository } from 'typeorm';
 import { ProductRequest } from './entities/product-request.entity';
 import { _CreateProductRequestDto } from './dto/create-product-request.dto';
 //import { WholesalerProductsService } from '../wholesaler/products/wholesalerProducts.service';
-import { WholesalerProductsService } from '../products/wholesaler/wholesaler.service';
+//import { WholesalerProductsService } from '../products/wholesaler/wholesaler.service';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
 export class ProductRequestsService {
   constructor(
     private readonly dataSource: DataSource,
-    private wholesalerProductsService: WholesalerProductsService,
+    //private wholesalerProductsService: WholesalerProductsService,
 
     @InjectRepository(ProductRequest)
     private productRequestRepository: Repository<ProductRequest>,
@@ -99,7 +99,7 @@ export class ProductRequestsService {
         wholesalerProductPrice: null
       };
 
-      await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
+      //await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
 
       await queryRunner.commitTransaction();
     } catch (error) {

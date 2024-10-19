@@ -1,5 +1,5 @@
-import { Body, ConflictException, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerProductsService } from './products.service';
 import { WholesalerProduct } from './entities/wholesaler-product.entity';
@@ -8,16 +8,16 @@ import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto'
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > products')
-@Controller('wholesaler/products')
+@Controller('wholesaler')
 export class WholesalerProductsController {
   constructor(
     private wholesalerProductsService: WholesalerProductsService
   ) {}
 
-  @Post()
+  @Post('product')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 등록' })
+  @ApiOperation({ summary: '[개발중] 상품 등록' })
   @ApiResponse({ status: 201, type: WholesalerProduct })
   async createWholesalerProduct(
     @Body() createWholesalerProductDto: CreateWholesalerProductDto, 
@@ -32,6 +32,89 @@ export class WholesalerProductsController {
     return await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
   }
 
+  @Get('product/:wholesalerProductId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발중] 도매처 상품 조회' })
+  @ApiResponse({ status: 200 })
+  async findOneWholesalerProductByWholesalerProductId(
+    @Param('wholesalerProductId') wholesalerProductId: number, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.wholesalerProductsService.findOneWholesalerProductByWholesalerProductId(sellerId, wholesalerProductId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Patch('product/:wholesalerProductId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발중] 도매처 상품 수정' })
+  @ApiResponse({ status: 200 })
+  async updateWholesalerProduct(
+    @Param('wholesalerProductId') wholesalerProductId: number, 
+    //@Body() updateSellerProductDto: UpdateSellerProductDto, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    //const result = await this.sellerProductsService.updateSellerProduct(sellerId, sellerProductId, updateSellerProductDto);
+    return {
+      statusCode: 200,
+      message: '상품 수정이 완료되었습니다.'
+    };
+  }
+  
+  @Get('products')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerProduct(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Delete('products')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발중] 선택 상품 삭제' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async deleteWholesalerProducts(
+    //@Body() deleteSellerProductDto: DeleteSellerProductDto, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    //await this.wholesalerProductsService.deleteWholesalerProduct(wholesalerId, deleteSellerProductDto.ids);
+    return {
+      statusCode: 200,
+      message: '상품 삭제가 완료되었습니다.'
+    };
+  }
+  /*
   @Post('options')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -49,19 +132,6 @@ export class WholesalerProductsController {
     }
     return await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
   }
-/*
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '[검색 추가 필요] 상품 목록 조회' })
-  @ApiResponse({ status: 200, type: [WholesalerProduct] })
-  async findAllWholesalerProductByWholesalerId(
-    @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
-    @Request() req
-  ) {
-    const wholesalerId = req.user.uid;
-    return await this.wholesalerProductsService.findAllWholesalerProductByWholesalerId(wholesalerId, query, paginationQuery);
-  }
   */
+  
 }

@@ -56,7 +56,7 @@ export class WholesalerProductsService {
     return await this.wholesalerProductRepository.findOne({ where: {wholesalerId, code} });
   }
   
-  async findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string) {
+  async findAllWholesalerProduct(wholesalerId: number, query: string) {
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
       .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId })
       .select([
@@ -65,7 +65,6 @@ export class WholesalerProductsService {
         'wholesalerProduct.name',
         'wholesalerProduct.price',
       ]);
-      //.orderBy('option.id', 'DESC')
     
     if (query) {
       queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
@@ -82,7 +81,7 @@ export class WholesalerProductsService {
     return products;
   }
 
-  async findAllWholesalerProductByWholesalerIdWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerProductWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     
     const [products, total] = await this.wholesalerProductOptionRepository.findAndCount({
@@ -92,29 +91,12 @@ export class WholesalerProductsService {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
-    
-    /*
-    const query = this.wholesalerProductOptionRepository
-      .createQueryBuilder('option')
-      .leftJoinAndSelect('option.wholesalerProduct', 'product')
-      .where('option.wholesalerId = :wholesalerId', { wholesalerId })
-      .select([
-        'option.id',
-        'option.wholesalerId',
-        'option.color',
-        'option.size',
-        'option.quantity',
-        'product.name',
-      ])
-      .orderBy('option.id', 'DESC')
-      .take(limit)
-      .skip((page - 1) * limit);
 
-    const [products, total] = await query.getManyAndCount();
-    */
     for (const product of products) {
-      product.wholesalerProductOptionId = product.id;
+      product.code = product.wholesalerProduct.code;
       product.name = product.wholesalerProduct.name;
+      product.wholesalerProductOptionId = product.id;
+      delete(product.wholesalerId);
       delete(product.wholesalerProduct);
     }
     
