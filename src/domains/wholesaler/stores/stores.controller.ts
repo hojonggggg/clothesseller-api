@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
-import { Store } from './entities/store.entity';
 
 @ApiTags('wholesaler > stores')
 @Controller('wholesaler/stores')
@@ -11,10 +10,13 @@ export class StoresController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: '상가 전체 조회' })
-  @ApiResponse({ status: 200, type: [Store] })
+  @ApiOperation({ summary: '[완료] 상가 전체 조회' })
+  @ApiResponse({ status: 200 })
   async findAllStore() {
-    return await this.storesService.findAllStore();
+    const result = await this.storesService.findAllStore();
+    return {
+      statusCode: 200,
+      data: result
+    };
   }
-
 }

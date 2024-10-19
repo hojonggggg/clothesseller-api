@@ -20,6 +20,7 @@ import { WholesalerProductsModule } from './products/products.module';
 import { StoresModule } from './stores/stores.module';
 import { WholesalerOrdersModule } from './orders/orders.module';
 import { WholesalerSamplesModule } from './samples/samples.module';
+import { ProductRequestsModule } from './product-requests/product-requests.module';
 
 @Module({
   //imports: [TypeOrmModule.forFeature([User, WholesalerProfile]), AuthModule],
@@ -35,8 +36,9 @@ import { WholesalerSamplesModule } from './samples/samples.module';
       }),
       inject: [ConfigService],
     }),
-    WholesalerProductsModule,
     StoresModule,
+    ProductRequestsModule,
+    WholesalerProductsModule,
     WholesalerOrdersModule,
     WholesalerSamplesModule,
   ],

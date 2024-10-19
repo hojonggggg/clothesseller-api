@@ -9,7 +9,6 @@ import { SellerModule } from './domains/seller/seller.module';
 
 
 
-import { UsersModule } from './domains/users/users.module';
 import { ProductRequestsModule } from './domains/product-requests/product-requests.module';
 import configuration from './commons/config/configuration';
 import * as moment from 'moment-timezone';
@@ -39,12 +38,11 @@ import * as moment from 'moment-timezone';
       inject: [ConfigService],
     }),
     AuthModule,
-    SellerModule,
     WholesalerModule,
+    SellerModule,
     
     
     
-    UsersModule,
     ProductRequestsModule,
   ],
 })

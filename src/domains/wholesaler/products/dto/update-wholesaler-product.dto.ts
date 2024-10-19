@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-class CreateWholesalerProductOptionDto {
+class UpdateWholesalerProductOptionDto {
+  @IsNumber()
+  optionId: number;
+
   @IsString()
   color: string;
 
@@ -16,7 +19,7 @@ class CreateWholesalerProductOptionDto {
   quantity: number;
 }
 
-export class CreateWholesalerProductDto {
+export class UpdateWholesalerProductDto {
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
   @IsString()
   code: string;
@@ -25,7 +28,7 @@ export class CreateWholesalerProductDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 10000, description: '판매 가격' })
+  @ApiProperty({ example: 10000, description: '도매 가격' })
   @IsNumber()
   price: number;
 
@@ -39,19 +42,13 @@ export class CreateWholesalerProductDto {
 
   @ApiProperty({ 
     example: [
-      { color: 'Black', size: '100', price: 1000, quantity: 20 },
-      { color: 'Blue', size: '95', price: 0, quantity: 10 }
+      { optionId: 1, color: 'Black', size: '100', price: 1000, quantity: 20 },
+      { optionId: 2, color: 'Blue', size: '95', price: 0, quantity: 10 }
     ], 
     description: '옵션' 
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateWholesalerProductOptionDto)
-  options: CreateWholesalerProductOptionDto[];
-
-  /*
-  @ApiProperty({ example: false, description: '상품 판매 상태' })
-  @IsBoolean()
-  isActive: boolean;
-  */
+  @Type(() => UpdateWholesalerProductOptionDto)
+  options: UpdateWholesalerProductOptionDto[];
 }

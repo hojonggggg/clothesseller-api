@@ -38,9 +38,9 @@ export class ProductRequest {
 
   @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
   productRequestOptions: ProductRequestOption[];
-  /*
-  @ApiProperty({ example: 'WAIT', description: '상품 등록 승인 상태' })
+  
+  @ApiProperty({ example: '승인대기', description: '상품 등록 승인 상태' })
   @Column()
   status: string;
-  */
+  
 }
