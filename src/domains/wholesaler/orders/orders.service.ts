@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, Brackets } from 'typeorm';
+import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayent.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
@@ -10,10 +11,120 @@ import { getToday } from 'src/commons/shared/functions/date';
 @Injectable()
 export class WholesalerOrdersService {
   constructor(
+    private readonly dataSource: DataSource,
+
     @InjectRepository(WholesalerOrder)
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
+    @InjectRepository(WholesalerProductOption)
+    private wholesalerProductOptionRepository: Repository<WholesalerProductOption>,
   ) {}
 
+  async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(startOfDay.getHours() + 9);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    endOfDay.setHours(endOfDay.getHours() + 9);
+
+    const { pageNumber, pageSize } = paginationQueryDto;
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
+      .leftJoinAndSelect('order.sellerProfile', 'sellerProfile')
+      .where('order.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false });
+
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+    
+    for (const order of orders) {
+      order.name = order.wholesalerProduct.name;
+      order.color = order.wholesalerProductOption.color;
+      order.size = order.wholesalerProductOption.size;
+      order.sellerName = order.sellerProfile.name;
+      order.sellerMobile = order.sellerProfile.mobile;
+      if (order.sellerProfile.deliveryman) {
+        order.deliverymanMobile = order.sellerProfile.deliveryman.mobile;
+      } else {
+        order.deliverymanMobile = null;
+      }
+      delete(order.wholesalerId);
+      delete(order.wholesalerProductId);
+      delete(order.wholesalerProduct);
+      delete(order.wholesalerProductOptionId);
+      delete(order.sellerId);
+      delete(order.sellerOrderId);
+      delete(order.sellerProductId);
+      delete(order.sellerProductOptionId);
+      delete(order.orderType);
+      delete(order.isDeleted);
+      delete(order.isPrepayment);
+      delete(order.prePaymentDate);
+      delete(order.deliveryDate);
+      delete(order.createdAt);
+      delete(order.wholesalerProductOption);
+      delete(order.sellerProfile);
+    }
+    
+    return {
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async soldoutOrder(wholesalerId: number, ids: number[]): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      /*
+      await this.wholesalerOrderRepository.update(
+        {
+          id: In(ids),
+          wholesalerId
+        }, {
+          isSoldout: true
+        }
+      );
+      */
+      for (const id of ids) {
+        await this.wholesalerOrderRepository.update(
+          { id, wholesalerId }, 
+          { isSoldout: true }
+        );
+
+        const order = await this.wholesalerOrderRepository.findOne({ where: { id } });
+        const { wholesalerProductOptionId } = order;
+        await this.wholesalerProductOptionRepository.update(
+          { id: wholesalerProductOptionId },
+          { isSoldout: true }
+        );
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  ////////////
   async findAllOrderByWholesalerId(wholesalerId: number, date: string, paginationQuery: PaginationQueryDto) {
     const startOfDay = new Date(date);
     const endOfDay = new Date(date);
@@ -29,10 +140,10 @@ export class WholesalerOrdersService {
     });
     
     for (const order of orders) {
-      order.name = order.productOption.wholesalerProduct.name;
-      order.color = order.productOption.color;
-      order.size = order.productOption.size;
-      order.quantity = order.productOption.quantity;
+      order.name = order.wholesalerProductOption.wholesalerProduct.name;
+      order.color = order.wholesalerProductOption.color;
+      order.size = order.wholesalerProductOption.size;
+      order.quantity = order.wholesalerProductOption.quantity;
       order.sellerName = order.sellerProfile.name;
       order.sellerMobile = order.sellerProfile.mobile;
       if (order.sellerProfile.deliveryman) {
@@ -42,8 +153,8 @@ export class WholesalerOrdersService {
       }
       delete(order.wholesalerId);
       delete(order.wholesalerProductOptionId);
+      delete(order.wholesalerProductOption);
       delete(order.sellerId);
-      delete(order.productOption);
       delete(order.sellerProfile);
     }
     

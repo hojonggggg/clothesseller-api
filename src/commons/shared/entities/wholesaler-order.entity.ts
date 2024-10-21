@@ -77,9 +77,13 @@ export class WholesalerOrder {
   @Column({ name: 'is_prepayment', default: true })
   isPrepayment: boolean;
 
+  @ApiProperty({ example: false, description: '품절 여부' })
+  @Column({ name: 'is_soldout', default: true })
+  isSoldout: boolean;
+
   @ManyToOne(() => WholesalerProductOption, (productOption) => productOption.orders)
   @JoinColumn({ name: 'wholesaler_product_option_id' })
-  productOption: WholesalerProductOption;
+  wholesalerProductOption: WholesalerProductOption;
   /*
   @ManyToOne(() => SellerProfile, (sellerProfile) => sellerProfile.orders)
   @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })

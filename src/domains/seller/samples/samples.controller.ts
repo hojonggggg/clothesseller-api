@@ -115,7 +115,7 @@ export class SellerSamplesController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 월간 샘플 반납 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'month', required: true, description: '조회하려는 달' })
+  @ApiQuery({ name: 'month', required: true, description: '조회하려는 달(yyyy/mm)' })
   async findAllSampleOfMonthlyBySellerId(
     @Query('month') month: string,
     @Request() req
