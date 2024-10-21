@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, In } from 'typeorm';
 import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
 import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto';
@@ -59,7 +59,8 @@ export class WholesalerProductsService {
   async findOneWholesalerProduct(wholesalerProductId: number) {
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
       .leftJoinAndSelect('wholesalerProduct.options', 'options')
-      .where('wholesalerProduct.id = :wholesalerProductId', { wholesalerProductId });
+      .where('wholesalerProduct.id = :wholesalerProductId', { wholesalerProductId })
+      .andWhere('options.isDeleted = false');
 
     const wholesalerProduct = await queryBuilder.getOne();
     wholesalerProduct.price = formatCurrency(wholesalerProduct.price);
@@ -125,7 +126,6 @@ export class WholesalerProductsService {
   }
 
   async findAllWholesalerProductWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    
     const { pageNumber, pageSize } = paginationQuery;
     
     const [products, total] = await this.wholesalerProductRepository.findAndCount({
@@ -151,6 +151,49 @@ export class WholesalerProductsService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async findAllWholesalerProductOption(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+    
+    const [options, total] = await this.wholesalerProductOptionRepository.findAndCount({
+      where: { 
+        wholesalerId, 
+        isDeleted: false
+      },
+      relations: ['wholesalerProduct'],
+      order: { id: 'DESC' },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
+    });
+    
+    for (const option of options) {
+      option.optionPrice = formatCurrency(option.price);
+      option.wholesalerProduct.price = formatCurrency(option.wholesalerProduct.price);
+      delete(option.wholesalerId);
+      delete(option.price);
+      delete(option.isDeleted);
+      delete(option.wholesalerProduct.id);
+      delete(option.wholesalerProduct.wholesalerId);
+    }
+    
+    return {
+      list: options,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async deleteWholesalerProduct(wholesalerId: number, ids: number[]): Promise<void> {
+    await this.wholesalerProductOptionRepository.update(
+      {
+        id: In(ids),
+        wholesalerId
+      }, {
+        isDeleted: true
+      }
+    );
   }
   //////////////////////
   async findAllWholesalerProduct(wholesalerId: number, query: string) {

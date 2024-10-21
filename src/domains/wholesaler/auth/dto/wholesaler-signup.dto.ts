@@ -24,7 +24,7 @@ export class WholesalerSignupDto {
 
   @ApiProperty({ example: 1,  description: '상가 ID'})
   @IsNumber()
-  mallId: number;
+  storeId: number;
 
   @ApiProperty({ example: '가',  description: '상가 호수'})
   @IsString()

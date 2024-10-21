@@ -6,6 +6,7 @@ import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
 import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto';
 import { UpdateWholesalerProductDto } from './dto/update-wholesaler-product.dto';
+import { DeleteWholesalerProductDto } from './dto/delete-\bwholesaler-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > products')
@@ -40,7 +41,7 @@ export class WholesalerProductsController {
   @Get('products')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
+  @ApiOperation({ summary: '[완료] 상품 옵션 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllWholesalerProduct(
@@ -49,7 +50,8 @@ export class WholesalerProductsController {
     @Request() req
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
+    //const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
+    const result = await this.wholesalerProductsService.findAllWholesalerProductOption(wholesalerId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result
@@ -93,7 +95,7 @@ export class WholesalerProductsController {
   @Delete('products')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[상품기준? 옵션기준?] 선택 상품 삭제' })
+  @ApiOperation({ summary: '[완료] 선택 상품 옵션 삭제' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -108,14 +110,14 @@ export class WholesalerProductsController {
     },
   })
   async deleteWholesalerProducts(
-    //@Body() deleteSellerProductDto: DeleteSellerProductDto, 
-    @Request() req
+    @Request() req,
+    @Body() deleteWholesalerProductDto: DeleteWholesalerProductDto, 
   ) {
     const wholesalerId = req.user.uid;
-    //await this.wholesalerProductsService.deleteWholesalerProduct(wholesalerId, deleteSellerProductDto.ids);
+    await this.wholesalerProductsService.deleteWholesalerProduct(wholesalerId, deleteWholesalerProductDto.ids);
     return {
       statusCode: 200,
-      message: '상품 삭제가 완료되었습니다.'
+      message: '상품 옵션 삭제가 완료되었습니다.'
     };
   }
   /*

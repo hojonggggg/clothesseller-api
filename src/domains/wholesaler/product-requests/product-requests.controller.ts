@@ -5,7 +5,7 @@ import { ProductRequestsService } from './product-requests.service';
 import { ApproveProductRequestDto } from './dto/approve-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
-@ApiTags('wholesaler > product-requests')
+@ApiTags('wholesaler > product-requests (상품 기준)')
 @Controller('wholesaler')
 export class ProductRequestsController {
   constructor(
@@ -25,6 +25,21 @@ export class ProductRequestsController {
   ) {
     const wholesalerId = req.user.uid;
     const result = await this.productRequestsService.findAllProductRequestByWholesalerId(wholesalerId, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Get('product-request/:productRequestId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 등록 요청 조회' })
+  @ApiResponse({ status: 200 })
+  async findOneProductRequest(
+    @Param('productRequestId') productRequestId: number
+  ) {
+    const result = await this.productRequestsService.findOneProductRequest(productRequestId);
     return {
       statusCode: 200,
       data: result

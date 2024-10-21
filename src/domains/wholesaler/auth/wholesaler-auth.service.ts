@@ -11,7 +11,7 @@ export class WholesalerAuthService {
 
   async signup(signupDto: WholesalerSignupDto): Promise<any> {
     const hashedPassword = await bcrypt.hash(signupDto.password, 10);
-    const { id, licenseNumber, name, mobile, mallId, roomNo } = signupDto;
+    const { id, licenseNumber, name, mobile, storeId, roomNo } = signupDto;
     const createWholesalerDto = {
       id,
       password: hashedPassword,
@@ -19,7 +19,7 @@ export class WholesalerAuthService {
       licenseNumber,
       name,
       mobile,
-      mallId,
+      storeId,
       roomNo
     };
     return await this.usersService.createUser(createWholesalerDto);

@@ -51,7 +51,7 @@ export class ProductRequestsService {
           delete(option.productRequestId);
           delete(option.isDeleted);
         }
-        
+
         delete(request.wholesalerId);
       }
 
@@ -61,6 +61,27 @@ export class ProductRequestsService {
         page: Number(pageNumber),
         totalPage: Math.ceil(total / pageSize)
       }
+  }
+
+  async findOneProductRequest(productRequestId: number) {
+    const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
+      .leftJoinAndSelect('productRequest.options', 'options')
+      .where('productRequest.id = :productRequestId', { productRequestId })
+      .andWhere('options.isDeleted = 0');
+
+    const productRequest = await queryBuilder.getOne();
+
+    const { options } = productRequest;
+    for (const option of options) {
+      option.price = formatCurrency(option.price);
+      delete(option.productRequestId);
+      delete(option.isDeleted);
+    }
+
+    productRequest.price = formatCurrency(productRequest.price);
+    delete(productRequest.wholesalerId);
+
+    return productRequest;
   }
 
   async approveProductRequest(wholesalerId: number, productRequestId: number, approveProductRequestDto: ApproveProductRequestDto): Promise<void> {

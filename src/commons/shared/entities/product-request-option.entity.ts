@@ -38,6 +38,7 @@ export class ProductRequestOption {
 
 
   name: string;
+  optionId: number;
   ////
   productCode: string;
   wholesalerProductName: string;
