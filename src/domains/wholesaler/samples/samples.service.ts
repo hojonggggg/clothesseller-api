@@ -5,6 +5,7 @@ import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { WholesalerCreateSampleAutoDto } from './dto/wholesaler-create-sample-auto.dto';
 import { WholesalerCreateSampleManualDto } from './dto/wholesaler-create-sample-manual.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { getStartAndEndDate } from 'src/commons/shared/functions/date';
 
 @Injectable()
 export class WholesalerSamplesService {
@@ -45,7 +46,7 @@ export class WholesalerSamplesService {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
-          qb.orWhere('COALESCE(sample.sellerName, sellerProfile.name) LIKE :sellerName', { sellerName: `%${query}%` });
+            .orWhere('COALESCE(sample.sellerName, sellerProfile.name) LIKE :sellerName', { sellerName: `%${query}%` });
         })
       );
     }
@@ -88,6 +89,60 @@ export class WholesalerSamplesService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async findAllSampleOfMonthly(wholesalerId: number, month: string) {
+    const { startDate, endDate } = getStartAndEndDate(month);
+    
+    const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
+      .select([
+        'sample.id AS sampleId',
+        'sample.quantity AS quantity',
+        'sample.sampleDate AS sampleDate',
+        'sample.returnDate AS returnDate',
+        `IF(sample.sellerType = 'AUTO', sellerProfile.name, sample.sellerName) AS sellerName`
+      ])
+      .leftJoin('sample.sellerProfile', 'sellerProfile')
+      .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('STR_TO_DATE(sample.returnDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+        startDate,
+        endDate
+      });
+
+    const rawSamples = await queryBuilder
+      .orderBy('sample.id', 'DESC')
+      .getRawMany();
+    
+    const samples = rawSamples.reduce((acc, result) => {
+      const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName, sellerName } = result;
+    
+      // 이미 그룹이 존재하는지 확인
+      let dateGroup = acc.find(group => group.sampleDate === sampleDate);
+      
+      if (!dateGroup) {
+        // 그룹이 없으면 새로 생성
+        dateGroup = { sampleDate, samples: [] };
+        acc.push(dateGroup);
+      }
+    
+      // 샘플 추가
+      dateGroup.samples.push({ id: sampleId, name: wholesalerProductName, quantity, sellerName, sampleDate, returnDate });
+    
+      return acc;
+    }, []);
+
+    return samples;
+  }
+
+  async returnSamples(wholesalerId: number, ids: number[]): Promise<void> {
+    await this.sampleRepository.update(
+      {
+        id: In(ids),
+        wholesalerId
+      }, {
+        isReturned: true
+      }
+    );
   }
 
   async deleteSamples(wholesalerId: number, ids: number[]): Promise<void> {

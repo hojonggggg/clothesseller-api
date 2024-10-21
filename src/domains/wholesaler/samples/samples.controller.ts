@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerSamplesService } from './samples.service';
-import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { WholesalerCreateSampleAutoDto } from './dto/wholesaler-create-sample-auto.dto';
 import { WholesalerCreateSampleManualDto } from './dto/wholesaler-create-sample-manual.dto';
+import { WholesalerReturnSampleDto } from './dto/wholesaler-return-sample.dto';
 import { WholesalerDeleteSampleDto } from './dto/wholesaler-delete-sample.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -65,6 +65,53 @@ export class WholesalerSamplesController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Get('samples/monthly')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 월간 샘플 반납 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'month', required: true, description: '조회하려는 달' })
+  async findAllSampleOfMonthly(
+    @Request() req,
+    @Query('month') month: string
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerSamplesService.findAllSampleOfMonthly(wholesalerId, month);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Patch('samples/return')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 샘플 반납' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async returnSamples(
+    @Request() req,
+    @Body() wholesalerReturnSampleDto: WholesalerReturnSampleDto, 
+  ) {
+    const wholesalerId = req.user.uid;
+    await this.wholesalerSamplesService.returnSamples(wholesalerId, wholesalerReturnSampleDto.ids);
+    return {
+      statusCode: 200,
+      message: '샘플 반납이 완료되었습니다.'
     };
   }
 
