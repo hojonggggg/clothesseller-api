@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductRequest } from './product-request.entity';
 
@@ -20,22 +20,25 @@ export class ProductRequestOption {
   @Column()
   size: string;
 
-  @ApiProperty({ example: '10000', description: '수량' })
+  @ApiProperty({ example: 1000, description: '상품 옵션 가격' })
   @Column()
-  quantity: number;
-
-  @ApiProperty({ example: '등록요청', description: '상품 등록 요청 상태' })
-  @Column()
-  status: string;
-
-  @ApiProperty({ example: false, description: '상품 삭제 여부' })
+  price: number;
+  /*
+  @ApiProperty({ example: true, description: '상품 요청 승인 여부' })
+  @Column({ name: 'is_approve', default: true })
+  isApprove: boolean;
+  */
+  @ApiProperty({ example: false, description: '상품 요청 삭제 여부' })
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
 
-  @OneToOne(() => ProductRequest)
-  @JoinColumn({ name: 'product_request_id' })
+  @ManyToOne(() => ProductRequest, (request) => request.options, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'product_request_id' })  // 외래 키
   productRequest: ProductRequest;
 
+
+  name: string;
+  ////
   productCode: string;
   wholesalerProductName: string;
   wholesalerProductPrice: number;

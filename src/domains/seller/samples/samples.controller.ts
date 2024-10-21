@@ -45,7 +45,6 @@ export class SellerSamplesController {
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    //return await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, productName, wholesalerName, paginationQuery);
     const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, query, paginationQuery);
     return {
       statusCode: 200,

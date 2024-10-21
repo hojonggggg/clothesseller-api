@@ -11,8 +11,8 @@ export class WholesalerSamplesService {
     private sampleRepository: Repository<Sample>,
   ) {}
 
-  async findAllSampleByWholesalerId(wholesalerId: number, paginationQuery: PaginationQueryDto) {
-    const { pageNumber, pageSize } = paginationQuery;
+  async findAllSampleByWholesalerId(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
     const [samples, total] = await this.sampleRepository.findAndCount({
       where: { wholesalerId },
       relations: ['wholesalerProductOption', 'wholesalerProductOption.wholesalerProduct', 'sellerProfile', 'sellerProfile.deliveryman'],

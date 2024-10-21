@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { AuthModule } from './domains/auth/auth.module';
 import { WholesalerModule } from './domains/wholesaler/wholesaler.module';
 import { SellerModule } from './domains/seller/seller.module';
-
-
-
-
-import { ProductRequestsModule } from './domains/product-requests/product-requests.module';
 import configuration from './commons/config/configuration';
 import * as moment from 'moment-timezone';
 
@@ -40,10 +34,6 @@ import * as moment from 'moment-timezone';
     AuthModule,
     WholesalerModule,
     SellerModule,
-    
-    
-    
-    ProductRequestsModule,
   ],
 })
 export class AppModule {}

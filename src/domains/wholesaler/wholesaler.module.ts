@@ -3,15 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LocalStrategy } from 'src/commons/shared/auth/strategies/local.strategy';
-import { JwtStrategy } from 'src/commons/shared/auth/strategies/jwt.strategy';
-//import { WholesalerService } from './wholesaler.service';
-//import { WholesalerController } from './wholesaler.controller';
-import { AuthModule } from 'src/commons/shared/auth/auth.module';
-import { AuthService } from 'src/commons/shared/auth/auth.service';
-import { WholesalerAuthService } from './auth/wholesaler-auth.service';
-import { WholesalerAuthController } from './auth/wholesaler-auth.controller';
-//import { WholesalerAuthModule } from './auth/auth.module';
+//import { LocalStrategy } from 'src/commons/shared/auth/strategies/local.strategy';
+import { LocalStrategy } from '../auth/strategies/local.strategy';
+//import { JwtStrategy } from 'src/commons/shared/auth/strategies/jwt.strategy';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
+
+import { AuthModule } from '../auth/auth.module';
+//import { AuthModule } from 'src/commons/shared/auth/auth.module';
+//import { AuthService } from 'src/commons/shared/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
+//import { WholesalerAuthService } from './auth/wholesaler-auth.service';
+//import { WholesalerAuthController } from './auth/wholesaler-auth.controller';
+import { WholesalerAuthModule } from './auth/wholesaler-auth.module';
 import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
@@ -23,10 +26,12 @@ import { WholesalerSamplesModule } from './samples/samples.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 
 @Module({
-  //imports: [TypeOrmModule.forFeature([User, WholesalerProfile]), AuthModule],
   imports: [
-    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile]),
-    //UsersModule,
+    TypeOrmModule.forFeature([
+      User, 
+      WholesalerProfile, 
+      SellerProfile
+    ]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -36,14 +41,16 @@ import { ProductRequestsModule } from './product-requests/product-requests.modul
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
+    WholesalerAuthModule,
     StoresModule,
     ProductRequestsModule,
     WholesalerProductsModule,
     WholesalerOrdersModule,
     WholesalerSamplesModule,
   ],
-  providers: [AuthService, WholesalerAuthService, UsersService],
-  controllers: [WholesalerAuthController],
+  providers: [AuthService, UsersService],
+  controllers: [],
   exports: [WholesalerModule]
 })
 export class WholesalerModule {}

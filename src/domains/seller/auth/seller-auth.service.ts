@@ -24,5 +24,4 @@ export class SellerAuthService {
     };
     return await this.usersService.createUser(createSellerDto);
   }
-
 }

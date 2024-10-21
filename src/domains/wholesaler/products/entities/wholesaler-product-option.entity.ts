@@ -25,14 +25,14 @@ export class WholesalerProductOption {
   @Column()
   size: string;
 
-  @ApiProperty({ example: '10000', description: '수량' })
-  @Column()
-  quantity: number;
-
   @ApiProperty({ example: '1000', description: '상품 옵션 가격' })
   @Column()
   price: number;
 
+  @ApiProperty({ example: '10000', description: '수량' })
+  @Column()
+  quantity: number;
+  
   @ManyToOne(() => WholesalerProduct, (product) => product.options, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'wholesaler_product_id' })  // 외래 키
   wholesalerProduct: WholesalerProduct;

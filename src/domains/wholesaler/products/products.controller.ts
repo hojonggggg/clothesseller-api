@@ -36,6 +36,25 @@ export class WholesalerProductsController {
       message: '상품 등록이 완료되었습니다.'
     };
   }
+  
+  @Get('products')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerProduct(
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 
   @Get('product/:wholesalerProductId')
   @UseGuards(JwtAuthGuard)
@@ -68,25 +87,6 @@ export class WholesalerProductsController {
     return {
       statusCode: 200,
       message: '상품 수정이 완료되었습니다.'
-    };
-  }
-  
-  @Get('products')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
-  @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
-  async findAllWholesalerProduct(
-    @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
-    @Request() req
-  ) {
-    const wholesalerId = req.user.uid;
-    const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
-    return {
-      statusCode: 200,
-      data: result
     };
   }
 

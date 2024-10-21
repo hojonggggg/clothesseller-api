@@ -12,11 +12,11 @@ export class WholesalerSamplesController {
     private wholesalerSamplesService: WholesalerSamplesService
   ) {}
 
-  @Post('sample')
+  @Post('sample/auto-seller')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발중] 샘플 등록' })
-  //@ApiResponse({ status: 201, type: WholesalerProduct })
+  @ApiOperation({ summary: '[개발중] 샘플 등록 - 존재하는 셀러' })
+  @ApiResponse({ status: 201 })
   async createSample(
     //@Body() createWholesalerProductDto: CreateWholesalerProductDto, 
     @Request() req
@@ -36,13 +36,18 @@ export class WholesalerSamplesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[개발중] 샘플 목록 조회' })
-  @ApiResponse({ status: 200, type: [Sample] })
+  @ApiResponse({ status: 200 })
   async findAllSampleByWholesalerId(
-    @Query() paginationQuery: PaginationQueryDto,
-    @Request() req
+    @Request() req,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
-    return await this.wholesalerSamplesService.findAllSampleByWholesalerId(wholesalerId, paginationQuery);
+    const result = await this.wholesalerSamplesService.findAllSampleByWholesalerId(wholesalerId, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
   }
 
   @Delete('samples')  

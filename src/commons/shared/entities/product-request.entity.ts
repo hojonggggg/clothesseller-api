@@ -8,39 +8,38 @@ export class ProductRequest {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @ApiProperty({ example: '1', description: '셀러 ID' })
-  @Column({ name: 'seller_id' })
-  sellerId: number;
-
-  @ApiProperty({ example: '1', description: '도매처 ID' })
+  @ApiProperty({ example: 1, description: '도매처 ID' })
   @Column({ name: 'wholesaler_id' })
   wholesalerId: number;
 
+  @ApiProperty({ example: 1, description: '셀러 ID' })
+  @Column({ name: 'seller_id' })
+  sellerId: number;
+
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
-  @Column({ name: 'product_code' })
-  productCode: string;
+  @Column({ name: 'code' })
+  code: string;
 
   @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '도매처 상품명' })
-  @Column({ name: 'wholesaler_product_name' })
-  wholesalerProductName: string;
+  @Column({ name: 'name' })
+  name: string;
 
-  @ApiProperty({ example: '10000', description: '도매 가격' })
-  @Column({ name: 'wholesaler_product_price' })
-  wholesalerProductPrice: number;
+  @ApiProperty({ example: 10000, description: '도매 가격' })
+  @Column({ name: 'price' })
+  price: number;
 
-  @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '셀러 상품명' })
-  @Column({ name: 'seller_product_name' })
-  sellerProductName: string;
+  @ApiProperty({ example: '중국', description: '제조국' })
+  @Column()
+  country: string;
 
-  @ApiProperty({ example: '20000', description: '판매 가격' })
-  @Column({ name: 'seller_product_price' })
-  sellerProductPrice: number;
-
-  @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
-  productRequestOptions: ProductRequestOption[];
+  @ApiProperty({ example: '면 100%', description: '혼용률' })
+  @Column()
+  composition: string;
   
   @ApiProperty({ example: '승인대기', description: '상품 등록 승인 상태' })
   @Column()
   status: string;
-  
+
+  @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
+  options: ProductRequestOption[];
 }

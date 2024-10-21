@@ -2,7 +2,6 @@ import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Q
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
-import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
 import { UpdateProductRequestDto } from './dto/update-product-request.dto';
 import { DeleteProductRequestDto } from './dto/delete-product-request.dto';
@@ -18,7 +17,7 @@ export class ProductRequestsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 등록 요청' })
+  @ApiOperation({ summary: '[수정] 상품 등록 요청' })
   //@ApiResponse({ status: 201, type: ProductRequest })
   @ApiResponse({ status: 201 })
   async createProductRequest(
@@ -26,8 +25,8 @@ export class ProductRequestsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const { productCode } = createProductRequestDto;
-    const productRequest = await this.productRequestsService.findOneProductRequestBySellerIdAndProductCode(sellerId, productCode);
+    const { code } = createProductRequestDto;
+    const productRequest = await this.productRequestsService.findOneProductRequestBySellerIdAndProductCode(sellerId, code);
     if (productRequest) {
       throw new ConflictException('이미 등록 요청된 상품입니다.');
     }
@@ -42,7 +41,7 @@ export class ProductRequestsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 등록 요청 상품 목록 조회' })
+  @ApiOperation({ summary: '[수정] 등록 요청 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllProductRequestBySellerId(
@@ -61,7 +60,7 @@ export class ProductRequestsController {
   @Get(':productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 등록 요청 상품 조회' })
+  @ApiOperation({ summary: '[수정] 등록 요청 상품 조회' })
   @ApiResponse({ status: 200 })
   async findOneProductRequestByProductReguestId(
     @Param('productRequestId') productReguestId: number, 
@@ -78,7 +77,7 @@ export class ProductRequestsController {
   @Patch(':productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 등록 요청 상품 수정' })
+  @ApiOperation({ summary: '[수정] 등록 요청 상품 수정' })
   @ApiResponse({ status: 200 })
   async updateProductRequest(
     @Param('productRequestId') productRequestId: number, 
@@ -96,7 +95,7 @@ export class ProductRequestsController {
   @Delete()  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 등록 요청 상품 삭제' })
+  @ApiOperation({ summary: '[수정] 등록 요청 상품 삭제' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {

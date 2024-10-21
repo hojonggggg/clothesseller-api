@@ -55,8 +55,8 @@ export class ProductRequestsService {
     return await this.productRequestRepository.findOne({ where: { id } });
   }
 
-  async findOneProductRequestBySellerIdAndProductCode(sellerId: number, productCode: string): Promise<ProductRequest | undefined> {
-    return this.productRequestRepository.findOne({ where: { sellerId, productCode } });
+  async findOneProductRequestBySellerIdAndProductCode(sellerId: number, code: string): Promise<ProductRequest | undefined> {
+    return this.productRequestRepository.findOne({ where: { sellerId, code } });
   }
 
   async findAllProductRequestBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
@@ -67,7 +67,7 @@ export class ProductRequestsService {
       .where('productRequest.sellerId = :sellerId', { sellerId });
     
     if (query) {
-      queryBuilder.andWhere('productRequest.sellerProductName LIKE :query', { query: `%${query}%` });
+      queryBuilder.andWhere('productRequest.name LIKE :query', { query: `%${query}%` });
     }
 
     const [requests, total] = await queryBuilder
@@ -77,10 +77,8 @@ export class ProductRequestsService {
       .getManyAndCount();
       
     for (const request of requests) {
-      request.wholesalerProductName = request.productRequest.wholesalerProductName;
-      request.wholesalerProductPrice =  formatCurrency(request.productRequest.wholesalerProductPrice);
-      request.sellerProductName = request.productRequest.sellerProductName;
-      request.sellerProductPrice = formatCurrency(request.productRequest.sellerProductPrice);
+      request.name = request.productRequest.name;
+      request.price =  formatCurrency(request.productRequest.price);
       //request.status = request.productRequest.status;
 
       //delete(request.productRequestId);
@@ -101,8 +99,7 @@ export class ProductRequestsService {
       .where('productRequest.id = :productRequestId', { productRequestId });
 
     const productRequest = await queryBuilder.getOne();
-    productRequest.sellerProductPrice = formatCurrency(productRequest.sellerProductPrice);
-    productRequest.wholesalerProductPrice = formatCurrency(productRequest.wholesalerProductPrice);
+    productRequest.price = formatCurrency(productRequest.price);
 
     return productRequest;
   }
@@ -119,10 +116,8 @@ export class ProductRequestsService {
           id: productRequestId,
           sellerId
         }, {
-          wholesalerProductPrice: updateProductRequestDto.wholesalerProductPrice,
-          wholesalerProductName: updateProductRequestDto.wholesalerProductName,
-          sellerProductPrice: updateProductRequestDto.sellerProductPrice,
-          sellerProductName: updateProductRequestDto.sellerProductName,
+          price: updateProductRequestDto.price,
+          name: updateProductRequestDto.name,
         }
       );
 
@@ -169,7 +164,6 @@ export class ProductRequestsService {
       {
         id: In(ids)
       }, {
-        status: '삭제',
         isDeleted: true
       }
     )

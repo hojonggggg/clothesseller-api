@@ -2,7 +2,6 @@ import { Body, ConflictException, Controller, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SellerAuthService } from './seller-auth.service';
 import { UsersService } from 'src/commons/shared/users/users.service';
-import { User } from 'src/commons/shared/users/entities/user.entity';
 import { SellerSignupDto } from './dto/seller-signup.dto';
 
 @ApiTags('seller > auth')
@@ -21,7 +20,7 @@ export class SellerAuthController {
     if (user) {
       throw new ConflictException('이미 존재하는 아이디입니다.');
     }
-    //return await this.sellerAuthService.signup(sellerSignupDto);
+    
     await this.sellerAuthService.signup(sellerSignupDto);
 
     return {

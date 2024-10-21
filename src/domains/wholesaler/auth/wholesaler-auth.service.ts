@@ -24,5 +24,4 @@ export class WholesalerAuthService {
     };
     return await this.usersService.createUser(createWholesalerDto);
   }
-
 }
