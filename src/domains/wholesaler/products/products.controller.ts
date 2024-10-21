@@ -6,7 +6,7 @@ import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
 import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto';
 import { UpdateWholesalerProductDto } from './dto/update-wholesaler-product.dto';
-import { DeleteWholesalerProductDto } from './dto/delete-\bwholesaler-product.dto';
+import { DeleteWholesalerProductOptionDto } from './dto/delete-wholesaler-product-option.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > products')
@@ -31,7 +31,7 @@ export class WholesalerProductsController {
     if (product) {
       throw new ConflictException('이미 등록된 상품입니다.');
     }
-    await await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
+    await this.wholesalerProductsService.createWholesalerProduct(wholesalerId, createWholesalerProductDto);
     return {
       statusCode: 201,
       message: '상품 등록이 완료되었습니다.'
@@ -111,10 +111,10 @@ export class WholesalerProductsController {
   })
   async deleteWholesalerProducts(
     @Request() req,
-    @Body() deleteWholesalerProductDto: DeleteWholesalerProductDto, 
+    @Body() deleteWholesalerProductOptionDto: DeleteWholesalerProductOptionDto, 
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerProductsService.deleteWholesalerProduct(wholesalerId, deleteWholesalerProductDto.ids);
+    await this.wholesalerProductsService.deleteWholesalerProducts(wholesalerId, deleteWholesalerProductOptionDto.ids);
     return {
       statusCode: 200,
       message: '상품 옵션 삭제가 완료되었습니다.'

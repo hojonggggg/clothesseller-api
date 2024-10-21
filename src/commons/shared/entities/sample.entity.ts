@@ -12,9 +12,29 @@ export class Sample {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
   
+  @ApiProperty({ example: 'AUTO', description: '셀러 타입' })
+  @Column({ name: 'seller_type' })
+  sellerType: string;
+  
   @ApiProperty({ example: '1', description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;
+  
+  @ApiProperty({ example: '셀러', description: '셀러 업체명' })
+  @Column({ name: 'seller_name' })
+  sellerName: string;
+
+  @ApiProperty({ example: '동대문구 장안동', name: '셀러 주소' })
+  @Column({ name: 'seller_address' })
+  sellerAddress: string;
+
+  @ApiProperty({ example: '01012345678', description: '셀러 연락처' })
+  @Column({ name: 'seller_mobile' })
+  sellerMobile: string;
+
+  @ApiProperty({ example: '01012345678', description: '사입삼촌 연락처' })
+  @Column({ name: 'seller_deliveryman_mobile' })
+  deliverymanMobile: string;
 
   @ApiProperty({ example: '1', description: '도매처 ID' })
   @Column({ name: 'wholesaler_id' })
@@ -48,6 +68,10 @@ export class Sample {
   @Column({ name: 'is_deleted', default: true })
   isDeleted: boolean;
 
+  @ApiProperty({ example: false, description: '반납 여부' })
+  @Column({ name: 'is_returned', default: true })
+  isReturned: boolean;
+
   @OneToOne(() => SellerProfile)
   @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })
   sellerProfile: SellerProfile;
@@ -67,10 +91,6 @@ export class Sample {
   name: string;
   color: string;
   size: string;
-  sellerName: string;
-  sellerAddress: string;
-  sellerMobile: string;
-  deliverymanMobile: string;
   wholesalerName: string;
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;

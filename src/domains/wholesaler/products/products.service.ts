@@ -130,19 +130,14 @@ export class WholesalerProductsService {
     
     const [products, total] = await this.wholesalerProductRepository.findAndCount({
       where: { wholesalerId },
-      //relations: ['wholesalerProduct'],
       order: { id: 'DESC' },
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
     
     for (const product of products) {
-      //product.code = product.wholesalerProduct.code;
-      //product.name = product.wholesalerProduct.name;
-      //product.wholesalerProductOptionId = product.id;
       product.price = formatCurrency(product.price);
       delete(product.wholesalerId);
-      //delete(product.wholesalerProduct);
     }
     
     return {
@@ -185,7 +180,7 @@ export class WholesalerProductsService {
     };
   }
 
-  async deleteWholesalerProduct(wholesalerId: number, ids: number[]): Promise<void> {
+  async deleteWholesalerProducts(wholesalerId: number, ids: number[]): Promise<void> {
     await this.wholesalerProductOptionRepository.update(
       {
         id: In(ids),
