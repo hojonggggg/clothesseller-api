@@ -28,7 +28,7 @@ export class ProductRequestOption {
   @Column({ name: 'is_approve', default: true })
   isApprove: boolean;
   */
-  @ApiProperty({ example: false, description: '상품 요청 삭제 여부' })
+  @ApiProperty({ example: false, description: '상품 요청 옵션 삭제 여부' })
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
 

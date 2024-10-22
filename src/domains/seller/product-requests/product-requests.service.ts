@@ -59,30 +59,37 @@ export class ProductRequestsService {
     return this.productRequestRepository.findOne({ where: { wholesalerId, code } });
   }
 
-  async findAllProductRequestBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { pageNumber, pageSize } = paginationQuery;
+  async findAllProductRequestBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
 
-    const queryBuilder = this.productRequestOptionRepository.createQueryBuilder('productRequestOption')
-      .leftJoinAndSelect('productRequestOption.productRequest', 'productRequest')
-      .where('productRequest.sellerId = :sellerId', { sellerId });
+    const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
+      .leftJoinAndSelect('productRequest.options', 'options')
+      .where('productRequest.sellerId = :sellerId', { sellerId })
+      .andWhere('productRequest.isDeleted = 0')
+      .andWhere('options.isDeleted = 0');
     
     if (query) {
       queryBuilder.andWhere('productRequest.name LIKE :query', { query: `%${query}%` });
     }
 
     const [requests, total] = await queryBuilder
-      .orderBy('productRequestOption.id', 'DESC')
+      .orderBy('productRequest.id', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
       
     for (const request of requests) {
-      request.name = request.productRequest.name;
-      request.price =  formatCurrency(request.productRequest.price);
-      //request.status = request.productRequest.status;
+      const { options } = request;
+      request.price = formatCurrency(request.price);
 
-      //delete(request.productRequestId);
-      delete(request.productRequest);
+      for (const option of options) {
+        option.price = formatCurrency(option.price);
+        delete(option.productRequestId);
+        delete(option.isDeleted);
+      }
+
+      delete(request.wholesalerId);
+      delete(request.sellerId);
     }
 
     return {
@@ -93,13 +100,25 @@ export class ProductRequestsService {
     };
   }
 
-  async findOneProductRequestByProductRequestId(sellerId: number, productRequestId: number) {
+  async findOneProductRequest(productRequestId: number) {
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
-      .leftJoinAndSelect('productRequest.productRequestOptions', 'productRequestOptions')
-      .where('productRequest.id = :productRequestId', { productRequestId });
+      .leftJoinAndSelect('productRequest.options', 'options')
+      .where('productRequest.id = :productRequestId', { productRequestId })
+      .andWhere('options.isDeleted = 0');
 
     const productRequest = await queryBuilder.getOne();
+
+    const { options } = productRequest;
+    for (const option of options) {
+      option.price = formatCurrency(option.price);
+      delete(option.productRequestId);
+      delete(option.isDeleted);
+    }
+
     productRequest.price = formatCurrency(productRequest.price);
+    delete(productRequest.wholesalerId);
+    delete(productRequest.sellerId);
+    delete(productRequest.isDeleted);
 
     return productRequest;
   }
@@ -111,24 +130,28 @@ export class ProductRequestsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      const { wholesalerId, code, name, price, country, composition, options } = updateProductRequestDto;
+
       await this.productRequestRepository.update(
         {
           id: productRequestId,
           sellerId
         }, {
-          price: updateProductRequestDto.price,
-          name: updateProductRequestDto.name,
+          wholesalerId,
+          code,
+          price,
+          name,
+          country,
+          composition
         }
       );
 
-      const { options } = updateProductRequestDto;
       for (const option of options) {
         const productRequestOptionId = option.id;
 
         await this.productRequestOptionRepository.update(
           {
             id: productRequestOptionId,
-            //sellerId
           }, {
             ...option
           }
@@ -144,25 +167,11 @@ export class ProductRequestsService {
     }
   }
 
-  async deleteProductRequest(sellerId: number, ids: number[]): Promise<void> {
-    /*
-    for (const deleteProductRequestDto of deleteProductRequestDtos) {
-      const productRequestOptionId = deleteProductRequestDto.id;
-      
-      await this.productRequestOptionRepository.update(
-        {
-          id: productRequestOptionId,
-          //sellerId
-        }, {
-          status: '삭제',
-          isDeleted: true
-        }
-      );
-    }
-    */
-    await this.productRequestOptionRepository.update(
+  async deleteProductRequests(sellerId: number, ids: number[]): Promise<void> {
+    await this.productRequestRepository.update(
       {
-        id: In(ids)
+        id: In(ids),
+        sellerId
       }, {
         isDeleted: true
       }

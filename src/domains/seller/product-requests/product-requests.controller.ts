@@ -46,16 +46,16 @@ export class ProductRequestsController {
   @Get('product-requests')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[수정] 등록 요청 상품 목록 조회' })
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllProductRequestBySellerId(
     @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
+    @Query() paginationQueryDto: PaginationQueryDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.productRequestsService.findAllProductRequestBySellerId(sellerId, query, paginationQuery);
+    const result = await this.productRequestsService.findAllProductRequestBySellerId(sellerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
@@ -65,14 +65,12 @@ export class ProductRequestsController {
   @Get('product-request/:productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[수정] 등록 요청 상품 조회' })
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 조회' })
   @ApiResponse({ status: 200 })
-  async findOneProductRequestByProductReguestId(
-    @Param('productRequestId') productReguestId: number, 
-    @Request() req
+  async findOneProductRequest(
+    @Param('productRequestId') productReguestId: number
   ) {
-    const sellerId = req.user.uid;
-    const result = await this.productRequestsService.findOneProductRequestByProductRequestId(sellerId, productReguestId);
+    const result = await this.productRequestsService.findOneProductRequest(productReguestId);
     return {
       statusCode: 200,
       data: result
@@ -82,7 +80,7 @@ export class ProductRequestsController {
   @Patch('product-request/:productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[수정] 등록 요청 상품 수정' })
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 수정' })
   @ApiResponse({ status: 200 })
   async updateProductRequest(
     @Param('productRequestId') productRequestId: number, 
@@ -90,7 +88,7 @@ export class ProductRequestsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.productRequestsService.updateProductRequest(sellerId, productRequestId, updateProductRequestDto);
+    await this.productRequestsService.updateProductRequest(sellerId, productRequestId, updateProductRequestDto);
     return {
       statusCode: 200,
       message: '등록 요청 상품 수정이 완료되었습니다.'
@@ -100,7 +98,7 @@ export class ProductRequestsController {
   @Delete('product-requests')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[수정] 등록 요청 상품 삭제' })
+  @ApiOperation({ summary: '[완료] 등록 요청 상품 삭제' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -114,12 +112,12 @@ export class ProductRequestsController {
       },
     },
   })
-  async deleteSellerProduct(
+  async deleteProductRequests(
     @Body() deleteProductRequestDto: DeleteProductRequestDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.productRequestsService.deleteProductRequest(sellerId, deleteProductRequestDto.ids);
+    await this.productRequestsService.deleteProductRequests(sellerId, deleteProductRequestDto.ids);
     return {
       statusCode: 200,
       message: '등록 요청 상품 삭제가 완료되었습니다.'

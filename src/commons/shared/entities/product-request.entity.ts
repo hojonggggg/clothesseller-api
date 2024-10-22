@@ -39,6 +39,10 @@ export class ProductRequest {
   @ApiProperty({ example: '승인대기', description: '상품 등록 승인 상태' })
   @Column()
   status: string;
+  
+  @ApiProperty({ example: false, description: '상품 요청 삭제 여부' })
+  @Column({ name: 'is_deleted', default: false })
+  isDeleted: boolean;
 
   @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
   options: ProductRequestOption[];

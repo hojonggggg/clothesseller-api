@@ -17,6 +17,14 @@ class UpdateProductRequestOptionDto {
 }
 
 export class UpdateProductRequestDto {
+  @ApiProperty({ example: 1, description: '도매처 ID' })
+  @IsNumber()
+  wholesalerId: number;
+
+  @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
+  @IsString()
+  code: string;
+
   @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '도매처 상품명' })
   @IsString()
   name: string;
@@ -35,8 +43,8 @@ export class UpdateProductRequestDto {
 
   @ApiProperty({ 
     example: [
-      { id: 1, color: 'Black', size: '95', price: 1000, quantity: 20 },
-      { id: 2, color: 'Blue', size: '100', price: 0, quantity: 10 }
+      { id: 1, color: 'Black', size: '95', price: 1000 },
+      { id: 2, color: 'Blue', size: '100', price: 0 }
     ], 
     description: '옵션' 
   })

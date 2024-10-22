@@ -30,6 +30,7 @@ export class ProductRequestsService {
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')
       .where('productRequest.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('productRequest.isDeleted = 0')
       .andWhere('options.isDeleted = 0');
 
       if (query) {
@@ -53,6 +54,7 @@ export class ProductRequestsService {
         }
 
         delete(request.wholesalerId);
+        delete(request.sellerId);
       }
 
       return {
@@ -80,6 +82,8 @@ export class ProductRequestsService {
 
     productRequest.price = formatCurrency(productRequest.price);
     delete(productRequest.wholesalerId);
+    delete(productRequest.sellerId);
+    delete(productRequest.isDeleted);
 
     return productRequest;
   }
