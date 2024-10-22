@@ -53,8 +53,8 @@ export class CreateSellerProductDto {
   */
   @ApiProperty({ 
     example: [
-      { wholesalerProductOptionId: 1, color: 'Black', size: '95', price: 0, quantity: 20 },
-      { wholesalerProductOptionId: 2, color: 'Black', size: '100', price: 1000, quantity: 10 }
+      { wholesalerProductOptionId: 1, color: 'Black', size: '95', price: 0, wholesalerOptionPrice: 0, quantity: 20 },
+      { wholesalerProductOptionId: 2, color: 'Black', size: '100', price: 1000, wholesalerOptionPrice: 1000, quantity: 10 }
     ], 
     description: '옵션' 
   })
