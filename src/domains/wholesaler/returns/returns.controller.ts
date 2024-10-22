@@ -23,7 +23,28 @@ export class WholesalerReturnsController {
     @Query() paginationQueryDto: PaginationQueryDto, 
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, query, paginationQueryDto);
+    const isCredit = false;
+    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, isCredit, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+  
+  @Get('returns/credit')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 전잔 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
+  async findAllCredit(
+    @Request() req,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto, 
+  ) {
+    const wholesalerId = req.user.uid;
+    const isCredit = true;
+    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, isCredit, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

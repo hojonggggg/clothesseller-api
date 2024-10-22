@@ -11,7 +11,7 @@ export class WholesalerReturnsService {
     private returnRepository: Repository<Return>,
   ) {}
 
-  async findAllReturn(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllReturn(wholesalerId: number, isCredit: boolean, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.returnRepository.createQueryBuilder('return')
@@ -19,7 +19,7 @@ export class WholesalerReturnsService {
       .leftJoinAndSelect('return.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('return.sellerProfile', 'sellerProfile')
       .where('return.wholesalerId = :wholesalerId', { wholesalerId })
-      .andWhere('return.isCredit = false');
+      .andWhere('return.isCredit = :isCredit', { isCredit });
     
     if (query) {
       queryBuilder.andWhere(
