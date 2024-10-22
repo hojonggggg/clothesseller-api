@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Patch, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
 import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
+import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > orders')
@@ -61,6 +62,24 @@ export class WholesalerOrdersController {
       message: '품절 처리가 완료되었습니다.'
     };
   }
+
+  @Post('order/pre-payment')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 미송 등록' })
+  @ApiResponse({ status: 201 })
+  async createPrePayment(
+    @Body() wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.createPrePayment(sellerId, wholesalerCreatePrepaymentDto);
+    return {
+      statusCode: 201,
+      message: '미송 등록이 완료되었습니다.'
+    };
+  }
+
 
   @Get('orders/pre-payment')
   @UseGuards(JwtAuthGuard)

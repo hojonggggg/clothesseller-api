@@ -4,7 +4,8 @@ import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
-import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayent.dto';
+import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
+import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 import { getToday, getStartAndEndDate } from 'src/commons/shared/functions/date';
@@ -125,6 +126,10 @@ export class WholesalerOrdersService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async createPrePayment(wholesalerId: number, wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto) {
+
   }
 
   async findAllPrePayment(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {

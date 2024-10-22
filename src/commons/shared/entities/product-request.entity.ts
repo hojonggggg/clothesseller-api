@@ -60,6 +60,7 @@ export class ProductRequest {
   wholesalerName: string;
   wholesalerStoreName: string;
   wholesalerRoomNo: string;
+  wholesalerMobile: string;
   sellerName: string;
   sellerAddress: string;
   sellerMobile: string;

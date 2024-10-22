@@ -115,6 +115,8 @@ export class ProductRequestsService {
   async findOneProductRequest(productRequestId: number) {
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')
+      .leftJoinAndSelect('productRequest.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('productRequest.id = :productRequestId', { productRequestId })
       .andWhere('options.isDeleted = 0');
 
@@ -127,8 +129,13 @@ export class ProductRequestsService {
       delete(option.isDeleted);
     }
 
+    productRequest.wholesalerName = productRequest.wholesalerProfile.name;
+    productRequest.wholesalerStoreName = productRequest.wholesalerProfile.store.name;
+    productRequest.wholesalerRoomNo = productRequest.wholesalerProfile.roomNo;
+    productRequest.wholesalerMobile = productRequest.wholesalerProfile.mobile;
     productRequest.price = formatCurrency(productRequest.price);
     delete(productRequest.wholesalerId);
+    delete(productRequest.wholesalerProfile);
     delete(productRequest.sellerId);
     delete(productRequest.isDeleted);
 

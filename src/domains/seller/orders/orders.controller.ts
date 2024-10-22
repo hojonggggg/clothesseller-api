@@ -6,7 +6,7 @@ import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.se
 import { DeleteSellerOrderDto } from './dto/delete-seller-order.dto';
 import { DeleteWholesalerOrderDto } from './dto/delete-wholesaler-order.dto';
 import { CreateManualOrderingDto } from './dto/create-manual-ordering.dto';
-import { CreatePrepaymentDto } from './dto/create-prepayent.dto';
+import { CreatePrepaymentDto } from './dto/create-prepayment.dto';
 //import { PrepaymentWholesalerOrderDto } from './dto/prepayment-wholesaler-order.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
