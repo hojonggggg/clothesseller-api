@@ -2,35 +2,40 @@ import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Q
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
+import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
 import { UpdateProductRequestDto } from './dto/update-product-request.dto';
 import { DeleteProductRequestDto } from './dto/delete-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > product-requests')
-@Controller('seller/product-requests')
+@Controller('seller')
 export class ProductRequestsController {
   constructor(
-    private readonly productRequestsService: ProductRequestsService
+    private readonly productRequestsService: ProductRequestsService,
+    private readonly wholesalerProductsService: WholesalerProductsService
   ) {}
 
-  @Post()
+  @Post('product-request')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[수정] 상품 등록 요청' })
-  //@ApiResponse({ status: 201, type: ProductRequest })
+  @ApiOperation({ summary: '[완료] 상품 등록 요청' })
   @ApiResponse({ status: 201 })
   async createProductRequest(
     @Body() createProductRequestDto: CreateProductRequestDto,
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const { code } = createProductRequestDto;
-    const productRequest = await this.productRequestsService.findOneProductRequestBySellerIdAndProductCode(sellerId, code);
+    const { wholesalerId, code } = createProductRequestDto;
+    const productRequest = await this.productRequestsService.findOneProductRequestByWholesalerIdAndCode(wholesalerId, code);
     if (productRequest) {
       throw new ConflictException('이미 등록 요청된 상품입니다.');
     }
-    //return this.productRequestsService.createProductRequest(sellerId, createProductRequestDto);
+    const wholesalerProduct = await this.wholesalerProductsService.findOneWholesalerProductByCode(wholesalerId, code);
+    if (wholesalerProduct) {
+      throw new ConflictException('이미 등록된 상품입니다.');
+    }
+
     await this.productRequestsService.createProductRequest(sellerId, createProductRequestDto);
     return {
       statusCode: 201,
@@ -38,7 +43,7 @@ export class ProductRequestsController {
     };
   }
   
-  @Get()
+  @Get('product-requests')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[수정] 등록 요청 상품 목록 조회' })
@@ -57,7 +62,7 @@ export class ProductRequestsController {
     };
   }
 
-  @Get(':productRequestId')
+  @Get('product-request/:productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[수정] 등록 요청 상품 조회' })
@@ -74,7 +79,7 @@ export class ProductRequestsController {
     };
   }
 
-  @Patch(':productRequestId')
+  @Patch('product-request/:productRequestId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[수정] 등록 요청 상품 수정' })
@@ -92,7 +97,7 @@ export class ProductRequestsController {
     };
   }
 
-  @Delete()  
+  @Delete('product-requests')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[수정] 등록 요청 상품 삭제' })
