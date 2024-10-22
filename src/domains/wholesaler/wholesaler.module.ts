@@ -24,6 +24,7 @@ import { StoresModule } from './stores/stores.module';
 import { WholesalerOrdersModule } from './orders/orders.module';
 import { WholesalerSamplesModule } from './samples/samples.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
+import { WholesalerReturnsModule } from './returns/returns.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ProductRequestsModule } from './product-requests/product-requests.modul
     WholesalerProductsModule,
     WholesalerOrdersModule,
     WholesalerSamplesModule,
+    WholesalerReturnsModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

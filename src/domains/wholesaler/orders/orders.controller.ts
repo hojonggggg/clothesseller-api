@@ -50,15 +50,34 @@ export class WholesalerOrdersController {
       },
     },
   })
-  async soldoutOrder(
+  async setSoldoutOrder(
     @Request() req, 
     @Body() soldoutWholesalerOrderDto: SoldoutWholesalerOrderDto
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerOrdersService.soldoutOrder(wholesalerId, soldoutWholesalerOrderDto.ids);
+    await this.wholesalerOrdersService.setSoldoutOrder(wholesalerId, soldoutWholesalerOrderDto.ids);
     return {
       statusCode: 200,
       message: '품절 처리가 완료되었습니다.'
+    };
+  }
+
+  @Get('orders/pre-payment')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 미송 목록 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
+  async findAllPrePayment(
+    @Request() req,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.findAllPrePayment(wholesalerId, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
     };
   }
 }

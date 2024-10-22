@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
+import { SellerProfile } from '../users/entities/seller-profile.entity';
 
 @Entity('return')
 export class Return {
@@ -48,6 +49,10 @@ export class Return {
   @Column()
   price: number;
   
+  @ApiProperty({ example: '불량', description: '반품 사유' })
+  @Column()
+  memo: string;
+  
   @ApiProperty({ example: '반품신청', description: '반품 상태' })
   @Column()
   status: string;
@@ -79,6 +84,10 @@ export class Return {
   @JoinColumn({ name: 'wholesaler_product_option_id' })
   wholesalerProductOption: WholesalerProductOption;
 
+  @OneToOne(() => SellerProfile)
+  @JoinColumn({ name: 'seller_id' })
+  sellerProfile: SellerProfile;
+
   name: string;
   color: string;
   size: string;
@@ -86,4 +95,8 @@ export class Return {
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;
   wholesalerMobile: string;
+  sellerName: string;
+  sellerMobile: string;
+  deliverymanMobile: string;
+  returnDate: string;
 }
