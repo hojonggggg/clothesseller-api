@@ -77,6 +77,7 @@ export class ProductRequestsService {
   async findOneProductRequest(productRequestId: number) {
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')
+      .leftJoinAndSelect('productRequest.sellerProfile', 'sellerProfile')
       .where('productRequest.id = :productRequestId', { productRequestId })
       .andWhere('options.isDeleted = 0');
 
@@ -89,9 +90,16 @@ export class ProductRequestsService {
       delete(option.isDeleted);
     }
 
+    productRequest.sellerName = productRequest.sellerProfile.name;
+    const sellerAddress1 = productRequest.sellerProfile.address1;
+    const sellerAddress2 = productRequest.sellerProfile.address2;
+    productRequest.sellerAddress = sellerAddress1 + " " + sellerAddress2;
+    productRequest.sellerMobile = productRequest.sellerProfile.mobile;
+    
     productRequest.price = formatCurrency(productRequest.price);
     delete(productRequest.wholesalerId);
     delete(productRequest.sellerId);
+    delete(productRequest.sellerProfile);
     delete(productRequest.isDeleted);
 
     return productRequest;

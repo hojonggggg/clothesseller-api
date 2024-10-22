@@ -61,4 +61,6 @@ export class ProductRequest {
   wholesalerStoreName: string;
   wholesalerRoomNo: string;
   sellerName: string;
+  sellerAddress: string;
+  sellerMobile: string;
 }
