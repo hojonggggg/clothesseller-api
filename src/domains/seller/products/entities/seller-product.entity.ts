@@ -12,31 +12,31 @@ export class SellerProduct {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @ApiProperty({ example: '1', description: '셀러 ID' })
+  @ApiProperty({ example: 1, description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;
 
-  @ApiProperty({ example: '1', description: '판매몰 ID' })
+  @ApiProperty({ example: 1, description: '판매몰 ID' })
   @Column({ name: 'mall_id' })
   mallId: number;
 
-  @ApiProperty({ example: '1', description: '도매처 ID' })
+  @ApiProperty({ example: 1, description: '도매처 ID' })
   @Column({ name: 'wholesaler_id' })
   wholesalerId: number;
 
-  @ApiProperty({ example: '1', description: '도매처 상품 ID' })
+  @ApiProperty({ example: 1, description: '도매처 상품 ID' })
   @Column({ name: 'wholesaler_product_id' })
   wholesalerProductId: number;
 
-  @ApiProperty({ example: '20000', description: '셀러 상품명' })
+  @ApiProperty({ example: '후드', description: '셀러 상품명' })
   @Column()
   name: string;
 
-  @ApiProperty({ example: '20000', description: '판매 가격' })
+  @ApiProperty({ example: 20000, description: '판매 가격' })
   @Column()
   price: number;
 
-  @ApiProperty({ example: '10000', description: '도매 가격' })
+  @ApiProperty({ example: 10000, description: '도매 가격' })
   @Column({ name: 'wholesaler_product_price' })
   wholesalerProductPrice: number;
   /*

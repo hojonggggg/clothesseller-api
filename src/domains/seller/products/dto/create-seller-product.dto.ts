@@ -13,6 +13,9 @@ class CreateSellerProductOptionDto {
   size: string;
 
   @IsNumber()
+  price: number;
+
+  @IsNumber()
   quantity: number;
 }
 
@@ -37,7 +40,7 @@ export class CreateSellerProductDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: '20000', description: '퍈매 가격' })
+  @ApiProperty({ example: 20000, description: '퍈매 가격' })
   @IsNumber()
   price: number;
   /*
@@ -47,8 +50,8 @@ export class CreateSellerProductDto {
   */
   @ApiProperty({ 
     example: [
-      { wholesalerProductOptionId: 1, color: 'Black', size: '100', quantity: 20 },
-      { wholesalerProductOptionId: 2, color: 'Blue', size: '95', quantity: 10 }
+      { wholesalerProductOptionId: 1, color: 'Black', size: '95', price: 0, quantity: 20 },
+      { wholesalerProductOptionId: 2, color: 'Black', size: '100', price: 1000, quantity: 10 }
     ], 
     description: '옵션' 
   })

@@ -28,6 +28,10 @@ export class SellerProductOption {
   @Column()
   size: string;
 
+  @ApiProperty({ example: 1000, description: '옵션 가격' })
+  @Column()
+  price: number;
+
   @ApiProperty({ example: '10000', description: '수량' })
   @Column()
   quantity: number;
