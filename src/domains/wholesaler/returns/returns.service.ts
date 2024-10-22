@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Brackets } from 'typeorm';
+import { Repository, Brackets, In } from 'typeorm';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -70,5 +70,17 @@ export class WholesalerReturnsService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async updateReturns(wholesalerId: number, ids: number[]): Promise<void> {
+    await this.returnRepository.update(
+      {
+        id: In(ids),
+        wholesalerId
+      }, {
+        isCredit: true,
+        status: '반품완료'
+      }
+    );
   }
 }
