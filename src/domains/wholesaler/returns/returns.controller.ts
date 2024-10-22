@@ -2,7 +2,7 @@ import { Body, Controller, Get, Patch, Query, Request, UseGuards } from '@nestjs
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerReturnsService } from './returns.service';
-import { WholesalerReturnReturnDto } from './dto/wholesaler-return-return.dto';
+import { WholesalerUpdateReturnDto } from './dto/wholesaler-update-return.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > returns')
@@ -50,11 +50,11 @@ export class WholesalerReturnsController {
     },
   })
   async updateReturns(
-    @Body() wholesalerReturnReturnDto: WholesalerReturnReturnDto, 
+    @Body() wholesalerUpdateReturnDto: WholesalerUpdateReturnDto, 
     @Request() req
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerReturnsService.updateReturns(wholesalerId, wholesalerReturnReturnDto.ids);
+    await this.wholesalerReturnsService.updateReturns(wholesalerId, wholesalerUpdateReturnDto.ids);
     return {
       statusCode: 200,
       message: '등록 요청 상품 수정이 완료되었습니다.'

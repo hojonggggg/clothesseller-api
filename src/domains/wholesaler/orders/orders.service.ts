@@ -6,7 +6,8 @@ import { WholesalerProductOption } from '../products/entities/wholesaler-product
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayent.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
-import { getToday } from 'src/commons/shared/functions/date';
+import { formatCurrency } from 'src/commons/shared/functions/format-currency';
+import { getToday, getStartAndEndDate } from 'src/commons/shared/functions/date';
 
 @Injectable()
 export class WholesalerOrdersService {
@@ -163,6 +164,9 @@ export class WholesalerOrdersService {
       } else {
         order.deliverymanMobile = null;
       }
+      if (order.status != '출고완료' && order.status != '출고지연') {
+        order.status = '미출고';
+      }
       delete(order.wholesalerId);
       delete(order.wholesalerProductId);
       delete(order.wholesalerProduct);
@@ -187,6 +191,81 @@ export class WholesalerOrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async setDeliveryStatusOrder(wholesalerId: number, status: string, ids: number[]): Promise<void> {
+    await this.wholesalerOrderRepository.update(
+      {
+        id: In(ids),
+        wholesalerId
+      }, {
+        status
+      }
+    );
+  }
+
+  async findAllPrePaymentOfMonthly(wholesalerId: number, month: string) {
+    const { startDate, endDate } = getStartAndEndDate(month);
+    
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS id',
+        'wholesalerProduct.name AS name',
+        'wholesalerProduct.price AS productPrice',
+        'wholesalerProductOption.color AS color',
+        'wholesalerProductOption.size AS size',
+        'wholesalerProductOption.price AS optionPrice',
+        'order.quantity AS quantity',
+        'order.prePaymentDate AS prePaymentDate',
+        'order.deliveryDate AS deliveryDate',
+      ])
+      .leftJoin('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('order.wholesalerProductOption', 'wholesalerProductOption')
+      .where('order.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('STR_TO_DATE(order.prePaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+            startDate,
+            endDate
+          })
+          .orWhere('STR_TO_DATE(order.deliveryDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+            startDate,
+            endDate
+          });
+        })
+      );
+
+    const rawOrders = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .getRawMany();
+    
+    for (const rawOrder of rawOrders) {
+      const { productPrice, optionPrice, quantity } = rawOrder;
+      rawOrder.price = formatCurrency((productPrice + optionPrice) * quantity);
+      delete(rawOrder.productPrice);
+      delete(rawOrder.optionPrice);
+      delete(rawOrder.quantity);
+    }
+    /*
+    const orders = rawOrders.reduce((acc, result) => {
+      const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName, sellerName } = result;
+    
+      // 이미 그룹이 존재하는지 확인
+      let dateGroup = acc.find(group => group.sampleDate === sampleDate);
+      
+      if (!dateGroup) {
+        // 그룹이 없으면 새로 생성
+        dateGroup = { sampleDate, samples: [] };
+        acc.push(dateGroup);
+      }
+    
+      // 샘플 추가
+      dateGroup.samples.push({ id: sampleId, name: wholesalerProductName, quantity, sellerName, sampleDate, returnDate });
+    
+      return acc;
+    }, []);
+    */
+    return rawOrders;
   }
   ////////////
   async findAllOrderByWholesalerId(wholesalerId: number, date: string, paginationQuery: PaginationQueryDto) {

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Patch, Query, Request, UseGuards } from '@nestjs
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
-import { SoldoutWholesalerOrderDto } from './dto/soldout-wholesaler-order.dto';
+import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('wholesaler > orders')
@@ -36,7 +36,7 @@ export class WholesalerOrdersController {
   @Patch('orders/soldout')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 품절 처리' })
+  @ApiOperation({ summary: '[완료] 선택 품절' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -52,10 +52,10 @@ export class WholesalerOrdersController {
   })
   async setSoldoutOrder(
     @Request() req, 
-    @Body() soldoutWholesalerOrderDto: SoldoutWholesalerOrderDto
+    @Body() wholesalerSetOrderDto: WholesalerSetOrderDto
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerOrdersService.setSoldoutOrder(wholesalerId, soldoutWholesalerOrderDto.ids);
+    await this.wholesalerOrdersService.setSoldoutOrder(wholesalerId, wholesalerSetOrderDto.ids);
     return {
       statusCode: 200,
       message: '품절 처리가 완료되었습니다.'
@@ -75,6 +75,84 @@ export class WholesalerOrdersController {
   ) {
     const wholesalerId = req.user.uid;
     const result = await this.wholesalerOrdersService.findAllPrePayment(wholesalerId, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
+  @Patch('orders/pre-payment/delivery-complete')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 출고완료' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async setDeliveryCompleteOrder(
+    @Request() req, 
+    @Body() wholesalerSetOrderDto: WholesalerSetOrderDto
+  ) {
+    const wholesalerId = req.user.uid;
+    const status = '출고완료';
+    await this.wholesalerOrdersService.setDeliveryStatusOrder(wholesalerId, status, wholesalerSetOrderDto.ids);
+    return {
+      statusCode: 200,
+      message: '출고완료 처리되었습니다.'
+    };
+  }
+
+  @Patch('orders/pre-payment/delivery-delay')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 출고지연' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async setDeliveryDelayOrder(
+    @Request() req, 
+    @Body() wholesalerSetOrderDto: WholesalerSetOrderDto
+  ) {
+    const wholesalerId = req.user.uid;
+    const status = '출고지연';
+    await this.wholesalerOrdersService.setDeliveryStatusOrder(wholesalerId, status, wholesalerSetOrderDto.ids);
+    return {
+      statusCode: 200,
+      message: '출고지연 처리되었습니다.'
+    };
+  }
+
+  @Get('orders/pre-payment/monthly')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 월간 미송 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'month', required: true, description: '조회하려는 달' })
+  async findAllPrePaymentOfMonthly(
+    @Request() req,
+    @Query('month') month: string
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.findAllPrePaymentOfMonthly(wholesalerId, month);
     return {
       statusCode: 200,
       data: result
