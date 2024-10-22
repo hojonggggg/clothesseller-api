@@ -102,18 +102,32 @@ export class WholesalerProductsService {
 
       for (const option of options) {
         const { optionId, color, size, price, quantity } = option;
+        let isSoldout = true;
+        if (quantity > 0) isSoldout = false;
+
+        if (optionId) {
+          await this.wholesalerProductOptionRepository.update(
+            {
+              id: optionId,
+              wholesalerId
+            }, {
+              color,
+              size,
+              price,
+              quantity,
+              isSoldout
+            }
+          );
+        } else {
+          const productOption = this.wholesalerProductOptionRepository.create(option);
+          await this.wholesalerProductOptionRepository.save({
+            wholesalerId, 
+            wholesalerProductId, 
+            ...productOption,
+            isSoldout
+          });
+        }
         
-        await this.wholesalerProductOptionRepository.update(
-          {
-            id: optionId,
-            wholesalerId
-          }, {
-            color,
-            size,
-            price,
-            quantity
-          }
-        );
       }
 
       await queryRunner.commitTransaction();
