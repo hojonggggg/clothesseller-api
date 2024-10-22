@@ -1,16 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class UpdateSellerProductOptionDto {
   @IsNumber()
+  @IsOptional()
   id: number;
+
+  @IsNumber()
+  @IsOptional()
+  wholesalerProductOptionId: number;
 
   @IsString()
   color: string;
 
   @IsString()
   size: string;
+
+  @IsNumber()
+  price: number;
 
   @IsNumber()
   quantity: number;
@@ -20,6 +28,9 @@ class UpdateSellerProductOptionDto {
 
   @IsBoolean()
   isShow: boolean;
+
+  @IsBoolean()
+  isDeleted: boolean;
 }
 
 export class UpdateSellerProductDto {
@@ -37,8 +48,8 @@ export class UpdateSellerProductDto {
 
   @ApiProperty({ 
     example: [
-      { id: 1, color: 'Black', size: '100', quantity: 20, status: '판매중', isShow: true },
-      { id: 2, color: 'Blue', size: '95', quantity: 10, status: '판매중지', isShow: false }
+      { id: 1, color: 'Black', size: '100', quantity: 20, status: '판매중', isShow: true, isDeleted: false },
+      { id: 2, color: 'Blue', size: '95', quantity: 10, status: '판매중지', isShow: false, isDeleted: false }
     ], 
     description: '옵션' 
   })

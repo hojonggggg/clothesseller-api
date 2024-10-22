@@ -164,29 +164,39 @@ export class SellerProductsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      const { name, price, wholesalerProductPrice, options } = updateSellerProductDto;
+
       await this.sellerProductRepository.update(
         {
           id: sellerProductId,
           sellerId
         }, {
-          wholesalerProductPrice: updateSellerProductDto.wholesalerProductPrice,
-          name: updateSellerProductDto.name,
-          price: updateSellerProductDto.price
+          wholesalerProductPrice,
+          name,
+          price
         }
       );
 
-      const { options } = updateSellerProductDto;
       for (const option of options) {
-        const sellerProductOptionId = option.id;
+        const { id, wholesalerProductOptionId, color, size, price, quantity, isDeleted } = option;
 
-        await this.sellerProductOptionRepository.update(
-          {
-            id: sellerProductOptionId,
-            sellerId
-          }, {
+        if (id) {
+          await this.sellerProductOptionRepository.update(
+            {
+              id,
+              sellerId
+            }, {
+              ...option
+            }
+          );
+        } else {
+          await this.sellerProductOptionRepository.save({
+            sellerId,
+            sellerProductId,
             ...option
-          }
-        );
+          });
+        }
+        
       }
 
       await queryRunner.commitTransaction();

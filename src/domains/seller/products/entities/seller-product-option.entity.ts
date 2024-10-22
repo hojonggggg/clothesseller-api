@@ -48,7 +48,7 @@ export class SellerProductOption {
   @Column({ name: 'is_returned', default: false })
   isReturned: boolean;
 
-  @ApiProperty({ example: false, description: '상품 삭제 여부' })
+  @ApiProperty({ example: false, description: '상품 옵션 삭제 여부' })
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
 

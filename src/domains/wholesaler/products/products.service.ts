@@ -101,7 +101,7 @@ export class WholesalerProductsService {
       );
 
       for (const option of options) {
-        const { optionId, color, size, price, quantity } = option;
+        const { optionId, color, size, price, quantity, isDeleted } = option;
         let isSoldout = true;
         if (quantity > 0) isSoldout = false;
 
@@ -115,6 +115,7 @@ export class WholesalerProductsService {
               size,
               price,
               quantity,
+              isDeleted,
               isSoldout
             }
           );

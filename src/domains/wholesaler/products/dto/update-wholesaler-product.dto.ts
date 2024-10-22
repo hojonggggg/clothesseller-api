@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class UpdateWholesalerProductOptionDto {
   @IsNumber()
@@ -18,6 +18,9 @@ class UpdateWholesalerProductOptionDto {
 
   @IsNumber()
   quantity: number;
+
+  @IsBoolean()
+  isDeleted: boolean;
 }
 
 export class UpdateWholesalerProductDto {
@@ -43,8 +46,8 @@ export class UpdateWholesalerProductDto {
 
   @ApiProperty({ 
     example: [
-      { optionId: 1, color: 'Black', size: '100', price: 1000, quantity: 20 },
-      { optionId: 2, color: 'Blue', size: '95', price: 0, quantity: 10 }
+      { optionId: 1, color: 'Black', size: '100', price: 1000, quantity: 20, isDeleted: false },
+      { optionId: 2, color: 'Blue', size: '95', price: 0, quantity: 10, isDeleted: false }
     ], 
     description: '옵션' 
   })
