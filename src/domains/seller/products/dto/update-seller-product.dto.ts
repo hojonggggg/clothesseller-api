@@ -19,6 +19,9 @@ class UpdateSellerProductOptionDto {
 
   @IsNumber()
   price: number;
+  
+  @IsNumber()
+  wholesalerOptionPrice: number;
 
   @IsNumber()
   quantity: number;
@@ -48,8 +51,8 @@ export class UpdateSellerProductDto {
 
   @ApiProperty({ 
     example: [
-      { id: 1, color: 'Black', size: '100', quantity: 20, status: '판매중', isShow: true, isDeleted: false },
-      { id: 2, color: 'Blue', size: '95', quantity: 10, status: '판매중지', isShow: false, isDeleted: false }
+      { id: 1, color: 'Black', size: '100', price: 0, wholesalerOptionPrice: 0, quantity: 20, status: '판매중', isShow: true, isDeleted: false },
+      { id: 2, color: 'Blue', size: '95', price: 1000, wholesalerOptionPrice: 1000, quantity: 10, status: '판매중지', isShow: false, isDeleted: false }
     ], 
     description: '옵션' 
   })

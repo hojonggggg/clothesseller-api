@@ -32,6 +32,10 @@ export class SellerProductOption {
   @Column()
   price: number;
 
+  @ApiProperty({ example: 1000, description: '도매처 옵션 가격' })
+  @Column({ name: 'wholesaler_option_price' })
+  wholesalerOptionPrice: number;
+
   @ApiProperty({ example: '10000', description: '수량' })
   @Column()
   quantity: number;

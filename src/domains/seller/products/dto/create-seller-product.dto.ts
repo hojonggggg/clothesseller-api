@@ -14,6 +14,9 @@ class CreateSellerProductOptionDto {
 
   @IsNumber()
   price: number;
+  
+  @IsNumber()
+  wholesalerOptionPrice: number;
 
   @IsNumber()
   quantity: number;
