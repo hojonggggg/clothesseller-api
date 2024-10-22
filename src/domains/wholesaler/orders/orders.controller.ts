@@ -66,7 +66,7 @@ export class WholesalerOrdersController {
   @Post('order/pre-payment')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 미송 등록' })
+  @ApiOperation({ summary: '[완료] 미송 등록' })
   @ApiResponse({ status: 201 })
   async createPrePayment(
     @Body() wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto, 
