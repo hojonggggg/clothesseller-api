@@ -1,6 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductRequestOption } from './product-request-option.entity';
+import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
+import { SellerProfile } from '../users/entities/seller-profile.entity';
 
 @Entity('product_request')
 export class ProductRequest {
@@ -46,4 +48,17 @@ export class ProductRequest {
 
   @OneToMany(() => ProductRequestOption, (option) => option.productRequest)
   options: ProductRequestOption[];
+
+  @OneToOne(() => WholesalerProfile)
+  @JoinColumn({ name: 'wholesaler_id', referencedColumnName: 'userId' })
+  wholesalerProfile: WholesalerProfile;
+
+  @OneToOne(() => SellerProfile)
+  @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })
+  sellerProfile: SellerProfile;
+
+  wholesalerName: string;
+  wholesalerStoreName: string;
+  wholesalerRoomNo: string;
+  sellerName: string;
 }

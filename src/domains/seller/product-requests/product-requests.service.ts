@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In } from 'typeorm';
+import { DataSource, Repository, In, Brackets } from 'typeorm';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { ProductRequestOption } from 'src/commons/shared/entities/product-request-option.entity';
 import { CreateProductRequestDto } from './dto/create-product-request.dto';
@@ -64,12 +64,19 @@ export class ProductRequestsService {
 
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')
+      .leftJoinAndSelect('productRequest.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('productRequest.sellerId = :sellerId', { sellerId })
       .andWhere('productRequest.isDeleted = 0')
       .andWhere('options.isDeleted = 0');
     
     if (query) {
-      queryBuilder.andWhere('productRequest.name LIKE :query', { query: `%${query}%` });
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('productRequest.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
     }
 
     const [requests, total] = await queryBuilder
@@ -81,6 +88,9 @@ export class ProductRequestsService {
     for (const request of requests) {
       const { options } = request;
       request.price = formatCurrency(request.price);
+      request.wholesalerName = request.wholesalerProfile.name;
+      request.wholesalerStoreName = request.wholesalerProfile.store.name;
+      request.wholesalerRoomNo = request.wholesalerProfile.roomNo;
 
       for (const option of options) {
         option.price = formatCurrency(option.price);
@@ -89,7 +99,9 @@ export class ProductRequestsService {
       }
 
       delete(request.wholesalerId);
+      delete(request.wholesalerProfile);
       delete(request.sellerId);
+      delete(request.isDeleted);
     }
 
     return {

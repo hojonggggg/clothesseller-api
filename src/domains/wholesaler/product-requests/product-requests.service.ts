@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, Brackets } from 'typeorm';
 import { ProductRequest } from 'src/commons/shared/entities/product-request.entity';
 import { ProductRequestOption } from 'src/commons/shared/entities/product-request-option.entity';
 import { WholesalerProduct } from '../products/entities/wholesaler-product.entity';
@@ -29,12 +29,18 @@ export class ProductRequestsService {
 
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')
+      .leftJoinAndSelect('productRequest.sellerProfile', 'sellerProfile')
       .where('productRequest.wholesalerId = :wholesalerId', { wholesalerId })
       .andWhere('productRequest.isDeleted = 0')
       .andWhere('options.isDeleted = 0');
 
       if (query) {
-        queryBuilder.andWhere('productRequest.name LIKE :query', { query: `%${query}%` });
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            qb.where('productRequest.name LIKE :productName', { productName: `%${query}%` })
+              .orWhere('sellerProfile.name LIKE :sellerName', { sellerName: `%${query}%` });
+          })
+        );
       }
 
       const [requests, total] = await queryBuilder
@@ -46,6 +52,7 @@ export class ProductRequestsService {
       for (const request of requests) {
         const { options } = request;
         request.price = formatCurrency(request.price);
+        request.sellerName = request.sellerProfile.name;
 
         for (const option of options) {
           option.price = formatCurrency(option.price);
@@ -55,6 +62,8 @@ export class ProductRequestsService {
 
         delete(request.wholesalerId);
         delete(request.sellerId);
+        delete(request.sellerProfile);
+        delete(request.isDeleted);
       }
 
       return {
