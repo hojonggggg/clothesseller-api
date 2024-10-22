@@ -129,7 +129,16 @@ export class WholesalerOrdersService {
   }
 
   async createPrePayment(wholesalerId: number, wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto) {
-
+    const today = getToday();
+    const prePayment = this.wholesalerOrderRepository.create({
+      wholesalerId,
+      ...wholesalerCreatePrepaymentDto,
+      orderType: '수동',
+      status: '미송등록',
+      isPrepayment: true,
+      prePaymentDate: today
+    });
+    await this.wholesalerOrderRepository.save(prePayment);
   }
 
   async findAllPrePayment(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {

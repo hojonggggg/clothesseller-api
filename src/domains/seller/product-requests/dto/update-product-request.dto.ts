@@ -3,9 +3,10 @@ import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 class UpdateProductRequestOptionDto {
+  /*
   @IsNumber()
   id: number;
-
+  */
   @IsString()
   color: string;
 
@@ -17,10 +18,11 @@ class UpdateProductRequestOptionDto {
 }
 
 export class UpdateProductRequestDto {
+  /*
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
-
+  */
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
   @IsString()
   code: string;
@@ -43,8 +45,8 @@ export class UpdateProductRequestDto {
 
   @ApiProperty({ 
     example: [
-      { id: 1, color: 'Black', size: '95', price: 1000 },
-      { id: 2, color: 'Blue', size: '100', price: 0 }
+      { color: 'Black', size: '95', price: 0 },
+      { color: 'Black', size: '100', price: 1000 }
     ], 
     description: '옵션' 
   })

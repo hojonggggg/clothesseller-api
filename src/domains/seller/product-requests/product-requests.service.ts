@@ -67,6 +67,7 @@ export class ProductRequestsService {
       .leftJoinAndSelect('productRequest.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('productRequest.sellerId = :sellerId', { sellerId })
+      .andWhere(`productRequest.status != '등록완료'`)
       .andWhere('productRequest.isDeleted = 0')
       .andWhere('options.isDeleted = 0');
     
@@ -149,14 +150,13 @@ export class ProductRequestsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      const { wholesalerId, code, name, price, country, composition, options } = updateProductRequestDto;
+      const { code, name, price, country, composition, options } = updateProductRequestDto;
 
       await this.productRequestRepository.update(
         {
           id: productRequestId,
           sellerId
         }, {
-          wholesalerId,
           code,
           price,
           name,
@@ -165,7 +165,10 @@ export class ProductRequestsService {
         }
       );
 
+      await this.productRequestOptionRepository.delete({productRequestId});
+
       for (const option of options) {
+        /*
         const productRequestOptionId = option.id;
 
         await this.productRequestOptionRepository.update(
@@ -175,6 +178,12 @@ export class ProductRequestsService {
             ...option
           }
         );
+        */
+        const productOption = this.productRequestOptionRepository.create(option);
+        await this.productRequestOptionRepository.save({
+          productRequestId, 
+          ...productOption
+        });
       }
 
       await queryRunner.commitTransaction();
