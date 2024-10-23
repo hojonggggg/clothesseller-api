@@ -67,7 +67,7 @@ export class ProductRequestsService {
       .leftJoinAndSelect('productRequest.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('productRequest.sellerId = :sellerId', { sellerId })
-      .andWhere(`productRequest.status != '등록완료'`)
+      //.andWhere(`productRequest.status != '등록완료'`)
       .andWhere('productRequest.isDeleted = 0')
       .andWhere('options.isDeleted = 0');
     
