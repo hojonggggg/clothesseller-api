@@ -9,7 +9,7 @@ export class WholesalerUsersController {
     private readonly usersService: UsersService
   ) {}
 
-  @Get('sellers')
+  @Get('users/sellers')
   @ApiOperation({ summary: '[개발] 셀러 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '셀러명' })
