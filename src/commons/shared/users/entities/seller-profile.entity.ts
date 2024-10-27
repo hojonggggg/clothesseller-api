@@ -31,6 +31,9 @@ export class SellerProfile {
 
   @OneToOne(() => Deliveryman, (deliveryman) => deliveryman.sellerProfile)
   deliveryman: Deliveryman;
+  
+  sellerId: number;
+  address: string;
   /*
   @OneToMany(() => Order, (order) => order.sellerProfile)
   orders: Order[];

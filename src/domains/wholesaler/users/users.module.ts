@@ -4,11 +4,11 @@ import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
-import { SellerUsersController } from './users.controller';
+import { WholesalerUsersController } from './users.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile])],
   providers: [UsersService],
-  controllers: [SellerUsersController]
+  controllers: [WholesalerUsersController]
 })
-export class SellerUsersModule {}
+export class WholesalerUsersModule {}

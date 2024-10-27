@@ -90,4 +90,29 @@ export class UsersService {
     return wholesalers;
   }
 
+  async findAllSeller(query: string) {
+    const queryBuilder = this.sellerProfileRepository.createQueryBuilder('sellerProfile')
+
+    if (query) {
+      queryBuilder.andWhere('sellerProfile.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const sellers = await queryBuilder
+      .orderBy('sellerProfile.name', 'ASC')
+      .getMany();
+    
+    for (const seller of sellers) {
+      seller.sellerId = seller.userId;
+      const { address1, address2 } = seller;
+      seller.address = address1 + " " + address2;
+
+      delete(seller.userId);
+      delete(seller.licenseNumber);
+      delete(seller.address1);
+      delete(seller.address2);
+    }
+
+    return sellers;
+  }
+
 }

@@ -3,17 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-//import { LocalStrategy } from 'src/commons/shared/auth/strategies/local.strategy';
-import { LocalStrategy } from '../auth/strategies/local.strategy';
-//import { JwtStrategy } from 'src/commons/shared/auth/strategies/jwt.strategy';
-import { JwtStrategy } from '../auth/strategies/jwt.strategy';
-
+//import { LocalStrategy } from '../auth/strategies/local.strategy';
+//import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { AuthModule } from '../auth/auth.module';
-//import { AuthModule } from 'src/commons/shared/auth/auth.module';
-//import { AuthService } from 'src/commons/shared/auth/auth.service';
 import { AuthService } from '../auth/auth.service';
-//import { WholesalerAuthService } from './auth/wholesaler-auth.service';
-//import { WholesalerAuthController } from './auth/wholesaler-auth.controller';
 import { WholesalerAuthModule } from './auth/wholesaler-auth.module';
 import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
@@ -25,6 +18,7 @@ import { WholesalerOrdersModule } from './orders/orders.module';
 import { WholesalerSamplesModule } from './samples/samples.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 import { WholesalerReturnsModule } from './returns/returns.module';
+import { WholesalerUsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -50,6 +44,7 @@ import { WholesalerReturnsModule } from './returns/returns.module';
     WholesalerOrdersModule,
     WholesalerSamplesModule,
     WholesalerReturnsModule,
+    WholesalerUsersModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

@@ -2,21 +2,21 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from 'src/commons/shared/users/users.service';
 
-@ApiTags('seller > users')
-@Controller('seller')
-export class SellerUsersController {
+@ApiTags('wholesaler > users')
+@Controller('wholesaler')
+export class WholesalerUsersController {
   constructor(
     private readonly usersService: UsersService
   ) {}
 
-  @Get('wholesalers')
-  @ApiOperation({ summary: '[완료] 도매처 조회' })
+  @Get('sellers')
+  @ApiOperation({ summary: '[개발] 셀러 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
-  async findAllSellerProductBySellerId(
+  @ApiQuery({ name: 'query', required: false, description: '셀러명' })
+  async findAllSeller(
     @Query('query') query: string
   ) {
-    const result = await this.usersService.findAllWholesaler(query);
+    const result = await this.usersService.findAllSeller(query);
     return {
       statusCode: 200,
       data: result
