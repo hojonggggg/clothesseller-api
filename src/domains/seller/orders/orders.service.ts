@@ -205,7 +205,7 @@ export class SellerOrdersService {
 
       delete(order.orderType);
       delete(order.memo);
-      delete(order.prePaymentDate);
+      delete(order.prepaymentDate);
       delete(order.deliveryDate);
       delete(order.createdAt);
       delete(order.sellerOrderId);
@@ -252,7 +252,7 @@ export class SellerOrdersService {
       }, {
         status: '미송요청',
         isPrepayment: true,
-        prePaymentDate: today
+        prepaymentDate: today
       }
     );
   }

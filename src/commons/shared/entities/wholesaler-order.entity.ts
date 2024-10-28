@@ -42,9 +42,21 @@ export class WholesalerOrder {
   @Column({ name: 'seller_product_option_id' })
   sellerProductOptionId: number;
   
-  @ApiProperty({ example: 5, description: '주문 수량' })
+  @ApiProperty({ example: 5, description: '주문 대기 수량' })
   @Column()
   quantity: number;
+  
+  @ApiProperty({ example: 5, description: '총 주문 수량' })
+  @Column({ name: 'quantity_total' })
+  quantityTotal: number;
+  
+  @ApiProperty({ example: 3, description: '출고 수량' })
+  @Column({ name: 'quantity_of_delivery_complete' })
+  quantityOfDelivery: number;
+  
+  @ApiProperty({ example: 3, description: '미송 수량' })
+  @Column({ name: 'quantity_of_pre_payment' })
+  quantityOfPrepayment: number;
   
   @ApiProperty({ example: '자동', description: '주문 유형' })
   @Column({ name: 'order_type' })
@@ -60,7 +72,7 @@ export class WholesalerOrder {
   
   @ApiProperty({ example: '2024/08/15', description: '미송일자' })
   @Column({ name: 'pre_payment_date' })
-  prePaymentDate: string;
+  prepaymentDate: string;
   
   @ApiProperty({ example: '2024/09/07', description: '출고예정일' })
   @Column({ name: 'delivery_date' })
@@ -74,7 +86,7 @@ export class WholesalerOrder {
   isDeleted: boolean;
 
   @ApiProperty({ example: false, description: '삭제 여부' })
-  @Column({ name: 'is_prepayment', default: true })
+  @Column({ name: 'is_pre_payment', default: true })
   isPrepayment: boolean;
 
   @ApiProperty({ example: false, description: '품절 여부' })

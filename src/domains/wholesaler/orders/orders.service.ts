@@ -5,6 +5,7 @@ import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.en
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
+import { WholesalerUpdateOrderDto } from './dto/wholesaler-update-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -75,7 +76,7 @@ export class WholesalerOrdersService {
       delete(order.orderType);
       delete(order.isDeleted);
       delete(order.isPrepayment);
-      delete(order.prePaymentDate);
+      delete(order.prepaymentDate);
       delete(order.deliveryDate);
       delete(order.createdAt);
       delete(order.wholesalerProductOption);
@@ -88,6 +89,38 @@ export class WholesalerOrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async orderConfirm(wholesalerId: number, wholesalerUpdateOrderDto: WholesalerUpdateOrderDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { orders } = wholesalerUpdateOrderDto;
+      for (const order of orders) {
+        const { id, quantity } = order;
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id } });
+        //const quantityOfPrepayment = orderItem.quantityOfPrepayment - quantity;
+
+        await this.wholesalerOrderRepository.update(
+          { id },
+          { 
+            quantity: orderItem.quantity - quantity,
+            quantityOfDelivery: orderItem.quantityOfDelivery + quantity,
+            status: '부분출고'
+          }
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async setSoldoutOrder(wholesalerId: number, ids: number[]): Promise<void> {
@@ -136,7 +169,7 @@ export class WholesalerOrdersService {
       orderType: '수동',
       status: '미송등록',
       isPrepayment: true,
-      prePaymentDate: today
+      prepaymentDate: today
     });
     await this.wholesalerOrderRepository.save(prePayment);
   }
@@ -192,7 +225,7 @@ export class WholesalerOrdersService {
       delete(order.orderType);
       delete(order.isDeleted);
       delete(order.isPrepayment);
-      delete(order.prePaymentDate);
+      delete(order.prepaymentDate);
       delete(order.deliveryDate);
       delete(order.createdAt);
       delete(order.wholesalerProductOption);
@@ -514,7 +547,7 @@ export class WholesalerOrdersService {
       sellerId,
       orderType: '수동',
       status: '미송요청',
-      prePaymentDate: getToday(),
+      prepaymentDate: getToday(),
       isPrepayment: true
     });
     return await this.wholesalerOrderRepository.save(prepayment);

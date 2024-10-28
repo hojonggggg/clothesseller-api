@@ -10,7 +10,7 @@ export class WholesalerUsersController {
   ) {}
 
   @Get('users/sellers')
-  @ApiOperation({ summary: '[개발] 셀러 조회' })
+  @ApiOperation({ summary: '[완료] 셀러 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '셀러명' })
   async findAllSeller(

@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } 
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
 import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
+import { WholesalerUpdateOrderDto } from './dto/wholesaler-update-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -16,7 +17,7 @@ export class WholesalerOrdersController {
   @Get('orders')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[status 확인] 주문 목록 조회' })
+  @ApiOperation({ summary: '[완료] 주문 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'date', required: true, description: '조회일자(yyyy/mm/dd)' })
   @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
@@ -31,6 +32,44 @@ export class WholesalerOrdersController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Patch('orders/confirm')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 발주' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        orders: {
+          type: 'array',
+          items: { 
+            type: 'object', 
+            properties: {
+              id: { type: 'integer', example: 1 },
+              quantity: { type: 'integer', example: 10 },
+            },
+          },
+          example: [
+            { id: 1, quantity: 10 },
+            { id: 2, quantity: 20 }
+          ],
+        },
+      },
+    },
+  })
+  async orderConfirm(
+    @Request() req, 
+    @Body() wholesalerUpdateOrderDto: WholesalerUpdateOrderDto
+  ) {
+    const wholesalerId = req.user.uid;
+    await this.wholesalerOrdersService.orderConfirm(wholesalerId, wholesalerUpdateOrderDto);
+    return {
+      statusCode: 200,
+      message: '발주 확인되었습니다.'
     };
   }
 
