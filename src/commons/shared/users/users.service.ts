@@ -4,7 +4,9 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { WholesalerProfile } from './entities/wholesaler-profile.entity';
 import { SellerProfile } from './entities/seller-profile.entity';
+import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +19,8 @@ export class UsersService {
     private wholesalerProfileRepository: Repository<WholesalerProfile>,
     @InjectRepository(SellerProfile)
     private sellerProfileRepository: Repository<SellerProfile>,
+    //@InjectRepository(Store)
+    //private storeRepository: Repository<Store>,
   ) {}
 
   async createUser(createUserDto): Promise<User> {
@@ -90,6 +94,60 @@ export class UsersService {
     return wholesalers;
   }
 
+  async findAllWholesalerWithPagination(query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+    
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('user.role = :role', { role: 'WHOLESALER' });
+    
+    if (query) {
+      queryBuilder.andWhere('wholesalerProfile.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const [users, total] = await queryBuilder
+      .orderBy('user.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+    for (const user of users) {
+      user.wholesalerId = user.wholesalerProfile.userId;
+      user.name = user.wholesalerProfile.name;
+      user.storeName = user.wholesalerProfile.store.name;
+      user.storeRoomNo = user.wholesalerProfile.roomNo;
+      user.mobile = user.wholesalerProfile.mobile;
+
+      delete(user.uid);
+      delete(user.id);
+      delete(user.password);
+      delete(user.role);
+      delete(user.agreeAlarm);
+      delete(user.wholesalerProfile);
+    }
+
+    return {
+      list: users,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findOneWholesaler(wholesalerId: number) {
+    const queryBuilder = this.wholesalerProfileRepository.createQueryBuilder('wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('wholesalerProfile.userId = :wholesalerId', { wholesalerId });
+
+    const wholesaler = await queryBuilder.getOne();
+    wholesaler.storeName = wholesaler.store.name;
+    delete(wholesaler.storeId);
+    delete(wholesaler.store);
+
+    return wholesaler;
+  }
+
   async findAllSeller(query: string) {
     const queryBuilder = this.sellerProfileRepository.createQueryBuilder('sellerProfile')
 
@@ -113,6 +171,59 @@ export class UsersService {
     }
 
     return sellers;
+  }
+
+  async findAllSellerWithPagination(query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+    
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.sellerProfile', 'sellerProfile')
+      .where('user.role = :role', { role: 'SELLER' });
+    
+    if (query) {
+      queryBuilder.andWhere('sellerProfile.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const [users, total] = await queryBuilder
+      .orderBy('user.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+      
+    for (const user of users) {
+      user.sellerId = user.sellerProfile.userId;
+      user.name = user.sellerProfile.name;
+      const { address1, address2 } = user.sellerProfile;
+      user.address = address1 + " " + address2;
+      user.mobile = user.sellerProfile.mobile;
+
+      delete(user.uid);
+      delete(user.id);
+      delete(user.password);
+      delete(user.role);
+      delete(user.agreeAlarm);
+      delete(user.sellerProfile);
+    }
+
+    return {
+      list: users,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findOneSeller(sellerId: number) {
+    const queryBuilder = this.sellerProfileRepository.createQueryBuilder('sellerProfile')
+      .where('sellerProfile.userId = :sellerId', { sellerId });
+
+    const seller = await queryBuilder.getOne();
+    const { address1, address2 } = seller;
+    seller.address = address1 + " " + address2;
+    delete(seller.address1);
+    delete(seller.address2);
+
+    return seller;
   }
 
 }

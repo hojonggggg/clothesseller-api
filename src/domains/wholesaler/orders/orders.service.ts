@@ -119,7 +119,7 @@ export class WholesalerOrdersService {
         const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
 
         await this.wholesalerOrderRepository.update(
-          { id },
+          { id, wholesalerId },
           { 
             quantity: orderItem.quantity - quantity,
             quantityOfDelivery: orderItem.quantityOfDelivery + quantity,
@@ -153,7 +153,7 @@ export class WholesalerOrdersService {
         const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
 
         await this.wholesalerOrderRepository.update(
-          { id },
+          { id, wholesalerId },
           { 
             quantity: orderItem.quantity - quantity,
             quantityOfPrepayment: orderItem.quantityOfPrepayment + quantity,
@@ -185,10 +185,10 @@ export class WholesalerOrdersService {
       const { orders } = wholesalerRejectOrderDto;
       for (const order of orders) {
         const { id, quantity, memo } = order;
-        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+        //const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
 
         await this.wholesalerOrderRepository.update(
-          { id },
+          { id, wholesalerId },
           { 
             memo,
             status: '발주불가'
@@ -207,27 +207,25 @@ export class WholesalerOrdersService {
     }
   }
 
-  async setSoldoutOrder(wholesalerId: number, ids: number[]): Promise<void> {
+  async orderSoldout(wholesalerId: number, ids: number[]): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
-      /*
-      await this.wholesalerOrderRepository.update(
-        {
-          id: In(ids),
-          wholesalerId
-        }, {
-          isSoldout: true
-        }
-      );
-      */
+
       for (const id of ids) {
         await this.wholesalerOrderRepository.update(
           { id, wholesalerId }, 
-          { isSoldout: true }
+          { 
+            status: '품절',
+            isSoldout: true
+           }
         );
+
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+        const quantity = orderItem.quantity;
+        await this.createOrderHistory(id, 'soldout', quantity);
 
         const order = await this.wholesalerOrderRepository.findOne({ where: { id } });
         const { wholesalerProductOptionId } = order;

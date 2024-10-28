@@ -2,10 +2,11 @@ import { Body, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
-import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
 import { WholesalerRejectOrderDto } from './dto/wholesaler-reject-order.dto';
+import { WholesalerSoldoutOrderDto } from './dto/wholesaler-soldout-order.dto';
+import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -171,12 +172,12 @@ export class WholesalerOrdersController {
       },
     },
   })
-  async setSoldoutOrder(
+  async orderSoldout(
     @Request() req, 
-    @Body() wholesalerSetOrderDto: WholesalerSetOrderDto
+    @Body() wholesalerSoldoutOrderDto: WholesalerSoldoutOrderDto
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerOrdersService.setSoldoutOrder(wholesalerId, wholesalerSetOrderDto.ids);
+    await this.wholesalerOrdersService.orderSoldout(wholesalerId, wholesalerSoldoutOrderDto.ids);
     return {
       statusCode: 200,
       message: '품절 처리가 완료되었습니다.'

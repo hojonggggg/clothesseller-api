@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './domains/auth/auth.module';
+import { AdminModule } from './domains/admin/admin.module';
 import { WholesalerModule } from './domains/wholesaler/wholesaler.module';
 import { SellerModule } from './domains/seller/seller.module';
 import configuration from './commons/config/configuration';
@@ -32,6 +33,7 @@ import * as moment from 'moment-timezone';
       inject: [ConfigService],
     }),
     AuthModule,
+    AdminModule,
     WholesalerModule,
     SellerModule,
   ],

@@ -1,7 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../enums/role.enum';
 import { IsEnum } from 'class-validator';
+import { WholesalerProfile } from './wholesaler-profile.entity';
+import { SellerProfile } from './seller-profile.entity';
 
 @Entity('user')
 export class User {
@@ -25,4 +27,20 @@ export class User {
   @ApiProperty({ example: true, description: '알람 수신 여부' })
   @Column({ name: 'agree_alarm' })
   agreeAlarm: boolean;
+
+  @OneToOne(() => WholesalerProfile)
+  @JoinColumn({ name: 'id' })
+  wholesalerProfile: WholesalerProfile;
+
+  @OneToOne(() => SellerProfile)
+  @JoinColumn({ name: 'id' })
+  sellerProfile: SellerProfile;
+
+  wholesalerId: number;
+  sellerId: number;
+  name: string;
+  storeName: string;
+  storeRoomNo: string;
+  address: string;
+  mobile: string;
 }
