@@ -8,6 +8,7 @@ import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-ma
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
+import { WholesalerRejectOrderDto } from './dto/wholesaler-reject-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -163,6 +164,38 @@ export class WholesalerOrdersService {
         );
 
         await this.createOrderHistory(id, 'prepayment', quantity);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async orderReject(wholesalerId: number, wholesalerRejectOrderDto: WholesalerRejectOrderDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { orders } = wholesalerRejectOrderDto;
+      for (const order of orders) {
+        const { id, quantity, memo } = order;
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+
+        await this.wholesalerOrderRepository.update(
+          { id },
+          { 
+            memo,
+            status: '발주불가'
+          }
+        );
+
+        await this.createOrderHistory(id, 'reject', quantity);
       }
 
       await queryRunner.commitTransaction();

@@ -5,6 +5,7 @@ import { WholesalerOrdersService } from './orders.service';
 import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
+import { WholesalerRejectOrderDto } from './dto/wholesaler-reject-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -39,7 +40,7 @@ export class WholesalerOrdersController {
   @Patch('orders/confirm')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 선택 발주' })
+  @ApiOperation({ summary: '[완료] 선택 발주확인' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -111,6 +112,45 @@ export class WholesalerOrdersController {
     return {
       statusCode: 200,
       message: '미송 처리되었습니다.'
+    };
+  }
+
+  @Patch('orders/reject')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 발주불가' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        orders: {
+          type: 'array',
+          items: { 
+            type: 'object', 
+            properties: {
+              id: { type: 'integer', example: 1 },
+              quantity: { type: 'integer', example: 10 },
+              memo: { type: 'string', example: '2024/10/20 발송예정' },
+            },
+          },
+          example: [
+            { id: 1, quantity: 10, memo: '2024/10/20 발송예정' },
+            { id: 2, quantity: 20, memo: '2024/10/30 발송예정' }
+          ],
+        },
+      },
+    },
+  })
+  async orderReject(
+    @Request() req, 
+    @Body() wholesalerRejectOrderDto: WholesalerRejectOrderDto
+  ) {
+    const wholesalerId = req.user.uid;
+    await this.wholesalerOrdersService.orderReject(wholesalerId, wholesalerRejectOrderDto);
+    return {
+      statusCode: 200,
+      message: '발주 불가되었습니다.'
     };
   }
 
