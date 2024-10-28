@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { WholesalerOrderHistory } from 'src/commons/shared/entities/wholesaler-order-history.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
-import { WholesalerUpdateOrderDto } from './dto/wholesaler-update-order.dto';
+import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
+import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -18,6 +20,8 @@ export class WholesalerOrdersService {
 
     @InjectRepository(WholesalerOrder)
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
+    @InjectRepository(WholesalerOrderHistory)
+    private wholesalerOrderHistoryRepository: Repository<WholesalerOrderHistory>,
     @InjectRepository(WholesalerProductOption)
     private wholesalerProductOptionRepository: Repository<WholesalerProductOption>,
   ) {}
@@ -91,18 +95,27 @@ export class WholesalerOrdersService {
     };
   }
 
-  async orderConfirm(wholesalerId: number, wholesalerUpdateOrderDto: WholesalerUpdateOrderDto): Promise<void> {
+  async createOrderHistory(wholesalerOrderId: number, action: string, quantity: number) {
+    const history = this.wholesalerOrderHistoryRepository.create({
+      wholesalerOrderId,
+      action,
+      quantity
+    });
+
+    await this.wholesalerOrderHistoryRepository.save(history);
+  }
+
+  async orderConfirm(wholesalerId: number, wholesalerConfirmOrderDto: WholesalerConfirmOrderDto): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      const { orders } = wholesalerUpdateOrderDto;
+      const { orders } = wholesalerConfirmOrderDto;
       for (const order of orders) {
         const { id, quantity } = order;
-        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id } });
-        //const quantityOfPrepayment = orderItem.quantityOfPrepayment - quantity;
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
 
         await this.wholesalerOrderRepository.update(
           { id },
@@ -112,6 +125,44 @@ export class WholesalerOrdersService {
             status: '부분출고'
           }
         );
+
+        //const newQuantity = orderItem.quantity - quantity;
+        await this.createOrderHistory(id, 'confirm', quantity);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async orderPrepayment(wholesalerId: number, wholesalerPrepaymentOrderDto: WholesalerPrepaymentOrderDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { orders } = wholesalerPrepaymentOrderDto;
+      for (const order of orders) {
+        const { id, quantity, prepaymentDate, deliveryDate } = order;
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+
+        await this.wholesalerOrderRepository.update(
+          { id },
+          { 
+            quantity: orderItem.quantity - quantity,
+            quantityOfPrepayment: orderItem.quantityOfPrepayment + quantity,
+            status: '미송처리',
+            prepaymentDate,
+            deliveryDate
+          }
+        );
+
+        await this.createOrderHistory(id, 'prepayment', quantity);
       }
 
       await queryRunner.commitTransaction();

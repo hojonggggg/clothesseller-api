@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-class WholesalerUpdateOrderDetailDto {
+class WholesalerConfirmOrderDetailDto {
   @IsNumber()
   id: number;
 
@@ -10,7 +10,7 @@ class WholesalerUpdateOrderDetailDto {
   quantity: number;
 }
 
-export class WholesalerUpdateOrderDto {
+export class WholesalerConfirmOrderDto {
   @ApiProperty({ 
     example: [
       { id: 1, quantity: 10 },
@@ -20,6 +20,6 @@ export class WholesalerUpdateOrderDto {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => WholesalerUpdateOrderDetailDto)
-  orders: WholesalerUpdateOrderDetailDto[];
+  @Type(() => WholesalerConfirmOrderDetailDto)
+  orders: WholesalerConfirmOrderDetailDto[];
 }

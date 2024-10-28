@@ -3,7 +3,8 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } 
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
 import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
-import { WholesalerUpdateOrderDto } from './dto/wholesaler-update-order.dto';
+import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
+import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -63,13 +64,53 @@ export class WholesalerOrdersController {
   })
   async orderConfirm(
     @Request() req, 
-    @Body() wholesalerUpdateOrderDto: WholesalerUpdateOrderDto
+    @Body() wholesalerConfirmOrderDto: WholesalerConfirmOrderDto
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerOrdersService.orderConfirm(wholesalerId, wholesalerUpdateOrderDto);
+    await this.wholesalerOrdersService.orderConfirm(wholesalerId, wholesalerConfirmOrderDto);
     return {
       statusCode: 200,
       message: '발주 확인되었습니다.'
+    };
+  }
+
+  @Patch('orders/pre-payment')  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 선택 미송' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        orders: {
+          type: 'array',
+          items: { 
+            type: 'object', 
+            properties: {
+              id: { type: 'integer', example: 1 },
+              quantity: { type: 'integer', example: 10 },
+              prepaymentDate: { type: 'string', example: '2024/10/10' },
+              deliveryDate: { type: 'string', example: '2024/10/15' },
+            },
+          },
+          example: [
+            { id: 1, quantity: 10, prepaymentDate: '2024/10/10', deliveryDate: '2024/10/15' },
+            { id: 2, quantity: 20, prepaymentDate: '2024/10/20', deliveryDate: '2024/10/25' }
+          ],
+        },
+      },
+    },
+  })
+  async orderPrepayment(
+    @Request() req, 
+    @Body() wholesalerPrepaymentOrderDto: WholesalerPrepaymentOrderDto
+  ) {
+    const wholesalerId = req.user.uid;
+    await this.wholesalerOrdersService.orderPrepayment(wholesalerId, wholesalerPrepaymentOrderDto);
+    return {
+      statusCode: 200,
+      message: '미송 처리되었습니다.'
     };
   }
 
