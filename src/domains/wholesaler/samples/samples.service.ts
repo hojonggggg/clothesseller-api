@@ -97,12 +97,14 @@ export class WholesalerSamplesService {
     const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
       .select([
         'sample.id AS sampleId',
+        'wholesalerProduct.name AS wholesalerProductName',
         'sample.quantity AS quantity',
         'sample.sampleDate AS sampleDate',
         'sample.returnDate AS returnDate',
         `IF(sample.sellerType = 'AUTO', sellerProfile.name, sample.sellerName) AS sellerName`
       ])
       .leftJoin('sample.sellerProfile', 'sellerProfile')
+      .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
       .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
       .andWhere('STR_TO_DATE(sample.returnDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
         startDate,
@@ -130,6 +132,33 @@ export class WholesalerSamplesService {
     
       return acc;
     }, []);
+
+    return samples;
+  }
+
+  async findAllSampleOfDaily(wholesalerId: number, day: string) {
+    const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
+      .select([
+        'sample.id AS sampleId',
+        'wholesalerProduct.name AS name',
+        'sample.quantity AS quantity',
+        'sample.sampleDate AS sampleDate',
+        'sample.returnDate AS returnDate',
+        `IF(sample.sellerType = 'AUTO', sellerProfile.name, sample.sellerName) AS sellerName`
+      ])
+      .leftJoin('sample.sellerProfile', 'sellerProfile')
+      .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
+      .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('sample.sampleDate = :day', { day })
+            .orWhere('sample.returnDate = :day', { day })
+        })
+      );
+
+    const samples = await queryBuilder
+      .orderBy('sample.id', 'DESC')
+      .getRawMany();
 
     return samples;
   }

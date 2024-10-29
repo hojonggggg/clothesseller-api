@@ -254,6 +254,7 @@ export class SellerSamplesService {
     const samples = await queryBuilder
       .orderBy('sample.id', 'DESC')
       .getRawMany();
+      
     return samples;
   }
 }

@@ -86,6 +86,24 @@ export class WholesalerSamplesController {
     };
   }
 
+  @Get('samples/daily')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 일간 샘플 반납 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'day', required: true, description: '조회하려는 날' })
+  async findAllSampleOfDaily(
+    @Request() req,
+    @Query('day') day: string
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerSamplesService.findAllSampleOfDaily(wholesalerId, day);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Patch('samples/return')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
