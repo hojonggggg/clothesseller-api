@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Brackets, In } from 'typeorm';
+import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { Sample } from 'src/commons/shared/entities/sample.entity';
 import { WholesalerCreateSampleAutoDto } from './dto/wholesaler-create-sample-auto.dto';
 import { WholesalerCreateSampleManualDto } from './dto/wholesaler-create-sample-manual.dto';
@@ -10,26 +10,66 @@ import { getStartAndEndDate } from 'src/commons/shared/functions/date';
 @Injectable()
 export class WholesalerSamplesService {
   constructor(
+    private readonly dataSource: DataSource,
+
     @InjectRepository(Sample)
     private sampleRepository: Repository<Sample>,
   ) {}
 
-  async createSampleAuto(wholesalerId: number, wholesalerCreateSampleAutoDto: WholesalerCreateSampleAutoDto): Promise<Sample> {
-    const sample = this.sampleRepository.create({
-      wholesalerId, 
-      sellerType: 'AUTO',
-      ...wholesalerCreateSampleAutoDto
-    });
-    return await this.sampleRepository.save(sample);
+  async createSampleAuto(wholesalerId: number, wholesalerCreateSampleAutoDto: WholesalerCreateSampleAutoDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { options } = wholesalerCreateSampleAutoDto;
+      for (const option of options) {
+        const sample = this.sampleRepository.create({
+          wholesalerId, 
+          sellerType: 'AUTO',
+          ...wholesalerCreateSampleAutoDto,
+          wholesalerProductOptionId: option.wholesalerProductOptionId,
+          quantity: option.quantity
+        });
+        await this.sampleRepository.save(sample);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  async createSampleManual(wholesalerId: number, wholesalerCreateSampleManualDto: WholesalerCreateSampleManualDto): Promise<Sample> {
-    const sample = this.sampleRepository.create({
-      wholesalerId, 
-      sellerType: 'MANUAL',
-      ...wholesalerCreateSampleManualDto
-    });
-    return await this.sampleRepository.save(sample);
+  async createSampleManual(wholesalerId: number, wholesalerCreateSampleManualDto: WholesalerCreateSampleManualDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { options } = wholesalerCreateSampleManualDto;
+      for (const option of options) {
+        const sample = this.sampleRepository.create({
+          wholesalerId, 
+          sellerType: 'MANUAL',
+          ...wholesalerCreateSampleManualDto,
+          wholesalerProductOptionId: option.wholesalerProductOptionId,
+          quantity: option.quantity
+        });
+        await this.sampleRepository.save(sample);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findAllSample(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
