@@ -219,11 +219,11 @@ export class SellerSamplesService {
       const { sampleId, sampleDate, quantity, returnDate, wholesalerProductName, wholesalerName } = result;
     
       // 이미 그룹이 존재하는지 확인
-      let dateGroup = acc.find(group => group.sampleDate === sampleDate);
+      let dateGroup = acc.find(group => group.returnDate === returnDate);
       
       if (!dateGroup) {
         // 그룹이 없으면 새로 생성
-        dateGroup = { sampleDate, samples: [] };
+        dateGroup = { returnDate, samples: [] };
         acc.push(dateGroup);
       }
     
@@ -254,7 +254,7 @@ export class SellerSamplesService {
     const samples = await queryBuilder
       .orderBy('sample.id', 'DESC')
       .getRawMany();
-      
+
     return samples;
   }
 }
