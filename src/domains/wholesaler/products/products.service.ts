@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In } from 'typeorm';
+import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
 import { CreateWholesalerProductDto } from './dto/create-wholesaler-product.dto';
@@ -177,14 +177,35 @@ export class WholesalerProductsService {
 
   async findAllWholesalerProductByAdmin(query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
+      .leftJoinAndSelect('wholesalerProduct.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
     
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :wholesalerProductName', { wholesalerProductName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+
+    /*
     const [products, total] = await this.wholesalerProductRepository.findAndCount({
       relations: ['wholesalerProfile', 'wholesalerProfile.store'],
       order: { id: 'DESC' },
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
-    
+    */
+
+    const [products, total] = await queryBuilder
+      .orderBy('wholesalerProduct.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
     for (const product of products) {
       product.price = formatCurrency(product.price);
       product.wholesalerName = product.wholesalerProfile.name;
