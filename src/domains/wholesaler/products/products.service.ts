@@ -163,7 +163,30 @@ export class WholesalerProductsService {
     };
   }
 
-  async findAllWholesalerProductOption(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerProductOption(wholesalerId: number, query: string) {
+    const options = await this.wholesalerProductOptionRepository.find({
+      where: { 
+        wholesalerId, 
+        isDeleted: false
+      },
+      relations: ['wholesalerProduct'],
+      order: { id: 'DESC' }
+    });
+    
+    for (const option of options) {
+      option.optionPrice = formatCurrency(option.price);
+      option.wholesalerProduct.price = formatCurrency(option.wholesalerProduct.price);
+      delete(option.wholesalerId);
+      delete(option.price);
+      delete(option.isDeleted);
+      delete(option.wholesalerProduct.id);
+      delete(option.wholesalerProduct.wholesalerId);
+    }
+    
+    return options;
+  }
+
+  async findAllWholesalerProductOptionWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     
     const [options, total] = await this.wholesalerProductOptionRepository.findAndCount({
@@ -231,7 +254,7 @@ export class WholesalerProductsService {
     return products;
   }
 
-  async findAllWholesalerProductOptionWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async _findAllWholesalerProductOptionWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     
     const [products, total] = await this.wholesalerProductOptionRepository.findAndCount({
