@@ -64,4 +64,5 @@ export class SellerProductOption {
   sellerPrice: number;
   wholesalerPrice: number;
   mallName: string;
+  optionId: number;
 }

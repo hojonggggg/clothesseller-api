@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In } from 'typeorm';
+import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { Return } from 'src/commons/shared/entities/return.entity';
@@ -120,7 +120,7 @@ export class SellerProductsService {
     };
   }
 
-  async findOneSellerProductBySellerProductId(sellerId: number, sellerProductId: number) {
+  async findOneSellerProductBySellerProductId(sellerProductId: number) {
     
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
       .leftJoinAndSelect('sellerProduct.sellerProductOptions', 'sellerProductOptions')
@@ -133,8 +133,14 @@ export class SellerProductsService {
     const sellerProduct = await queryBuilder.getOne();
     const sellerProductOptions = sellerProduct.sellerProductOptions;
     for (const sellerProductOption of sellerProductOptions) {
+      sellerProductOption.optionId = sellerProductOption.id;
+      sellerProductOption.price = formatCurrency(sellerProductOption.price);
+      sellerProductOption.wholesalerOptionPrice = formatCurrency(sellerProductOption.wholesalerOptionPrice);
       delete(sellerProductOption.sellerId);
       delete(sellerProductOption.sellerProductId);
+      delete(sellerProductOption.isShow);
+      delete(sellerProductOption.isDeleted);
+      delete(sellerProductOption.isReturned);
     }
 
     sellerProduct.wholesalerProductCode = sellerProduct.wholesalerProduct.code;
@@ -326,5 +332,46 @@ export class SellerProductsService {
         isDeleted: true
       }
     );
+  }
+
+  async findAllSellerProductByAdmin(query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
+      .leftJoinAndSelect('sellerProduct.sellerProfile', 'sellerProfile')
+      .leftJoinAndSelect('sellerProduct.mall', 'mall')
+    
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sellerProduct.name LIKE :sellerProductName', { sellerProductName: `%${query}%` })
+            .orWhere('sellerProfile.name LIKE :sellerName', { sellerName: `%${query}%` });
+        })
+      );
+    }
+
+    const [products, total] = await queryBuilder
+      .orderBy('sellerProduct.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+    for (const product of products) {
+      product.price = formatCurrency(product.price);
+      product.wholesalerProductPrice = formatCurrency(product.wholesalerProductPrice);
+      product.sellerName = product.sellerProfile.name;
+      product.mallName = product.mall.name;
+      delete(product.wholesalerId);
+      delete(product.sellerId);
+      delete(product.sellerProfile);
+      delete(product.mall);
+    }
+    
+    return {
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
   }
 }

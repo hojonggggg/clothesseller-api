@@ -11,6 +11,7 @@ import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { AdminUsersModule } from './users/users.module';
 import { AdminProductsModule } from './products/products.module';
+import { AdminSamplesModule } from './samples/samples.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AdminProductsModule } from './products/products.module';
     AuthModule,
     AdminUsersModule,
     AdminProductsModule,
+    AdminSamplesModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

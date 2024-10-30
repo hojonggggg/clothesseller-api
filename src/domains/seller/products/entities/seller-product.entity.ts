@@ -5,6 +5,7 @@ import { SellerProductOption } from './seller-product-option.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
+import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 
 @Entity('seller_product')
 export class SellerProduct {
@@ -52,6 +53,10 @@ export class SellerProduct {
   @JoinColumn({ name: 'wholesaler_id' })
   wholesalerProfile: WholesalerProfile;
 
+  @OneToOne(() => SellerProfile)
+  @JoinColumn({ name: 'seller_id' })
+  sellerProfile: SellerProfile;
+
   @OneToOne(() => WholesalerProduct)
   @JoinColumn({ name: 'wholesaler_product_id' })
   wholesalerProduct: WholesalerProduct;
@@ -68,4 +73,5 @@ export class SellerProduct {
   wholesalerMobile: string;
   mallName: string;
   wholesalerProductCode: string;
+  sellerName: string;
 }

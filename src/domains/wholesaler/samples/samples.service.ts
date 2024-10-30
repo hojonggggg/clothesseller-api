@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets, In } from 'typeorm';
-import { Sample } from 'src/commons/shared/entities/sample.entity';
+import { Sample } from 'src/commons/shared/samples/entities/sample.entity';
 import { WholesalerCreateSampleAutoDto } from './dto/wholesaler-create-sample-auto.dto';
 import { WholesalerCreateSampleManualDto } from './dto/wholesaler-create-sample-manual.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';

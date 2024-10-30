@@ -160,7 +160,7 @@ export class SellerProductsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.sellerProductsService.findOneSellerProductBySellerProductId(sellerId, sellerProductId);
+    const result = await this.sellerProductsService.findOneSellerProductBySellerProductId(sellerProductId);
     return {
       statusCode: 200,
       data: result

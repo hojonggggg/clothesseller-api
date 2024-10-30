@@ -191,15 +191,6 @@ export class WholesalerProductsService {
       );
     }
 
-    /*
-    const [products, total] = await this.wholesalerProductRepository.findAndCount({
-      relations: ['wholesalerProfile', 'wholesalerProfile.store'],
-      order: { id: 'DESC' },
-      take: pageSize,
-      skip: (pageNumber - 1) * pageSize,
-    });
-    */
-
     const [products, total] = await queryBuilder
       .orderBy('wholesalerProduct.id', 'DESC')
       .take(pageSize)
@@ -341,15 +332,21 @@ export class WholesalerProductsService {
     };
   }
 
-  async findOneWholesalerProductByWholesalerProductId(sellerId: number, wholesalerProductId: number) {
+  async findOneWholesalerProductByWholesalerProductId(wholesalerProductId: number) {
     
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
-      .leftJoinAndSelect('wholesalerProduct.wholesalerProductOptions', 'wholesalerProductOptions')
+      .leftJoinAndSelect('wholesalerProduct.options', 'options')
       .where('wholesalerProduct.id = :wholesalerProductId', { wholesalerProductId });
 
     const wholesalerProduct = await queryBuilder.getOne();
-    const wholesalerProductOptions = wholesalerProduct.options;
-    for (const wholesalerProductOption of wholesalerProductOptions) {
+    wholesalerProduct.price = formatCurrency(wholesalerProduct.price);
+    const options = wholesalerProduct.options;
+    for (const option of options) {
+      option.optionId = option.id;
+      option.price = formatCurrency(option.price);
+      delete(option.wholesalerId);
+      delete(option.wholesalerProductId);
+      delete(option.isDeleted);
       //delete(sellerProductOption.sellerId);
       //delete(sellerProductOption.sellerProductId);
     }

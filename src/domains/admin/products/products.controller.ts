@@ -1,14 +1,16 @@
-import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
+import { SellerProductsService } from 'src/domains/seller/products/products.service';
 
 @ApiTags('admin > products')
 @Controller('admin')
 export class AdminProductsController {
   constructor(
-    private wholesalerProductsService: WholesalerProductsService
+    private wholesalerProductsService: WholesalerProductsService,
+    private sellerProductsService: SellerProductsService
   ) {}
   
   @Get('products')
@@ -16,19 +18,47 @@ export class AdminProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'query', required: false, description: '도매처명 or 상품명' })
-  async findAllWholesalerProduct(
-    @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
-    @Request() req
+  @ApiQuery({ name: 'role', required: true, description: 'WHOLESALER or SELLER' })
+  @ApiQuery({ name: 'query', required: false, description: '(도매처명 or 셀러명) or 상품명' })
+  async findAllProduct(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query('role') role: string,
+    @Query('query') query: string
   ) {
-    const result = await this.wholesalerProductsService.findAllWholesalerProductByAdmin(query, paginationQuery);
+    let result;
+    if (role === 'WHOLESALER') {
+      result = await this.wholesalerProductsService.findAllWholesalerProductByAdmin(query, paginationQuery);
+    } else if (role === 'SELLER') {
+      result = await this.sellerProductsService.findAllSellerProductByAdmin(query, paginationQuery);
+    }
+    
     return {
       statusCode: 200,
       data: result
     };
   }
-
-
+  
+  @Get('product/:productId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 상품 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'role', required: true, description: 'WHOLESALER or SELLER' })
+  async findOneWholesalerProduct(
+    @Param('productId') productId: number, 
+    @Query('role') role: string
+  ) {
+    let result;
+    if (role === 'WHOLESALER') {
+      result = await this.wholesalerProductsService.findOneWholesalerProductByWholesalerProductId(productId);
+    } else if (role === 'SELLER') {
+      result = await this.sellerProductsService.findOneSellerProductBySellerProductId(productId);
+    }
+    
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 
 }

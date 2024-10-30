@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { SellerProfile } from '../users/entities/seller-profile.entity';
-import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
+import { SellerProfile } from '../../users/entities/seller-profile.entity';
+import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 
