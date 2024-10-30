@@ -41,7 +41,7 @@ export class WholesalerProductsController {
   @Get('products')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 상품 옵션 목록 조회' })
+  @ApiOperation({ summary: '[완료] 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllWholesalerProduct(
@@ -50,7 +50,7 @@ export class WholesalerProductsController {
   ) {
     const wholesalerId = req.user.uid;
     //const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
-    const result = await this.wholesalerProductsService.findAllWholesalerProductOption(wholesalerId, query);
+    const result = await this.wholesalerProductsService.findOneWholesalerProduct(wholesalerId);
     return {
       statusCode: 200,
       data: result
