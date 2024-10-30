@@ -10,7 +10,7 @@ import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { AdminUsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
+import { AdminProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { ProductsModule } from './products/products.module';
     }),
     AuthModule,
     AdminUsersModule,
-    ProductsModule,
+    AdminProductsModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

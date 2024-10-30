@@ -175,6 +175,33 @@ export class WholesalerProductsService {
     };
   }
 
+  async findAllWholesalerProductByAdmin(query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+    
+    const [products, total] = await this.wholesalerProductRepository.findAndCount({
+      relations: ['wholesalerProfile', 'wholesalerProfile.store'],
+      order: { id: 'DESC' },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
+    });
+    
+    for (const product of products) {
+      product.price = formatCurrency(product.price);
+      product.wholesalerName = product.wholesalerProfile.name;
+      product.wholesalerStoreName = product.wholesalerProfile.store.name;
+      product.wholesalerStoreRoomNo = product.wholesalerProfile.roomNo;
+      delete(product.wholesalerId);
+      delete(product.wholesalerProfile);
+    }
+    
+    return {
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
   async findAllWholesalerProductOption(wholesalerId: number, query: string) {
     const options = await this.wholesalerProductOptionRepository.find({
       where: { 
