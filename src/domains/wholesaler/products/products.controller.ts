@@ -50,7 +50,7 @@ export class WholesalerProductsController {
   ) {
     const wholesalerId = req.user.uid;
     //const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
-    const result = await this.wholesalerProductsService.findOneWholesalerProduct(wholesalerId);
+    const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
     return {
       statusCode: 200,
       data: result
