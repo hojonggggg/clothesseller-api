@@ -26,12 +26,12 @@ export class ProductRequestsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const { wholesalerId, code } = createProductRequestDto;
-    const productRequest = await this.productRequestsService.findOneProductRequestByWholesalerIdAndCode(wholesalerId, code);
+    const { wholesalerId, name } = createProductRequestDto;
+    const productRequest = await this.productRequestsService.findOneProductRequestByWholesalerIdAndName(wholesalerId, name);
     if (productRequest) {
       throw new ConflictException('이미 등록 요청된 상품입니다.');
     }
-    const wholesalerProduct = await this.wholesalerProductsService.findOneWholesalerProductByCode(wholesalerId, code);
+    const wholesalerProduct = await this.wholesalerProductsService.findOneWholesalerProductByName(wholesalerId, name);
     if (wholesalerProduct) {
       throw new ConflictException('이미 등록된 상품입니다.');
     }

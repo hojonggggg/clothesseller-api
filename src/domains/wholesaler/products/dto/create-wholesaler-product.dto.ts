@@ -17,10 +17,11 @@ class CreateWholesalerProductOptionDto {
 }
 
 export class CreateWholesalerProductDto {
+  /*
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
   @IsString()
   code: string;
-
+  */
   @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '상품명' })
   @IsString()
   name: string;

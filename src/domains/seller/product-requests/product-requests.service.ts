@@ -55,8 +55,8 @@ export class ProductRequestsService {
     return await this.productRequestRepository.findOne({ where: { id } });
   }
 
-  async findOneProductRequestByWholesalerIdAndCode(wholesalerId: number, code: string): Promise<ProductRequest | undefined> {
-    return this.productRequestRepository.findOne({ where: { wholesalerId, code } });
+  async findOneProductRequestByWholesalerIdAndName(wholesalerId: number, name: string): Promise<ProductRequest | undefined> {
+    return this.productRequestRepository.findOne({ where: { wholesalerId, name } });
   }
 
   async findAllProductRequestBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {

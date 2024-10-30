@@ -17,11 +17,11 @@ export class CreateProductRequestDto {
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
-
+  /*
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
   @IsString()
   code: string;
-
+  */
   @ApiProperty({ example: '머슬핏 컴포트 반팔 니트', description: '도매처 상품명' })
   @IsString()
   name: string;

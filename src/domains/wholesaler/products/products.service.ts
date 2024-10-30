@@ -26,8 +26,20 @@ export class WholesalerProductsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      const lastProduct = await this.wholesalerProductRepository
+        .createQueryBuilder('wholesalerProduct')
+        .select('wholesalerProduct.code AS code')
+        .orderBy('wholesalerProduct.id', 'DESC')
+        .getRawOne();
+      const lastProductCode = lastProduct.code;
+      const lastProductCodeNumber = lastProductCode.replace('CS', '');
+      const newProductCodeNumber = (lastProductCodeNumber * 1) + 1;
+      const formattedCodeNumber = newProductCodeNumber.toString().padStart(6, '0');
+      const code = 'CS' + formattedCodeNumber;
+
       const wholesalerProduct = await this.wholesalerProductRepository.save({
         wholesalerId,
+        code,
         ...createWholesalerProductDto
       });
 
@@ -52,8 +64,8 @@ export class WholesalerProductsService {
     }
   }
 
-  async findOneWholesalerProductByCode(wholesalerId: number, code: string): Promise<WholesalerProduct | undefined> {
-    return await this.wholesalerProductRepository.findOne({ where: {wholesalerId, code} });
+  async findOneWholesalerProductByName(wholesalerId: number, name: string): Promise<WholesalerProduct | undefined> {
+    return await this.wholesalerProductRepository.findOne({ where: {wholesalerId, name} });
   }
 
   async findOneWholesalerProduct(wholesalerProductId: number) {

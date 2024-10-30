@@ -150,6 +150,7 @@ export class UsersService {
 
   async findAllSeller(query: string) {
     const queryBuilder = this.sellerProfileRepository.createQueryBuilder('sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
 
     if (query) {
       queryBuilder.andWhere('sellerProfile.name LIKE :query', { query: `%${query}%` });
@@ -163,11 +164,16 @@ export class UsersService {
       seller.sellerId = seller.userId;
       const { address1, address2 } = seller;
       seller.address = address1 + " " + address2;
+      seller.deliverymanMobile = null;
+      if (seller.deliveryman) {
+        seller.deliverymanMobile = seller.deliveryman.mobile;
+      }
 
       delete(seller.userId);
       delete(seller.licenseNumber);
       delete(seller.address1);
       delete(seller.address2);
+      delete(seller.deliveryman);
     }
 
     return sellers;
@@ -178,6 +184,7 @@ export class UsersService {
     
     const queryBuilder = this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.sellerProfile', 'sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('user.role = :role', { role: 'SELLER' });
     
     if (query) {
@@ -215,13 +222,19 @@ export class UsersService {
 
   async findOneSeller(sellerId: number) {
     const queryBuilder = this.sellerProfileRepository.createQueryBuilder('sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('sellerProfile.userId = :sellerId', { sellerId });
 
     const seller = await queryBuilder.getOne();
     const { address1, address2 } = seller;
     seller.address = address1 + " " + address2;
+    seller.deliverymanMobile = null;
+    if (seller.deliveryman) {
+      seller.deliverymanMobile = seller.deliveryman.mobile;
+    }
     delete(seller.address1);
     delete(seller.address2);
+    delete(seller.deliveryman);
 
     return seller;
   }

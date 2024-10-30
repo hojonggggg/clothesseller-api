@@ -26,8 +26,8 @@ export class WholesalerProductsController {
     @Request() req
   ) {
     const wholesalerId = req.user.uid;
-    const { code } = createWholesalerProductDto;
-    const product = await this.wholesalerProductsService.findOneWholesalerProductByCode(wholesalerId, code);
+    const { name } = createWholesalerProductDto;
+    const product = await this.wholesalerProductsService.findOneWholesalerProductByName(wholesalerId, name);
     if (product) {
       throw new ConflictException('이미 등록된 상품입니다.');
     }

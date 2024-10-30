@@ -34,6 +34,7 @@ export class SellerProfile {
   
   sellerId: number;
   address: string;
+  deliverymanMobile: string;
   /*
   @OneToMany(() => Order, (order) => order.sellerProfile)
   orders: Order[];

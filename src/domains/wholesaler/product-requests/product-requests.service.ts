@@ -122,7 +122,17 @@ export class ProductRequestsService {
         }
       );
 
-      const { code, name, price, country, composition, options } = approveProductRequestDto;
+      const { name, price, country, composition, options } = approveProductRequestDto;
+      const lastProduct = await this.wholesalerProductRepository
+        .createQueryBuilder('wholesalerProduct')
+        .select('wholesalerProduct.code AS code')
+        .orderBy('wholesalerProduct.id', 'DESC')
+        .getRawOne();
+      const lastProductCode = lastProduct.code;
+      const lastProductCodeNumber = lastProductCode.replace('CS', '');
+      const newProductCodeNumber = (lastProductCodeNumber * 1) + 1;
+      const formattedCodeNumber = newProductCodeNumber.toString().padStart(6, '0');
+      const code = 'CS' + formattedCodeNumber;
       const product = await this.wholesalerProductRepository.save({
         wholesalerId,
         code,
