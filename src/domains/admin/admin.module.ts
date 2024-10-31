@@ -13,6 +13,7 @@ import { AdminUsersModule } from './users/users.module';
 import { AdminProductsModule } from './products/products.module';
 import { AdminSamplesModule } from './samples/samples.module';
 import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
+import { AdminOrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
     AdminUsersModule,
     AdminProductsModule,
     AdminSamplesModule,
+    AdminOrdersModule,
     AdminPrepaymentsModule,
   ],
   providers: [AuthService, UsersService],

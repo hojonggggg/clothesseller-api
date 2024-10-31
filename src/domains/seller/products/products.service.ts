@@ -334,7 +334,7 @@ export class SellerProductsService {
     );
   }
 
-  async findAllSellerProductByAdmin(query: string, paginationQuery: PaginationQueryDto) {
+  async findAllSellerProductForAdmin(query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')

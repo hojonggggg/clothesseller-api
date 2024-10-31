@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards, Request, Param } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
@@ -21,15 +21,15 @@ export class AdminProductsController {
   @ApiQuery({ name: 'type', required: true, description: 'WHOLESALER or SELLER' })
   @ApiQuery({ name: 'query', required: false, description: '(도매처명 or 셀러명) or 상품명' })
   async findAllProduct(
-    @Query() paginationQuery: PaginationQueryDto,
     @Query('type') type: string,
-    @Query('query') query: string
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto
   ) {
     let result;
     if (type === 'WHOLESALER') {
-      result = await this.wholesalerProductsService.findAllWholesalerProductByAdmin(query, paginationQuery);
+      result = await this.wholesalerProductsService.findAllWholesalerProductForAdmin(query, paginationQueryDto);
     } else if (type === 'SELLER') {
-      result = await this.sellerProductsService.findAllSellerProductByAdmin(query, paginationQuery);
+      result = await this.sellerProductsService.findAllSellerProductForAdmin(query, paginationQueryDto);
     }
     
     return {

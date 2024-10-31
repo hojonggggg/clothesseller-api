@@ -175,7 +175,7 @@ export class WholesalerProductsService {
     };
   }
 
-  async findAllWholesalerProductByAdmin(query: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerProductForAdmin(query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
