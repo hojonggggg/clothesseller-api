@@ -60,5 +60,4 @@ export class AdminProductsController {
       data: result
     };
   }
-
 }

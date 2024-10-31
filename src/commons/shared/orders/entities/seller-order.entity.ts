@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SellerProfile } from '../../users/entities/seller-profile.entity';
 import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
 import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
@@ -61,6 +62,10 @@ export class SellerOrder {
   @JoinColumn({ name: 'seller_product_option_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결
   sellerProductOption: SellerProductOption;
 
+  @OneToOne(() => SellerProfile)
+  @JoinColumn({ name: 'seller_id' })
+  sellerProfile: SellerProfile;
+
   @OneToOne(() => WholesalerProfile)
   @JoinColumn({ name: 'wholesaler_id' })
   wholesalerProfile: WholesalerProfile;
@@ -82,4 +87,6 @@ export class SellerOrder {
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;
   wholesalerMobile: string;
+  productName: string;
+  sellerName: string;
 }
