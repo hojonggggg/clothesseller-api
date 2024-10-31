@@ -345,7 +345,7 @@ export class WholesalerOrdersService {
         'wholesalerProductOption.size AS size',
         'wholesalerProductOption.price AS optionPrice',
         'order.quantity AS quantity',
-        'order.prePaymentDate AS prePaymentDate',
+        'order.prepaymentDate AS prepaymentDate',
         'order.deliveryDate AS deliveryDate',
       ])
       .leftJoin('order.wholesalerProduct', 'wholesalerProduct')
@@ -353,7 +353,7 @@ export class WholesalerOrdersService {
       .where('order.wholesalerId = :wholesalerId', { wholesalerId })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('STR_TO_DATE(order.prePaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+          qb.where('STR_TO_DATE(order.prepaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
             startDate,
             endDate
           })
