@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { WholesalerProduct } from './wholesaler-product.entity';
-import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 
 @Entity('wholesaler_product_option')
 export class WholesalerProductOption {

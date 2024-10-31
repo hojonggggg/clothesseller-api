@@ -1,9 +1,9 @@
 import { Controller, Get, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { SellerProductsService } from 'src/domains/seller/products/products.service';
+import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('admin > products')
 @Controller('admin')
@@ -18,17 +18,17 @@ export class AdminProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'role', required: true, description: 'WHOLESALER or SELLER' })
+  @ApiQuery({ name: 'type', required: true, description: 'WHOLESALER or SELLER' })
   @ApiQuery({ name: 'query', required: false, description: '(도매처명 or 셀러명) or 상품명' })
   async findAllProduct(
     @Query() paginationQuery: PaginationQueryDto,
-    @Query('role') role: string,
+    @Query('type') type: string,
     @Query('query') query: string
   ) {
     let result;
-    if (role === 'WHOLESALER') {
+    if (type === 'WHOLESALER') {
       result = await this.wholesalerProductsService.findAllWholesalerProductByAdmin(query, paginationQuery);
-    } else if (role === 'SELLER') {
+    } else if (type === 'SELLER') {
       result = await this.sellerProductsService.findAllSellerProductByAdmin(query, paginationQuery);
     }
     
@@ -43,15 +43,15 @@ export class AdminProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'role', required: true, description: 'WHOLESALER or SELLER' })
+  @ApiQuery({ name: 'type', required: true, description: 'WHOLESALER or SELLER' })
   async findOneWholesalerProduct(
     @Param('productId') productId: number, 
-    @Query('role') role: string
+    @Query('type') type: string
   ) {
     let result;
-    if (role === 'WHOLESALER') {
+    if (type === 'WHOLESALER') {
       result = await this.wholesalerProductsService.findOneWholesalerProductByWholesalerProductId(productId);
-    } else if (role === 'SELLER') {
+    } else if (type === 'SELLER') {
       result = await this.sellerProductsService.findOneSellerProductBySellerProductId(productId);
     }
     

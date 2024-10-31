@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets, In } from 'typeorm';
-import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
-import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.entity';
+import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { getStartAndEndDate } from 'src/commons/shared/functions/date';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';

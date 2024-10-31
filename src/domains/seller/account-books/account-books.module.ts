@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SellerAccountBooksService } from './account-books.service';
 import { SellerAccountBooksController } from './account-books.controller';
-import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
+import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { TaxInvoice } from 'src/commons/shared/entities/tax-invoice.entity';
 
 @Module({

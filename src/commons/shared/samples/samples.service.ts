@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
 import { Sample } from './entities/sample.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SamplesService {
@@ -49,9 +49,11 @@ export class SamplesService {
 
   async findOneSampleForAdmin(sampleId: number) {
     const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
-      .where('sample.id = :sampleId', { sampleId });
+      .where('sample.id = :sampleId', { sampleId })
+      .andWhere('sample.isDeleted = 0');
 
     const sample = await queryBuilder.getOne();
+    delete(sample.isDeleted);
 
     return sample;
   }

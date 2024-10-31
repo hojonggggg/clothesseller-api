@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
-import { WholesalerOrder } from 'src/commons/shared/entities/wholesaler-order.entity';
-import { WholesalerOrderHistory } from 'src/commons/shared/entities/wholesaler-order-history.entity';
+import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
+import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/wholesaler-order-history.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';

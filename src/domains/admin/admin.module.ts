@@ -12,6 +12,7 @@ import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.
 import { AdminUsersModule } from './users/users.module';
 import { AdminProductsModule } from './products/products.module';
 import { AdminSamplesModule } from './samples/samples.module';
+import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AdminSamplesModule } from './samples/samples.module';
     AdminUsersModule,
     AdminProductsModule,
     AdminSamplesModule,
+    AdminPrepaymentsModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { SellerOrder } from 'src/commons/shared/entities/seller-order.entity';
+import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.entity';
 import { WholesalerProductOption } from './wholesaler-product-option.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 
@@ -47,5 +47,8 @@ export class WholesalerProduct {
   wholesalerName: string;
   wholesalerStoreName: string;
   wholesalerStoreRoomNo: string;
+  productId: number;
+  color: string;
+  size: string;
   
 }

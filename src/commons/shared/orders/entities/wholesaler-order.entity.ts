@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
-import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
-import { SellerProfile } from '../users/entities/seller-profile.entity';
+import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
+import { SellerProfile } from '../../users/entities/seller-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
+import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
 
@@ -86,16 +86,18 @@ export class WholesalerOrder {
   isDeleted: boolean;
 
   @ApiProperty({ example: false, description: '삭제 여부' })
-  @Column({ name: 'is_pre_payment', default: true })
+  @Column({ name: 'is_prepayment', default: true })
   isPrepayment: boolean;
 
   @ApiProperty({ example: false, description: '품절 여부' })
   @Column({ name: 'is_soldout', default: true })
   isSoldout: boolean;
 
+  /*
   @ManyToOne(() => WholesalerProductOption, (productOption) => productOption.orders)
   @JoinColumn({ name: 'wholesaler_product_option_id' })
   wholesalerProductOption: WholesalerProductOption;
+  */
   /*
   @ManyToOne(() => SellerProfile, (sellerProfile) => sellerProfile.orders)
   @JoinColumn({ name: 'seller_id', referencedColumnName: 'userId' })
@@ -105,6 +107,10 @@ export class WholesalerOrder {
   @OneToOne(() => WholesalerProduct)
   @JoinColumn({ name: 'wholesaler_product_id' })
   wholesalerProduct: WholesalerProduct;
+
+  @OneToOne(() => WholesalerProductOption)
+  @JoinColumn({ name: 'wholesaler_product_option_id' })
+  wholesalerProductOption: WholesalerProductOption;
 
   @OneToOne(() => WholesalerProfile)
   @JoinColumn({ name: 'wholesaler_id', referencedColumnName: 'userId' })
@@ -132,6 +138,7 @@ export class WholesalerOrder {
   wholesalerMobile: string;
 
   name: string;
+  productName: string;
   color: string;
   size: string;
   //quantity: number;
