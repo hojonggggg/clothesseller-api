@@ -74,4 +74,6 @@ export class SellerProduct {
   mallName: string;
   wholesalerProductCode: string;
   sellerName: string;
+  color: string;
+  size: string;
 }
