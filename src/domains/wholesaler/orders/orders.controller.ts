@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { WholesalerOrdersService } from './orders.service';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
+import { WholesalerDeliveryDelayOrderDto } from './dto/wholesaler-delivery-delay-order.dto';
 import { WholesalerRejectOrderDto } from './dto/wholesaler-reject-order.dto';
 import { WholesalerSoldoutOrderDto } from './dto/wholesaler-soldout-order.dto';
 import { WholesalerSetOrderDto } from './dto/wholesaler-set-order.dto';
@@ -164,10 +165,19 @@ export class WholesalerOrdersController {
     schema: {
       type: 'object',
       properties: {
-        ids: {
+        orders: {
           type: 'array',
-          items: { type: 'integer' },
-          example: [1, 2],
+          items: { 
+            type: 'object', 
+            properties: {
+              id: { type: 'integer', example: 1 },
+              memo: { type: 'string', example: '2024/10/20 발송예정' },
+            },
+          },
+          example: [
+            { id: 1, memo: '2024/10/20 발송예정' },
+            { id: 2, memo: '2024/10/30 발송예정' }
+          ],
         },
       },
     },
@@ -260,21 +270,31 @@ export class WholesalerOrdersController {
     schema: {
       type: 'object',
       properties: {
-        ids: {
+        orders: {
           type: 'array',
-          items: { type: 'integer' },
-          example: [1, 2],
+          items: { 
+            type: 'object', 
+            properties: {
+              id: { type: 'integer', example: 1 },
+              quantity: { type: 'integer', example: 10 },
+              deliveryDate: { type: 'string', example: '2024/10/15' },
+            },
+          },
+          example: [
+            { id: 1, quantity: 10, deliveryDate: '2024/10/15' },
+            { id: 2, quantity: 20, deliveryDate: '2024/10/25' }
+          ],
         },
       },
     },
   })
   async setDeliveryDelayOrder(
     @Request() req, 
-    @Body() wholesalerSetOrderDto: WholesalerSetOrderDto
+    @Body() wholesalerDeliveryDelayOrderDto: WholesalerDeliveryDelayOrderDto
   ) {
     const wholesalerId = req.user.uid;
     const status = '출고지연';
-    await this.wholesalerOrdersService.setDeliveryStatusOrder(wholesalerId, status, wholesalerSetOrderDto.ids);
+    await this.wholesalerOrdersService.setDeliveryDelayOrder(wholesalerId, wholesalerDeliveryDelayOrderDto);
     return {
       statusCode: 200,
       message: '출고지연 처리되었습니다.'

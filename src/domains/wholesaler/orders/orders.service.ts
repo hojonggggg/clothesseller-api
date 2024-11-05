@@ -7,8 +7,9 @@ import { WholesalerProductOption } from '../products/entities/wholesaler-product
 import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
-import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
+import { WholesalerDeliveryDelayOrderDto } from './dto/wholesaler-delivery-delay-order.dto';
 import { WholesalerRejectOrderDto } from './dto/wholesaler-reject-order.dto';
+import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
 import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepayment.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
@@ -224,6 +225,7 @@ export class WholesalerOrdersService {
         await this.wholesalerOrderRepository.update(
           { id, wholesalerId }, 
           { 
+            memo,
             status: '품절',
             isSoldout: true
            }
@@ -359,6 +361,40 @@ export class WholesalerOrdersService {
       }
     );
   }
+
+  async setDeliveryDelayOrder(wholesalerId: number, wholesalerDeliveryDelayOrderDto: WholesalerDeliveryDelayOrderDto): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const { orders } = wholesalerDeliveryDelayOrderDto;
+      for (const order of orders) {
+        const { id, quantity, deliveryDate } = order;
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+
+        await this.wholesalerOrderRepository.update(
+          { id, wholesalerId },
+          { 
+            status: '출고지연',
+            deliveryDate
+          }
+        );
+
+        await this.createOrderHistory(id, 'delivery-delay', quantity);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+
 
   async findAllPrePaymentOfMonthly(wholesalerId: number, month: string) {
     const { startDate, endDate } = getStartAndEndDate(month);
