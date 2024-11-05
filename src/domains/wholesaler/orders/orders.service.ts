@@ -687,6 +687,7 @@ export class WholesalerOrdersService {
   }
 
   async createPrepayment(sellerId: number, createPrepaymentDto: CreatePrepaymentDto) {
+    
     const prepayment = this.wholesalerOrderRepository.create({
       ...createPrepaymentDto,
       sellerId,
@@ -696,6 +697,35 @@ export class WholesalerOrdersService {
       isPrepayment: true
     });
     return await this.wholesalerOrderRepository.save(prepayment);
+  }
+
+  async createPrePaymentFromWholesaler(wholesalerId: number, wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto) {
+
+    const { options } = wholesalerCreatePrepaymentDto;
+
+    for (const option of options) {
+
+      const { wholesalerProductOptionId, quantity } = option;
+
+      const prepayment = this.wholesalerOrderRepository.create({
+        ...wholesalerCreatePrepaymentDto,
+        wholesalerId,
+        wholesalerProductOptionId,
+        quantity: 0,
+        quantityTotal: quantity,
+        quantityOfDelivery: 0,
+        quantityOfPrepayment: quantity,
+        orderType: '수동',
+        status: '미송요청',
+        prepaymentDate: getToday(),
+        isPrepayment: true
+      });
+
+      await this.wholesalerOrderRepository.save(prepayment);
+    }
+    
+    
+    
   }
 }
 

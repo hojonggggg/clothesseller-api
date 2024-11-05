@@ -203,8 +203,8 @@ export class WholesalerOrdersController {
     @Body() wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto, 
     @Request() req
   ) {
-    const sellerId = req.user.uid;
-    const result = await this.wholesalerOrdersService.createPrePayment(sellerId, wholesalerCreatePrepaymentDto);
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.createPrePaymentFromWholesaler(wholesalerId, wholesalerCreatePrepaymentDto);
     return {
       statusCode: 201,
       message: '미송 등록이 완료되었습니다.'
