@@ -13,6 +13,7 @@ import { WholesalerCreatePrepaymentDto } from './dto/wholesaler-create-prepaymen
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 import { getToday, getStartAndEndDate } from 'src/commons/shared/functions/date';
+import { WholesalerSoldoutOrderDto } from './dto/wholesaler-soldout-order.dto';
 
 @Injectable()
 export class WholesalerOrdersService {
@@ -207,13 +208,38 @@ export class WholesalerOrdersService {
     }
   }
 
-  async orderSoldout(wholesalerId: number, ids: number[]): Promise<void> {
+  async orderSoldout(wholesalerId: number, wholesalerSoldoutOrderDto: WholesalerSoldoutOrderDto): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      const { orders } = wholesalerSoldoutOrderDto;
+
+      for (const order of orders) {
+        const { id, memo } = order;
+        //const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id, wholesalerId } });
+
+        await this.wholesalerOrderRepository.update(
+          { id, wholesalerId }, 
+          { 
+            status: '품절',
+            isSoldout: true
+           }
+        );
+
+        await this.createOrderHistory(id, 'soldout', null);
+
+        const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id } });
+        const { wholesalerProductOptionId } = orderItem;
+        await this.wholesalerProductOptionRepository.update(
+          { id: wholesalerProductOptionId },
+          { isSoldout: true }
+        );
+      }
+
+      /*
       for (const id of ids) {
         await this.wholesalerOrderRepository.update(
           { id, wholesalerId }, 
@@ -234,6 +260,7 @@ export class WholesalerOrdersService {
           { isSoldout: true }
         );
       }
+      */
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();

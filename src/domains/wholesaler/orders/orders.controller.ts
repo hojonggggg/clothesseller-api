@@ -177,7 +177,7 @@ export class WholesalerOrdersController {
     @Body() wholesalerSoldoutOrderDto: WholesalerSoldoutOrderDto
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerOrdersService.orderSoldout(wholesalerId, wholesalerSoldoutOrderDto.ids);
+    await this.wholesalerOrdersService.orderSoldout(wholesalerId, wholesalerSoldoutOrderDto);
     return {
       statusCode: 200,
       message: '품절 처리가 완료되었습니다.'
