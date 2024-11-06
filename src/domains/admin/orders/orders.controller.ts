@@ -58,4 +58,20 @@ export class AdminOrdersController {
       data: result
     };
   }
+
+  @Get('orders/statistics')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 상품별 주문 주회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'day', required: true, description: '조회하려는 날' })
+  async wholesalerOrderStatistics(
+    @Query('day') day: string
+  ) {
+    const result = await this.ordersService.wholesalerOrderStatistics(day);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 }

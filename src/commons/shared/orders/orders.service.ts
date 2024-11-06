@@ -136,6 +136,34 @@ export class OrdersService {
     return wholesalerOrder;
   }
 
+  async wholesalerOrderStatistics(day: string) {
+    const formattedDay = day.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .select([
+        "wholesalerOrder.wholesalerProductId AS wholesalerProductId",
+        "wholesalerOrder.wholesalerProductOptionId AS wholesalerProductOptionId",
+        "wholesalerProduct.name AS name",
+        "wholesalerProduct.price AS price",
+        "wholesalerProductOption.color AS color",
+        "wholesalerProductOption.size AS size",
+        "SUM(wholesalerOrder.quantityTotal) AS quantity"
+      ])
+      .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
+      .where("DATE(wholesalerOrder.createdAt) = :day", { day: formattedDay })
+      .groupBy("wholesalerOrder.wholesalerProductOptionId")
+      .orderBy("quantity", "DESC");
+
+    const statistics = await queryBuilder.getRawMany();
+    for (const item of statistics) {
+      item.price = formatCurrency(item.price);
+    }
+
+
+    return statistics;
+  }
+
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
