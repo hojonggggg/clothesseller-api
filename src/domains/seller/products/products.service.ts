@@ -119,7 +119,7 @@ export class SellerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  
   async findOneSellerProductBySellerProductId(sellerProductId: number) {
     
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
@@ -162,7 +162,7 @@ export class SellerProductsService {
 
     return sellerProduct;
   }
-
+  
   async updateSellerProduct(sellerId: number, sellerProductId: number, updateSellerProductDto: UpdateSellerProductDto): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -333,7 +333,7 @@ export class SellerProductsService {
       }
     );
   }
-
+  /*
   async findAllSellerProductForAdmin(query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
@@ -374,4 +374,5 @@ export class SellerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+  */
 }

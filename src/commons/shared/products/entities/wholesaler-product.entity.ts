@@ -33,10 +33,10 @@ export class WholesalerProduct {
   @ApiProperty({ example: '면 100%', description: '혼용률' })
   @Column()
   composition: string;
-
+  /*
   @OneToMany(() => SellerOrder, (order) => order.wholesalerProduct)
   sellerOrders: SellerOrder[];
-
+  */
   @OneToOne(() => WholesalerProfile)
   @JoinColumn({ name: 'wholesaler_id', referencedColumnName: 'userId' })
   wholesalerProfile: WholesalerProfile;

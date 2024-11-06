@@ -331,7 +331,7 @@ export class WholesalerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  /*
   async findOneWholesalerProductByWholesalerProductId(wholesalerProductId: number) {
     
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
@@ -352,4 +352,5 @@ export class WholesalerProductsService {
     }
     return wholesalerProduct;
   }
+  */
 }

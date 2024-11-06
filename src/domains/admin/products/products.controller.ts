@@ -2,18 +2,14 @@ import { Controller, Get, Query, UseGuards, Param, Post, Body, ConflictException
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductsService } from 'src/commons/shared/products/products.service';
-import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
-import { SellerProductsService } from 'src/domains/seller/products/products.service';
-import { CreateWholesalerProductDtoFromAdmin } from 'src/commons/shared/products/dto/admin-create-wholesaler-product.dto';
+import { CreateWholesalerProductDtoFromAdmin } from 'src/commons/shared/products/dto/create-wholesaler-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('admin > products')
 @Controller('admin')
 export class AdminProductsController {
   constructor(
-    private productsService: ProductsService,
-    private wholesalerProductsService: WholesalerProductsService,
-    private sellerProductsService: SellerProductsService
+    private productsService: ProductsService
   ) {}
   
   @Get('products')
@@ -32,7 +28,7 @@ export class AdminProductsController {
     if (type === 'WHOLESALER') {
       result = await this.productsService.findAllWholesalerProductForAdmin(query, paginationQueryDto);
     } else if (type === 'SELLER') {
-      result = await this.sellerProductsService.findAllSellerProductForAdmin(query, paginationQueryDto);
+      result = await this.productsService.findAllSellerProductForAdmin(query, paginationQueryDto);
     }
     
     return {
@@ -53,9 +49,9 @@ export class AdminProductsController {
   ) {
     let result;
     if (type === 'WHOLESALER') {
-      result = await this.wholesalerProductsService.findOneWholesalerProductByWholesalerProductId(productId);
+      result = await this.productsService.findOneWholesalerProductById(productId);
     } else if (type === 'SELLER') {
-      result = await this.sellerProductsService.findOneSellerProductBySellerProductId(productId);
+      result = await this.productsService.findOneSellerProductById(productId);
     }
     
     return {
@@ -73,7 +69,7 @@ export class AdminProductsController {
     @Body() createWholesalerProductDto: CreateWholesalerProductDtoFromAdmin, 
   ) {
     const { wholesalerId, name } = createWholesalerProductDto;
-    const product = await this.productsService.findOneWholesalerProductByName(wholesalerId, name);
+    const product = await this.productsService.findOneWholesalerProductByWholesalerIdAndName(wholesalerId, name);
     if (product) {
       throw new ConflictException('이미 등록된 상품입니다.');
     }

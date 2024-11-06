@@ -15,6 +15,7 @@ import { AdminSamplesModule } from './samples/samples.module';
 import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
 import { AdminOrdersModule } from './orders/orders.module';
 import { AdminWeekProductsModule } from './week-products/week-products.module';
+import { AdminBoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AdminWeekProductsModule } from './week-products/week-products.module';
     AdminOrdersModule,
     AdminPrepaymentsModule,
     AdminWeekProductsModule,
+    AdminBoardsModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],
