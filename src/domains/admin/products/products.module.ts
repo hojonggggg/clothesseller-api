@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-//import { ProductsService } from './products.service';
 import { AdminProductsController } from './products.controller';
+import { ProductsService } from 'src/commons/shared/products/products.service';
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
@@ -12,7 +12,7 @@ import { Return } from 'src/commons/shared/entities/return.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([WholesalerProduct, WholesalerProductOption, SellerProduct, SellerProductOption, Return])],
-  providers: [WholesalerProductsService, SellerProductsService],
+  providers: [ProductsService, WholesalerProductsService, SellerProductsService],
   controllers: [AdminProductsController]
 })
 export class AdminProductsModule {}

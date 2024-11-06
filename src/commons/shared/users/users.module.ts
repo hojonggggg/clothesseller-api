@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { WholesalerProfile } from './entities/wholesaler-profile.entity';
 import { SellerProfile } from './entities/seller-profile.entity';
-import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
 
 @Module({
   imports: [
@@ -12,7 +11,6 @@ import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
       User, 
       WholesalerProfile, 
       SellerProfile,
-      //Store
     ])
   ],
   providers: [UsersService],

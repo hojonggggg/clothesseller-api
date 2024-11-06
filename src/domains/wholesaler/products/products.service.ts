@@ -174,7 +174,7 @@ export class WholesalerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  /*
   async findAllWholesalerProductForAdmin(query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
@@ -213,7 +213,7 @@ export class WholesalerProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  */
   async findAllWholesalerProductOption(wholesalerId: number, query: string) {
     const options = await this.wholesalerProductOptionRepository.find({
       where: { 
