@@ -19,6 +19,7 @@ import { WholesalerSamplesModule } from './samples/samples.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 import { WholesalerReturnsModule } from './returns/returns.module';
 import { WholesalerUsersModule } from './users/users.module';
+import { WholesalerWeekProductsModule } from './week-products/week-products.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { WholesalerUsersModule } from './users/users.module';
     WholesalerSamplesModule,
     WholesalerReturnsModule,
     WholesalerUsersModule,
+    WholesalerWeekProductsModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],

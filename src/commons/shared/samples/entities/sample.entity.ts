@@ -40,7 +40,7 @@ export class Sample {
   @Column({ name: 'wholesaler_id' })
   wholesalerId: number;
 
-  @ApiProperty({ example: '1', description: '셀러 상품 옵션 ID' })
+  @ApiProperty({ example: '1', description: '도매처 상품 ID' })
   @Column({ name: 'wholesaler_product_id' })
   wholesalerProductId: number;
 
