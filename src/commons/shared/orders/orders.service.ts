@@ -144,6 +144,7 @@ export class OrdersService {
     
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
       .select([
+        "wholesalerOrder.id AS id",
         "wholesalerOrder.wholesalerProductId AS wholesalerProductId",
         "wholesalerOrder.wholesalerProductOptionId AS wholesalerProductOptionId",
         "wholesalerProduct.name AS name",
@@ -155,19 +156,27 @@ export class OrdersService {
       .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
       .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
       .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", { startDate: formatStartDay, endDate: formatEndDay })
-      //.groupBy("wholesalerOrder.wholesalerProductOptionId")
-      //.orderBy("quantity", "DESC");
+      .groupBy("wholesalerOrder.wholesalerProductOptionId")
+      .orderBy("quantity", "DESC")
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize);
+    
+    //const volumes = await queryBuilder.getRawMany();
+    const [volumes, total] = await queryBuilder.getManyAndCount(); 
+
+    const totalQueryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", { startDate: formatStartDay, endDate: formatEndDay })
+      .groupBy("wholesalerOrder.wholesalerProductOptionId");
+
+    //const total = (await totalQueryBuilder.getRawMany()).length;
     /*
     const statistics = await queryBuilder.getRawMany();
     for (const item of statistics) {
       item.price = formatCurrency(item.price);
     }
     */
-      /*
-   const [volumes, total] = await queryBuilder
-      .take(pageSize)
-      .skip((pageNumber - 1) * pageSize)
-      .getManyAndCount();
 
     return {
       list: volumes,
@@ -175,7 +184,6 @@ export class OrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
-      */
   }
 
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {

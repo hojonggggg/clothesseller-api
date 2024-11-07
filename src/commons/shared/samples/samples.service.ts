@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
 import { Sample } from './entities/sample.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
+import { formatCurrency } from '../functions/format';
 
 @Injectable()
 export class SamplesService {
@@ -63,10 +64,30 @@ export class SamplesService {
 
   async findOneSampleForAdmin(sampleId: number) {
     const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
+      .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
+      .leftJoinAndSelect('sample.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('sample.id = :sampleId', { sampleId })
       .andWhere('sample.isDeleted = 0');
 
     const sample = await queryBuilder.getOne();
+    const {wholesalerProduct, wholesalerProductOption, wholesalerProfile } = sample;
+
+    sample.wholesalerProduct.price = formatCurrency(wholesalerProduct.price);
+    sample.wholesalerProduct.color = wholesalerProductOption.color;
+    sample.wholesalerProduct.size = wholesalerProductOption.size;
+    sample.wholesalerProfile.storeName = wholesalerProfile.store.name;
+    delete(sample.wholesalerProductId);
+    delete(sample.wholesalerProduct.id);
+    delete(sample.wholesalerProduct.wholesalerId);
+    delete(sample.wholesalerProductOptionId);
+    delete(sample.wholesalerProductOption);
+    delete(sample.wholesalerId);
+    delete(sample.wholesalerProfile.userId);
+    delete(sample.wholesalerProfile.storeId);
+    delete(sample.wholesalerProfile.store);
+    delete(sample.status);
     delete(sample.isDeleted);
 
     return sample;

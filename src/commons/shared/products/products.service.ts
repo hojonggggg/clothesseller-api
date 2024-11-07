@@ -7,7 +7,7 @@ import { CreateWholesalerProductDtoFromAdmin } from './dto/create-wholesaler-pro
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
-import { formatCurrency } from '../functions/format-currency';
+import { formatCurrency } from '../functions/format';
 
 @Injectable()
 export class ProductsService {
