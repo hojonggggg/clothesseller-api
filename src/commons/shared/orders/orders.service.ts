@@ -4,7 +4,7 @@ import { Repository, Brackets } from 'typeorm';
 import { WholesalerOrder } from '../orders/entities/wholesaler-order.entity';
 import { SellerOrder } from './entities/seller-order.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
-import { formatCurrency } from '../functions/format-currency';
+import { formatCurrency, formatHyphenDay } from '../functions/format';
 
 @Injectable()
 export class OrdersService {
@@ -136,9 +136,12 @@ export class OrdersService {
     return wholesalerOrder;
   }
 
-  async wholesalerOrderStatistics(day: string) {
-    const formattedDay = day.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+  async wholesalerOrderVolume(startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
 
+    const formatStartDay = formatHyphenDay(startDate);
+    const formatEndDay = formatHyphenDay(endDate);
+    
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
       .select([
         "wholesalerOrder.wholesalerProductId AS wholesalerProductId",
@@ -151,17 +154,28 @@ export class OrdersService {
       ])
       .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
       .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
-      .where("DATE(wholesalerOrder.createdAt) = :day", { day: formattedDay })
-      .groupBy("wholesalerOrder.wholesalerProductOptionId")
-      .orderBy("quantity", "DESC");
-
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", { startDate: formatStartDay, endDate: formatEndDay })
+      //.groupBy("wholesalerOrder.wholesalerProductOptionId")
+      //.orderBy("quantity", "DESC");
+    /*
     const statistics = await queryBuilder.getRawMany();
     for (const item of statistics) {
       item.price = formatCurrency(item.price);
     }
+    */
+      /*
+   const [volumes, total] = await queryBuilder
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
 
-
-    return statistics;
+    return {
+      list: volumes,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+      */
   }
 
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {

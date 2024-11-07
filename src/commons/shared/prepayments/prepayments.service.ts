@@ -18,6 +18,7 @@ export class PrepaymentsService {
       .leftJoinAndSelect('wholesalerOrder.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerOrder.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
       .where('wholesalerOrder.isDeleted = 0')
       .andWhere('wholesalerOrder.isPrepayment = 1');
     
@@ -38,10 +39,12 @@ export class PrepaymentsService {
       .getManyAndCount();
 
     for (const prepayment of prepayments) {
-      const { wholesalerProfile, sellerProfile, wholesalerProduct } = prepayment;
+      const { wholesalerProfile, sellerProfile, wholesalerProduct, wholesalerProductOption } = prepayment;
       prepayment.wholesalerName = wholesalerProfile.name;
       prepayment.sellerName = sellerProfile.name;
       prepayment.productName = wholesalerProduct.name;
+      prepayment.color = wholesalerProductOption.color;
+      prepayment.size = wholesalerProductOption.size;
       prepayment.quantity = prepayment.quantityOfPrepayment;
 
       delete(prepayment.wholesalerId);
@@ -49,9 +52,10 @@ export class PrepaymentsService {
       delete(prepayment.orderType);
       delete(prepayment.sellerId);
       delete(prepayment.sellerProfile);
-      delete(prepayment.wholesalerProduct);
       delete(prepayment.wholesalerProductId);
+      delete(prepayment.wholesalerProduct);
       delete(prepayment.wholesalerProductOptionId);
+      delete(prepayment.wholesalerProductOption);
       delete(prepayment.sellerOrderId);
       delete(prepayment.sellerProductId);
       delete(prepayment.sellerProductOptionId);

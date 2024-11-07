@@ -62,13 +62,18 @@ export class AdminOrdersController {
   @Get('orders/statistics')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 상품별 주문 주회' })
+  @ApiOperation({ summary: '[개발] 상품별 주문 통계' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'day', required: true, description: '조회하려는 날' })
+  @ApiQuery({ name: 'startDate', required: true, description: '조회 시작 날짜' })
+  @ApiQuery({ name: 'endDate', required: true, description: '조회 끝 날짜' })
+  @ApiQuery({ name: 'query', required: false, description: '상품명' })
   async wholesalerOrderStatistics(
-    @Query('day') day: string
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto
   ) {
-    const result = await this.ordersService.wholesalerOrderStatistics(day);
+    const result = await this.ordersService.wholesalerOrderVolume(startDate, endDate, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
