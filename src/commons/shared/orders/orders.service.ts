@@ -136,47 +136,110 @@ export class OrdersService {
     return wholesalerOrder;
   }
 
-  async wholesalerOrderVolume(startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  async _wholesalerOrderTotalCount(startDate: string, endDate: string) {
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .select([
+        'SUM(wholesalerOrder.quantityTotal) AS quantity'
+      ])
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+    
+    const result = await queryBuilder.getRawOne();
+    return Number(result.quantity);
+  }
+
+  async _wholesalerOrderTotalPrice(startDate: string, endDate: string) {
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .select([
+        'SUM(wholesalerOrder.quantityTotal * wholesalerProduct.price) AS price'
+      ])
+      .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+    
+    const result = await queryBuilder.getRawOne();
+    return formatCurrency(Number(result.price));
+  }
+
+  async _wholesalerOrderTotalProductCount(startDate: string, endDate: string) {
+    const queryBuilder = this.wholesalerOrderRepository
+      .createQueryBuilder("wholesalerOrder")
+      .select([
+        'COUNT(DISTINCT wholesalerOrder.wholesalerProductId) AS count'
+      ])
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async _wholesalerOrderTotalProductOptionCount(startDate: string, endDate: string) {
+    const queryBuilder = this.wholesalerOrderRepository
+      .createQueryBuilder("wholesalerOrder")
+      .select([
+        'COUNT(DISTINCT wholesalerOrder.wholesalerProductOptionId) AS count'
+      ])
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async wholesalerOrderStatistics(startDate: string, endDate: string) {
+    const formatStartDay = formatHyphenDay(startDate);
+    const formatEndDay = formatHyphenDay(endDate);
+
+    const totalCount = await this._wholesalerOrderTotalCount(formatStartDay, formatEndDay);
+    const totalPrice = await this._wholesalerOrderTotalPrice(formatStartDay, formatEndDay);
+    const totalProductCount = await this._wholesalerOrderTotalProductCount(formatStartDay, formatEndDay);
+    const totalProductOptionCount = await this._wholesalerOrderTotalProductOptionCount(formatStartDay, formatEndDay);
+
+    return {
+      totalCount,
+      totalPrice,
+      totalProductCount,
+      totalProductOptionCount
+    }
+  }
+
+  async wholesalerOrderVolumeByProduct(startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const formatStartDay = formatHyphenDay(startDate);
     const formatEndDay = formatHyphenDay(endDate);
-    
+
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
       .select([
-        "wholesalerOrder.id AS id",
-        "wholesalerOrder.wholesalerProductId AS wholesalerProductId",
-        "wholesalerOrder.wholesalerProductOptionId AS wholesalerProductOptionId",
-        "wholesalerProduct.name AS name",
-        "wholesalerProduct.price AS price",
-        "wholesalerProductOption.color AS color",
-        "wholesalerProductOption.size AS size",
-        "SUM(wholesalerOrder.quantityTotal) AS quantity"
+        'wholesalerOrder.wholesalerProductOptionId AS optionId',
+        'wholesalerProduct.name AS name',
+        'wholesalerProductOption.color AS color',
+        'wholesalerProductOption.size AS size',
+        'SUM(wholesalerOrder.quantityTotal) AS quantity'
       ])
       .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
       .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
-      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", { startDate: formatStartDay, endDate: formatEndDay })
+      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: formatStartDay, endDate: formatEndDay })
       .groupBy("wholesalerOrder.wholesalerProductOptionId")
-      .orderBy("quantity", "DESC")
-      .take(pageSize)
-      .skip((pageNumber - 1) * pageSize);
-    
-    //const volumes = await queryBuilder.getRawMany();
-    const [volumes, total] = await queryBuilder.getManyAndCount(); 
+      .orderBy("quantity", "DESC");
 
-    const totalQueryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
-      .leftJoin('wholesalerOrder.wholesalerProduct', 'wholesalerProduct')
-      .leftJoin('wholesalerOrder.wholesalerProductOption', 'wholesalerProductOption')
-      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", { startDate: formatStartDay, endDate: formatEndDay })
-      .groupBy("wholesalerOrder.wholesalerProductOptionId");
-
-    //const total = (await totalQueryBuilder.getRawMany()).length;
-    /*
-    const statistics = await queryBuilder.getRawMany();
-    for (const item of statistics) {
-      item.price = formatCurrency(item.price);
+    // query가 존재하면 조건 추가
+    if (query) {
+      queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
     }
-    */
+    
+    // 전체 데이터 가져오기
+    const allVolumes = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allVolumes.length;
+    const volumes = allVolumes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    for (const volume of volumes) {
+      //delete(volume)
+    }
 
     return {
       list: volumes,
@@ -184,6 +247,50 @@ export class OrdersService {
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
     };
+  }
+
+  async wholesalerOrderVolumeByDaily() {
+    // 오늘 날짜 기준으로 7일전 날짜 계산
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // 오늘 포함 7일이므로 6일 전으로 설정
+
+    const formatToday = formatHyphenDay(today.toISOString().split('T')[0]);
+    const formatSevenDaysAgo = formatHyphenDay(sevenDaysAgo.toISOString().split('T')[0]);
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+     .select([
+       'DATE(wholesalerOrder.createdAt) AS orderDate',
+       'SUM(wholesalerOrder.quantityTotal) AS quantity'
+     ])
+     .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+       { startDate: formatSevenDaysAgo, endDate: formatToday })
+     .groupBy("orderDate")
+     .orderBy("orderDate", "DESC");
+   
+    const results = await queryBuilder.getRawMany();
+
+    // 날짜가 없는 경우도 0으로 채워서 반환하기 위한 처리
+    const filledResults = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const formattedDate = formatHyphenDay(date.toISOString().split('T')[0]);
+      
+      const existingData = results.find(r => r.orderDate === formattedDate);
+      filledResults.push({
+        orderDate: formattedDate,
+        quantity: existingData ? Number(existingData.quantity) : 0
+      });
+    }
+
+    /*
+    return {
+      list: filledResults,
+      total: filledResults.reduce((sum, item) => sum + item.quantity, 0)
+    };
+    */
+    return filledResults.reverse();
   }
 
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
@@ -296,5 +403,130 @@ export class OrdersService {
     delete(sellerOrder.status);
     
     return sellerOrder;
+  }
+
+  async _sellerOrderTotalCount(startDate: string, endDate: string) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'SUM(sellerOrder.quantity) AS quantity'
+      ])
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+    
+    const result = await queryBuilder.getRawOne();
+    return Number(result.quantity);
+  }
+
+  async _sellerOrderTotalPrice(startDate: string, endDate: string) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'SUM(sellerOrder.quantity * sellerProduct.price) AS price'
+      ])
+      .leftJoin('sellerOrder.sellerProduct', 'sellerProduct')
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+    
+    const result = await queryBuilder.getRawOne();
+    return formatCurrency(Number(result.price));
+  }
+
+  async _sellerOrderTotalProductCount(startDate: string, endDate: string) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(DISTINCT sellerOrder.sellerProductId) AS count'
+      ])
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async _sellerOrderTotalProductOptionCount(startDate: string, endDate: string) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(DISTINCT sellerOrder.sellerProductOptionId) AS count'
+      ])
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async sellerOrderStatistics(startDate: string, endDate: string) {
+    const formatStartDay = formatHyphenDay(startDate);
+    const formatEndDay = formatHyphenDay(endDate);
+
+    const totalCount = await this._sellerOrderTotalCount(formatStartDay, formatEndDay);
+    const totalPrice = await this._sellerOrderTotalPrice(formatStartDay, formatEndDay);
+    const totalProductCount = await this._sellerOrderTotalProductCount(formatStartDay, formatEndDay);
+    const totalProductOptionCount = await this._sellerOrderTotalProductOptionCount(formatStartDay, formatEndDay);
+
+    return {
+      totalCount,
+      totalPrice,
+      totalProductCount,
+      totalProductOptionCount
+    }
+  }
+
+  async sellerOrderVolumeBySeller(startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const formatStartDay = formatHyphenDay(startDate);
+    const formatEndDay = formatHyphenDay(endDate);
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'sellerProfile.name AS name',
+        "CONCAT(sellerProfile.address1, ' ', sellerProfile.address2) AS address",
+        'SUM(sellerOrder.quantity) AS quantity'
+      ])
+      .leftJoin('sellerOrder.sellerProfile', 'sellerProfile')
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: formatStartDay, endDate: formatEndDay })
+      .groupBy("sellerOrder.sellerId")
+      .orderBy("quantity", "DESC");
+
+    // query가 존재하면 조건 추가
+    if (query) {
+      queryBuilder.andWhere('sellerProfile.name LIKE :query', { query: `%${query}%` });
+    }
+    
+    // 전체 데이터 가져오기
+    const allVolumes = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allVolumes.length;
+    const volumes = allVolumes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: volumes,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async sellerOrderVolumeByMall(startDate: string, endDate: string) {
+    const formatStartDay = formatHyphenDay(startDate);
+    const formatEndDay = formatHyphenDay(endDate);
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'mall.name AS name',
+        'SUM(sellerOrder.quantity) AS quantity',
+        "CONCAT(ROUND((SUM(sellerOrder.quantity) * 100.0 / SUM(SUM(sellerOrder.quantity)) OVER()), 1), '%') AS percent"
+      ])
+      .leftJoin('sellerOrder.mall', 'mall')
+      .where("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: formatStartDay, endDate: formatEndDay })
+      .groupBy("sellerOrder.mallId")
+      .orderBy("quantity", "DESC");
+    
+    const volumes = await queryBuilder.getRawMany();
+
+    return volumes;
   }
 }

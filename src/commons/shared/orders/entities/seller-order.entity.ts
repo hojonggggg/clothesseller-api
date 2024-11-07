@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SellerProfile } from '../../users/entities/seller-profile.entity';
 import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
@@ -52,6 +52,9 @@ export class SellerOrder {
   @ApiProperty({ example: false, description: '삭제 여부' })
   @Column({ name: 'is_deleted', default: true })
   isDeleted: boolean;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
   //@ManyToOne(() => SellerProduct, (productOption) => productOption.sellerOrders)
   @OneToOne(() => SellerProduct)
