@@ -5,7 +5,7 @@ import { ProductRequest } from 'src/commons/shared/entities/product-request.enti
 import { ProductRequestOption } from 'src/commons/shared/entities/product-request-option.entity';
 import { WholesalerProduct } from '../products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
-import { ApproveProductRequestDto } from './dto/approve-product-request.dto';
+import { ApproveProductRequestDto } from 'src/commons/shared/product-requests/dto/approve-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 

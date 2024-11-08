@@ -10,6 +10,7 @@ import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { AdminUsersModule } from './users/users.module';
+import { AdminProductRequestsModule } from './product-requests/product-requests.module';
 import { AdminProductsModule } from './products/products.module';
 import { AdminSamplesModule } from './samples/samples.module';
 import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
@@ -35,6 +36,7 @@ import { AdminBoardsModule } from './boards/boards.module';
     }),
     AuthModule,
     AdminUsersModule,
+    AdminProductRequestsModule,
     AdminProductsModule,
     AdminSamplesModule,
     AdminOrdersModule,

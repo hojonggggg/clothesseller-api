@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-class _ApproveProductRequestOptionDto {
+class ApproveProductRequestOptionDto {
   @IsString()
   color: string;
 
@@ -16,11 +16,7 @@ class _ApproveProductRequestOptionDto {
   quantity: number;
 }
 
-export class _ApproveProductRequestDto {
-  @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
-  @IsString()
-  code: string;
-  
+export class ApproveProductRequestDto {
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
@@ -50,6 +46,6 @@ export class _ApproveProductRequestDto {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => _ApproveProductRequestOptionDto)
-  options: _ApproveProductRequestOptionDto[];
+  @Type(() => ApproveProductRequestOptionDto)
+  options: ApproveProductRequestOptionDto[];
 }
