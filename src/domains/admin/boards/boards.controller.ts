@@ -18,6 +18,7 @@ export class AdminBoardsController {
   @Post('board')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  /*
   @UseInterceptors(FileInterceptor('thumbnailImage', {
     storage: memoryStorage(), // 메모리 스토리지 사용
     limits: {
@@ -31,6 +32,7 @@ export class AdminBoardsController {
     }
   }))
   @ApiConsumes('multipart/form-data')
+  */
   @ApiOperation({ summary: '[완료] 게시글 등록' })
   @ApiResponse({ status: 201 })
   @ApiBody({
@@ -39,9 +41,10 @@ export class AdminBoardsController {
   })
   async createBoard(
     @Body() createBoardDto: CreateBoardDto,
-    @UploadedFile() file: Express.Multer.File,
+    //@UploadedFile() file: Express.Multer.File,
   ) {
-    await this.boardsService.createBoard(createBoardDto, file);
+    //await this.boardsService.createBoard(createBoardDto, file);
+    await this.boardsService.createBoard(createBoardDto);
     return {
       statusCode: 201,
       message: '게시글 등록이 완료되었습니다.'
@@ -77,6 +80,7 @@ export class AdminBoardsController {
   @Patch('board/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  /*
   @UseInterceptors(FileInterceptor('thumbnailImage', {
     storage: memoryStorage(), // 메모리 스토리지 사용
     limits: {
@@ -90,6 +94,7 @@ export class AdminBoardsController {
     }
   }))
   @ApiConsumes('multipart/form-data')
+  */
   @ApiOperation({ summary: '[완료] 게시글 수정' })
   @ApiResponse({ status: 200 })
   @ApiBody({
@@ -99,9 +104,10 @@ export class AdminBoardsController {
   async updateBoard(
     @Param('id') id: number,
     @Body() updateBoardDto: UpdateBoardDto,
-    @UploadedFile() file: Express.Multer.File,
+    //@UploadedFile() file: Express.Multer.File,
   ) {
-    await this.boardsService.updateBoard(id, updateBoardDto, file);
+    //await this.boardsService.updateBoard(id, updateBoardDto, file);
+    await this.boardsService.updateBoard(id, updateBoardDto);
     return {
       statusCode: 200,
       message: '게시글 수정이 완료되었습니다.'

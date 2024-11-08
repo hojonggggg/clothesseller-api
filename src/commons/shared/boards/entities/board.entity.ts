@@ -14,11 +14,11 @@ export class Board {
   @ApiProperty({ example: '공지', description: '제목' })
   @Column()
   title: string;
-
+  /*
   @ApiProperty({ type: 'string', format: 'binary', description: '썸네일 이미지' })
   @Column({ name: 'thumbnail_image' })
   thumbnailImage: string;
-
+  */
   @ApiProperty({ example: '공지사항 입니다.', description: '내용' })
   @Column()
   content: string;

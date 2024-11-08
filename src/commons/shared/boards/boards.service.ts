@@ -16,9 +16,10 @@ export class BoardsService {
     private readonly boardRepository: Repository<Board>,
   ) {}
 
-  async createBoard(createBoardDto: CreateBoardDto, file: Express.Multer.File) {
-    let thumbnailPath = null;
-
+  //async createBoard(createBoardDto: CreateBoardDto, file: Express.Multer.File) {
+    async createBoard(createBoardDto: CreateBoardDto) {
+    //let thumbnailPath = null;
+    /*
     if (file) {
       try {
         const uploadDir = 'uploads/thumbnails';
@@ -39,7 +40,7 @@ export class BoardsService {
         throw new BadRequestException('파일 업로드에 실패했습니다.');
       }
     }
-
+    */
     try {
       const board = this.boardRepository.create({
         ...createBoardDto,
@@ -47,11 +48,13 @@ export class BoardsService {
 
       return await this.boardRepository.save(board);
     } catch (error) {
+      /*
       // 파일이 저장되었다면 삭제
       if (thumbnailPath) {
         const filePath = path.join('uploads', thumbnailPath);
         await fs.unlink(filePath).catch(() => {});
       }
+      */
       throw error;
     }
   }
@@ -91,12 +94,13 @@ export class BoardsService {
     return board;
   }
 
-  async updateBoard(id: number, updateBoardDto: UpdateBoardDto, file: Express.Multer.File) {
+  //async updateBoard(id: number, updateBoardDto: UpdateBoardDto, file: Express.Multer.File) {
+    async updateBoard(id: number, updateBoardDto: UpdateBoardDto) {
     const board = await this.boardRepository.findOne({
       where: { id }
     });
-    let thumbnailPath = board.thumbnailImage;
-
+    //let thumbnailPath = board.thumbnailImage;
+    /*
     if (file) {
       try {
         const uploadDir = 'uploads/thumbnails';
@@ -117,7 +121,7 @@ export class BoardsService {
         throw new BadRequestException('파일 업로드에 실패했습니다.');
       }
     }
-
+    */
     try {
       const board = await this.boardRepository.update(
         {
@@ -127,14 +131,16 @@ export class BoardsService {
         }
       );
 
-      const oldFilePath = path.join('uploads', thumbnailPath);
-      await fs.unlink(oldFilePath).catch(() => {});
+      //const oldFilePath = path.join('uploads', thumbnailPath);
+      //await fs.unlink(oldFilePath).catch(() => {});
     } catch (error) {
+      /*
       // 파일이 저장되었다면 삭제
       if (thumbnailPath) {
         const filePath = path.join('uploads', thumbnailPath);
         await fs.unlink(filePath).catch(() => {});
       }
+      */
       throw error;
     }
   }
