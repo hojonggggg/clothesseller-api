@@ -24,9 +24,13 @@ export class SellerProductsService {
     private returnRepository: Repository<Return>,
   ) {}
 
+  async _totalProductCount(sellerId: number, mallId: number) {
+    return this.sellerProductRepository.count({ where: { sellerId, mallId } });
+  }
+
   async summarySellerProduct(sellerId: number, mallId: number) {
     const result = {
-      totalProduct: 100,
+      totalProduct: await this._totalProductCount(sellerId, mallId),
       soldoutProduct: 10,
       needOrderProduct: 5,
       totalProductQuantity: 500
@@ -87,6 +91,7 @@ export class SellerProductsService {
       .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
+      .andWhere('sellerProduct.wholesalerProductId IS NOT NULL')
       .andWhere('sellerProductOption.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('sellerProductOption.isReturned = :isReturned', { isReturned: false });
     
@@ -103,7 +108,7 @@ export class SellerProductsService {
     for (const product of products) {
       product.name = product.sellerProduct.name;
       product.sellerPrice = formatCurrency(product.sellerProduct.price);
-      //product.wholesalerPrice = formatCurrency(product.sellerProduct.wholesalerProductPrice);
+      product.wholesalerPrice = formatCurrency(product.sellerProduct.wholesalerProductPrice);
       product.mallName = product.sellerProduct.mall.name;
 
       delete(product.sellerId);
