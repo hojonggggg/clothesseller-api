@@ -91,6 +91,68 @@ export class ProductRequestsService {
     }
   }
 
+  async findAllProductRequestForWholesaler(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
+      .leftJoinAndSelect('productRequest.options', 'options')
+      .leftJoinAndSelect('productRequest.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .leftJoinAndSelect('productRequest.sellerProfile', 'sellerProfile')
+      .where('productRequest.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('productRequest.isDeleted = 0')
+      .andWhere('options.isDeleted = 0');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('productRequest.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` })
+            .orWhere('sellerProfile.name LIKE :sellerName', { sellerName: `%${query}%` });
+        })
+      );
+    }
+
+    const [requests, total] = await queryBuilder
+      .orderBy('productRequest.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+      
+    for (const request of requests) {
+      const { wholesalerProfile, sellerProfile, options } = request;
+      //request.sellerName = request.sellerProfile.name;
+      wholesalerProfile.storeName = wholesalerProfile.store.name;
+      const { address1, address2 } = sellerProfile;
+      const address = address1 + " " + address2;
+      sellerProfile.address = address;
+      request.price = formatCurrency(request.price);
+
+
+      for (const option of options) {
+        option.price = formatCurrency(option.price);
+        delete(option.productRequestId);
+        delete(option.isDeleted);
+      }
+
+      delete(request.wholesalerId);
+      delete(request.wholesalerProfile.storeId);
+      delete(request.wholesalerProfile.store);
+      delete(request.sellerId);
+      delete(request.sellerProfile.address1);
+      delete(request.sellerProfile.address2);
+      delete(request.isDeleted);
+      delete(request.status);
+    }
+
+    return {
+      list: requests,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize)
+    }
+  }
+
   async findOneProductRequest(productRequestId: number) {
     const queryBuilder = this.productRequestRepository.createQueryBuilder('productRequest')
       .leftJoinAndSelect('productRequest.options', 'options')

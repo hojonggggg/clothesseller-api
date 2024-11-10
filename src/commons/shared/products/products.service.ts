@@ -31,9 +31,10 @@ export class ProductsService {
       .orderBy('wholesalerProduct.id', 'DESC')
       .getRawOne();
 
-    const lastProductCode = lastProduct.code;
-    const lastProductCodeNumber = lastProductCode.replace('CS', '');
-    const newProductCodeNumber = (lastProductCodeNumber * 1) + 1;
+    let lastProductCode = 'CS000000';
+    if (lastProduct) lastProductCode = lastProduct.code;
+    const lastProductCodeNumber = Number(lastProductCode.replace('CS', ''));
+    const newProductCodeNumber = lastProductCodeNumber + 1;
     const formattedCodeNumber = newProductCodeNumber.toString().padStart(6, '0');
     const code = 'CS' + formattedCodeNumber;
 

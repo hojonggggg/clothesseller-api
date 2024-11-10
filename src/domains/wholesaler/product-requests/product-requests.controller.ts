@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
-import { ProductRequestsService } from './product-requests.service';
+import { ProductRequestsService } from 'src/commons/shared/product-requests/product-requests.service';
 import { ApproveProductRequestDto } from 'src/commons/shared/product-requests/dto/approve-product-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
@@ -9,7 +9,7 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('wholesaler')
 export class ProductRequestsController {
   constructor(
-    private productRequestsService: ProductRequestsService
+    private productRequestsService: ProductRequestsService,
   ) {}
 
   @Get('product-requests')
@@ -24,7 +24,7 @@ export class ProductRequestsController {
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.productRequestsService.findAllProductRequestByWholesalerId(wholesalerId, query, paginationQueryDto);
+    const result = await this.productRequestsService.findAllProductRequestForWholesaler(wholesalerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
