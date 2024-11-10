@@ -25,7 +25,12 @@ export class SellerProductsService {
   ) {}
 
   async _totalProductCount(sellerId: number, mallId: number) {
-    return this.sellerProductRepository.count({ where: { sellerId, mallId } });
+    return this.sellerProductRepository
+      .createQueryBuilder("product")
+      .where("product.sellerId = :sellerId", { sellerId })
+      .andWhere("product.mallId = :mallId", { mallId })
+      .andWhere("product.wholesalerProductId IS NOT NULL")
+      .getCount();
   }
 
   async summarySellerProduct(sellerId: number, mallId: number) {
