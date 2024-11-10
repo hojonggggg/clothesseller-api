@@ -16,7 +16,7 @@ import { WholesalerProductsModule } from './products/products.module';
 import { StoresModule } from './stores/stores.module';
 import { WholesalerOrdersModule } from './orders/orders.module';
 import { WholesalerSamplesModule } from './samples/samples.module';
-import { ProductRequestsModule } from './product-requests/product-requests.module';
+import { WholesalerProductRequestsModule } from './product-requests/product-requests.module';
 import { WholesalerReturnsModule } from './returns/returns.module';
 import { WholesalerUsersModule } from './users/users.module';
 import { WholesalerWeekProductsModule } from './week-products/week-products.module';
@@ -40,7 +40,7 @@ import { WholesalerWeekProductsModule } from './week-products/week-products.modu
     AuthModule,
     WholesalerAuthModule,
     StoresModule,
-    ProductRequestsModule,
+    WholesalerProductRequestsModule,
     WholesalerProductsModule,
     WholesalerOrdersModule,
     WholesalerSamplesModule,

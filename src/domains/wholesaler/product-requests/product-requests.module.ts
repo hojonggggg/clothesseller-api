@@ -24,4 +24,4 @@ import { SellerProductOption } from 'src/commons/shared/products/entities/seller
   providers: [ProductRequestsService, ProductsService],
   controllers: [ProductRequestsController]
 })
-export class ProductRequestsModule {}
+export class WholesalerProductRequestsModule {}
