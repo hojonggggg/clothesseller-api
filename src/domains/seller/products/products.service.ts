@@ -103,7 +103,7 @@ export class SellerProductsService {
     for (const product of products) {
       product.name = product.sellerProduct.name;
       product.sellerPrice = formatCurrency(product.sellerProduct.price);
-      product.wholesalerPrice = formatCurrency(product.sellerProduct.wholesalerProductPrice);
+      //product.wholesalerPrice = formatCurrency(product.sellerProduct.wholesalerProductPrice);
       product.mallName = product.sellerProduct.mall.name;
 
       delete(product.sellerId);
