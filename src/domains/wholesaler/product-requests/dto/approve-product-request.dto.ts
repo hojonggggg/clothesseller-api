@@ -17,10 +17,11 @@ class _ApproveProductRequestOptionDto {
 }
 
 export class _ApproveProductRequestDto {
+  /*
   @ApiProperty({ example: 'P00000IL', description: '상품 코드' })
   @IsString()
   code: string;
-  
+  */
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
