@@ -303,4 +303,44 @@ export class ProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+
+  async _sellerProductOptionCount(sellerId: number, mallId: number) {
+    return this.sellerProductOptionRepository
+      .createQueryBuilder("productOption")
+      .where("productOption.sellerId = :sellerId", { sellerId })
+      .andWhere("productOption.mallId = :mallId", { mallId })
+      .andWhere("productOption.isMatching = true")
+      .getCount();
+  }
+
+  async _sellerProductOptionSoldoutCount(sellerId: number, mallId: number) {
+    return this.sellerProductOptionRepository
+      .createQueryBuilder("productOption")
+      .where("productOption.sellerId = :sellerId", { sellerId })
+      .andWhere("productOption.mallId = :mallId", { mallId })
+      .andWhere("productOption.isMatching = true")
+      .andWhere("productOption.isSoldout = true")
+      .getCount();
+  }
+
+  async _sellerProductOptionQuantity(sellerId: number, mallId: number) {
+    return this.sellerProductOptionRepository
+      .createQueryBuilder("productOption")
+      .select("SUM(productOption.quantity)", "totalQuantity")
+      .where("productOption.sellerId = :sellerId", { sellerId })
+      .andWhere("productOption.mallId = :mallId", { mallId })
+      .andWhere("productOption.isMatching = true")
+      .getRawOne();
+  }
+
+  async sellerProductSummary(sellerId: number, mallId: number) {
+    const result = {
+      totalProduct: await this._sellerProductOptionCount(sellerId, mallId),
+      soldoutProduct: await this._sellerProductOptionSoldoutCount(sellerId, mallId),
+      needOrderProduct: 5,
+      totalProductQuantity: await this._sellerProductOptionQuantity(sellerId, mallId),
+    };
+
+    return result;
+  }
 }

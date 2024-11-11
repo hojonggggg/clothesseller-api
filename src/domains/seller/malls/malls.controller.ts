@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MallsService } from './malls.service';
+import { MallsService } from 'src/commons/shared/malls/malls.service';
 
 @ApiTags('seller > malls - 상품 등록할 때 사용')
 @Controller('seller/malls')
-export class MallsController {
+export class SellerMallsController {
   constructor(
     private readonly mallsService: MallsService
   ) {}

@@ -6,7 +6,7 @@ import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { SellerReturnsService } from '../returns/returns.service';
-import { Mall } from '../malls/entities/mall.entity';
+import { Mall } from '../../../commons/shared/malls/entities/mall.entity';
 import { CreateDeliverymanDto } from './dto/create-deliveryman.dto';
 import { CreatePickupRequestDto } from './dto/create-pickup-request.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';

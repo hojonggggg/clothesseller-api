@@ -11,7 +11,7 @@ import { UsersService } from 'src/commons/shared/users/users.service';
 import { User } from 'src/commons/shared/users/entities/user.entity';
 import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
-import { MallsModule } from './malls/malls.module';
+import { SellerMallsModule } from './malls/malls.module';
 import { DeliverymanModule } from './deliveryman/deliveryman.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 import { SellerProductsModule } from './products/products.module';
@@ -36,7 +36,7 @@ import { SellerProductMachingsModule } from './product-matchings/product-maching
       }),
       inject: [ConfigService],
     }),
-    MallsModule,
+    SellerMallsModule,
     DeliverymanModule,
     SellerUsersModule,
     ProductRequestsModule,

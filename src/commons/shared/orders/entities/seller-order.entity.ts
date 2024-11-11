@@ -2,10 +2,10 @@ import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, OneToOne, Joi
 import { ApiProperty } from '@nestjs/swagger';
 import { SellerProfile } from '../../users/entities/seller-profile.entity';
 import { SellerProduct } from '../../products/entities/seller-product.entity';
-import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
+import { SellerProductOption } from '../../products/entities/seller-product-option.entity';
 import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
-import { Mall } from 'src/domains/seller/malls/entities/mall.entity';
+import { Mall } from '../../malls/entities/mall.entity';
 
 @Entity('seller_order')
 export class SellerOrder {

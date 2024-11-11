@@ -5,7 +5,7 @@ import { DeliverymanController } from './deliveryman.controller';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
 import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
-import { SellerProductOption } from '../products/entities/seller-product-option.entity';
+import { SellerProductOption } from 'src/commons/shared/products/entities/seller-product-option.entity';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/wholesaler-order-history.entity';
