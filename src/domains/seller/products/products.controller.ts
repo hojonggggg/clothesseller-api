@@ -1,6 +1,7 @@
 import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { ProductsService } from 'src/commons/shared/products/products.service';
 import { SellerProductsService } from './products.service';
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';
@@ -13,6 +14,7 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('seller/products')
 export class SellerProductsController {
   constructor(
+    private readonly productsService: ProductsService,
     private readonly sellerProductsService: SellerProductsService,
     private readonly wholesalerProductsService: WholesalerProductsService
   ) {}
@@ -65,12 +67,13 @@ export class SellerProductsController {
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllSellerProductBySellerId(
     @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
+    @Query() paginationQueryDto: PaginationQueryDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
     //return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
-    const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, query, paginationQuery);
+    //const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, query, paginationQuery);
+    const result = await this.productsService.findAllSellerProductForSeller(sellerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

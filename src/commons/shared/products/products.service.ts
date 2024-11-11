@@ -259,4 +259,48 @@ export class ProductsService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+
+  async findAllSellerProductForSeller(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
+      .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('sellerProduct.mall', 'mall')
+      .where('sellerProduct.sellerId = :sellerId', { sellerId })
+      .andWhere("sellerProduct.isMatching = true")
+      .andWhere('sellerProduct.wholesalerProductId IS NOT NULL')
+      .andWhere("sellerProductOption.isMatching = true")
+      .andWhere('sellerProductOption.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('sellerProductOption.isReturned = :isReturned', { isReturned: false });
+    
+    if (query) {
+      queryBuilder.andWhere('sellerProduct.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const [products, total] = await queryBuilder
+      .orderBy('sellerProductOption.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+      
+    for (const product of products) {
+      product.name = product.sellerProduct.name;
+      product.sellerPrice = formatCurrency(product.sellerProduct.price);
+      product.wholesalerPrice = formatCurrency(product.sellerProduct.wholesalerProductPrice);
+      product.mallName = product.sellerProduct.mall.name;
+
+      delete(product.sellerId);
+      //delete(product.sellerProductId);
+      delete(product.sellerProduct);
+      delete(product.wholesalerProductOptionId);
+      delete(product.isMatching);
+    }
+
+    return {
+      list: products,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
 }
