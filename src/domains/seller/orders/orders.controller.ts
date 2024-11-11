@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Delete, Query, Request, UseGuards, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { OrdersService } from 'src/commons/shared/orders/orders.service';
 import { SellerOrdersService } from './orders.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { DeleteSellerOrderDto } from './dto/delete-seller-order.dto';
@@ -14,6 +15,7 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('seller/orders')
 export class SellerOrdersController {
   constructor(
+    private ordersService: OrdersService,
     private sellerOrdersService: SellerOrdersService,
     private wholesalerOrdersService: WholesalerOrdersService
   ) {}
@@ -21,13 +23,14 @@ export class SellerOrdersController {
   @Get('summary')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 주문 현황' })
+  @ApiOperation({ summary: '주문 현황' })
   @ApiResponse({ status: 200 })
   async summarySellerProduct(
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.sellerOrdersService.summarySellerOrder(sellerId);
+    //const result = await this.sellerOrdersService.summarySellerOrder(sellerId);
+    const result = await this.ordersService.sellerOrderSummary(sellerId);
     return {
       statusCode: 200,
       data: result
