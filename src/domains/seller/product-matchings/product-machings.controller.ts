@@ -6,7 +6,7 @@ import { ProductMatchingsService } from 'src/commons/shared/product-matchings/pr
 import { ProductMatchingDto } from 'src/commons/shared/product-matchings/dto/product-matching.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
-@ApiTags('seller > product-machings')
+@ApiTags('seller > product-matchings')
 @Controller('seller')
 export class SellerProductMatchingsController {
   constructor(
@@ -14,7 +14,7 @@ export class SellerProductMatchingsController {
     private productMatchingsService: ProductMatchingsService
   ) {}
   
-  @Get('product-machings')
+  @Get('product-matchings')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 셀러 상품 목록 조회' })
@@ -34,7 +34,7 @@ export class SellerProductMatchingsController {
     };
   }
   
-  @Get('product-machings/wholesaler')
+  @Get('product-matchings/wholesaler')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 도매처 상품 목록 조회' })
@@ -52,7 +52,7 @@ export class SellerProductMatchingsController {
     };
   }
   
-  @Patch('product-maching/:sellerProductOptionId')
+  @Patch('product-matching/:sellerProductOptionId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 매칭' })
