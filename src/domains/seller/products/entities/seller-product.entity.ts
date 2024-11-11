@@ -8,7 +8,7 @@ import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.ent
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 
 @Entity('seller_product')
-export class SellerProduct {
+export class _SellerProduct {
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
@@ -36,6 +36,10 @@ export class SellerProduct {
   @ApiProperty({ example: 20000, description: '판매 가격' })
   @Column()
   price: number;
+
+  @ApiProperty({ example: false, description: '상품 매칭 여부' })
+  @Column({ name: 'is_matching', default: false })
+  isMatching: boolean;
 
   @ApiProperty({ example: 10000, description: '도매 가격' })
   @Column({ name: 'wholesaler_product_price' })

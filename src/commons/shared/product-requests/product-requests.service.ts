@@ -214,7 +214,8 @@ export class ProductRequestsService {
         {
           id: productRequestId,
           isApprove: false
-        }, {
+        }, 
+        {
           isApprove: true,
           approveUserId: userId,
           status: '등록완료'

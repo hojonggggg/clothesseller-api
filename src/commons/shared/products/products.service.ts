@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
-import { CreateWholesalerProductDtoFromAdmin } from './dto/create-wholesaler-product.dto';
+import { CreateWholesalerProductDtoForAdmin } from './dto/create-wholesaler-product.dto';
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
@@ -41,7 +41,7 @@ export class ProductsService {
     return code;
   }
 
-  async createWholesalerProduct(createWholesalerProductDto: CreateWholesalerProductDtoFromAdmin) {
+  async createWholesalerProduct(createWholesalerProductDto: CreateWholesalerProductDtoForAdmin) {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
@@ -136,6 +136,43 @@ export class ProductsService {
     };
   }
 
+  async findAllWholesalerProductOption(query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wholesalerProductOption')
+      .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct');
+    
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :wholesalerProductName', { wholesalerProductName: `%${query}%` });
+        })
+      );
+    }
+
+    const [options, total] = await queryBuilder
+      .orderBy('wholesalerProductOption.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+    for (const option of options) {
+      const { wholesalerProduct } = option;
+      option.name = wholesalerProduct.name;
+      option.price = formatCurrency(wholesalerProduct.price);
+      delete(option.wholesalerProduct);
+      delete(option.isSoldout);
+      delete(option.isDeleted);
+    }
+    
+    return {
+      list: options,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
   async findOneSellerProductById(id: number) {
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
       .leftJoinAndSelect('sellerProduct.sellerProductOptions', 'sellerProductOptions')
@@ -183,7 +220,8 @@ export class ProductsService {
 
     const queryBuilder = this.sellerProductRepository.createQueryBuilder('sellerProduct')
       .leftJoinAndSelect('sellerProduct.sellerProfile', 'sellerProfile')
-      .leftJoinAndSelect('sellerProduct.mall', 'mall');
+      .leftJoinAndSelect('sellerProduct.mall', 'mall')
+      .where("sellerProduct.isMatching = true");
     
     if (query) {
       queryBuilder.andWhere(
@@ -199,6 +237,8 @@ export class ProductsService {
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
+
+      console.log({products});
 
     for (const product of products) {
       product.price = formatCurrency(product.price);

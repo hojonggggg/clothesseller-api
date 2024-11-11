@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseGuards, Param, Post, Body, ConflictException
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductsService } from 'src/commons/shared/products/products.service';
-import { CreateWholesalerProductDtoFromAdmin } from 'src/commons/shared/products/dto/create-wholesaler-product.dto';
+import { CreateWholesalerProductDtoForAdmin } from 'src/commons/shared/products/dto/create-wholesaler-product.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('admin > products')
@@ -66,7 +66,7 @@ export class AdminProductsController {
   @ApiOperation({ summary: '[완료] 도매처 상품 등록' })
   @ApiResponse({ status: 201 })
   async createWholesalerProduct(
-    @Body() createWholesalerProductDto: CreateWholesalerProductDtoFromAdmin, 
+    @Body() createWholesalerProductDto: CreateWholesalerProductDtoForAdmin, 
   ) {
     const { wholesalerId, name } = createWholesalerProductDto;
     const product = await this.productsService.findOneWholesalerProductByWholesalerIdAndName(wholesalerId, name);

@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { SellerProduct } from './seller-product.entity';
+import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
 
 @Entity('seller_product_option')
 export class SellerProductOption {

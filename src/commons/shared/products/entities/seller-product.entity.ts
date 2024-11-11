@@ -37,6 +37,10 @@ export class SellerProduct {
   @Column()
   price: number;
 
+  @ApiProperty({ example: false, description: '상품 매칭 여부' })
+  @Column({ name: 'is_matching', default: false })
+  isMatching: boolean;
+
   @ApiProperty({ example: 10000, description: '도매 가격' })
   @Column({ name: 'wholesaler_product_price' })
   wholesalerProductPrice: number;

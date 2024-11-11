@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets, In } from 'typeorm';
-import { SellerProduct } from './entities/seller-product.entity';
+import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
 import { Return } from 'src/commons/shared/entities/return.entity';
 import { CreateSellerProductDto } from './dto/create-seller-product.dto';

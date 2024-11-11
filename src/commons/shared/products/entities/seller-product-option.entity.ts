@@ -44,6 +44,10 @@ export class SellerProductOption {
   @Column()
   status: string;
 
+  @ApiProperty({ example: false, description: '상품 옵션 매칭 여부' })
+  @Column({ name: 'is_matching', default: false })
+  isMatching: boolean;
+
   @ApiProperty({ example: false, description: '상품 노출 여부' })
   @Column({ name: 'is_show', default: true })
   isShow: boolean;
@@ -65,4 +69,5 @@ export class SellerProductOption {
   wholesalerPrice: number;
   mallName: string;
   optionId: number;
+  sellerProductOptionId: number;
 }

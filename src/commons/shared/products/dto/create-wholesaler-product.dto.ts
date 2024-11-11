@@ -16,7 +16,7 @@ class CreateWholesalerProductOptionDto {
   quantity: number;
 }
 
-export class CreateWholesalerProductDtoFromAdmin {
+export class CreateWholesalerProductDtoForAdmin {
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
