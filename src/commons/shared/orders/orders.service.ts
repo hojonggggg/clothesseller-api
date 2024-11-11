@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
+import { ProductsService } from '../products/products.service';
 import { WholesalerOrder } from '../orders/entities/wholesaler-order.entity';
 import { SellerOrder } from './entities/seller-order.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
@@ -9,6 +10,8 @@ import { formatCurrency, formatHyphenDay } from '../functions/format';
 @Injectable()
 export class OrdersService {
   constructor(
+    private readonly productsService: ProductsService,
+
     @InjectRepository(WholesalerOrder)
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
     @InjectRepository(SellerOrder)
@@ -528,5 +531,29 @@ export class OrdersService {
     const volumes = await queryBuilder.getRawMany();
 
     return volumes;
+  }
+
+  async _sellerOrderNewCount(sellerId: number) {
+    return 0;
+  }
+
+  async _sellerOrderPendingCount(sellerId: number) {
+    return 0;
+  }
+
+  async _sellerOrderCompletedCount(sellerId: number) {
+    return 0;
+  }
+
+  async sellerOrderSummary(sellerId: number) {
+    const result = {
+      newOrder: await this._sellerOrderNewCount(sellerId),
+      matchingPending: await this.productsService._sellerProductMathcingPendingCount(sellerId),
+      matchingCompleted: await this.productsService._sellerProductMathcingCompletedCount(sellerId),
+      orderPending: await this._sellerOrderPendingCount(sellerId),
+      orderCompleted: await this._sellerOrderCompletedCount(sellerId),
+    };
+
+    return result;
   }
 }

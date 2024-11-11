@@ -53,7 +53,7 @@ export class WholesalerProductsController {
     const wholesalerId = req.user.uid;
     //const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
     //const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
-    const result = await this.productsService.findAllWholesalerProduct(wholesalerId, query);
+    const result = await this.productsService.findAllWholesalerProductByWholesalerId(wholesalerId, query);
     return {
       statusCode: 200,
       data: result
@@ -61,6 +61,7 @@ export class WholesalerProductsController {
   }
   
   @Get('products/pagination')
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 옵션 목록 조회' })

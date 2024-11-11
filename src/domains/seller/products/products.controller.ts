@@ -74,7 +74,7 @@ export class SellerProductsController {
     const sellerId = req.user.uid;
     //return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
     //const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, query, paginationQuery);
-    const result = await this.productsService.findAllSellerProductForSeller(sellerId, query, paginationQueryDto);
+    const result = await this.productsService.findAllSellerProductBySellerId(sellerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
@@ -112,7 +112,7 @@ export class SellerProductsController {
     @Request() req
   ) {
     //const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
-    const result = await this.productsService.findAllWholesalerProduct(wholesalerId, query);
+    const result = await this.productsService.findAllWholesalerProductByWholesalerId(wholesalerId, query);
     return {
       statusCode: 200,
       data: result
