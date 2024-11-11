@@ -28,7 +28,7 @@ export class ProductMatchingsService {
     .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
-      .andWhere("sellerProduct.wholesalerProductId IS NULL");
+      .andWhere("sellerProductOption.isMatching = false");
     
     if (query) {
       queryBuilder.andWhere(
