@@ -354,7 +354,7 @@ export class ProductsService {
     const result = await this.sellerProductOptionRepository
       .createQueryBuilder("sellerProductOption")
       .leftJoin('sellerProductOption.sellerProduct', 'sellerProduct')
-      .select("SUM(productOption.quantity)", "totalQuantity")
+      .select("SUM(sellerProductOption.quantity)", "totalQuantity")
       .where("sellerProductOption.sellerId = :sellerId", { sellerId })
       .andWhere("sellerProduct.mallId = :mallId", { mallId })
       .andWhere("sellerProductOption.isMatching = true")
