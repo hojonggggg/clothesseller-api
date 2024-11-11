@@ -101,7 +101,7 @@ export class AdminOrdersController {
   @Get('orders/volume-daily')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '일자별 주문 통계' })
+  @ApiOperation({ summary: '일주일 주문 통계' })
   @ApiResponse({ status: 200 })
   async wholesalerOrderVolumeByDaily() {
     const result = await this.ordersService.wholesalerOrderVolumeByDaily();

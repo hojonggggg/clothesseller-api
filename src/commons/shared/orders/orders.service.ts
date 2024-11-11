@@ -275,7 +275,7 @@ export class OrdersService {
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const formattedDate = formatHyphenDay(date.toISOString().split('T')[0]);
+      const formattedDate = formatHyphenDay(date.toISOString().split('T')[0]).substring(5);
       
       const existingData = results.find(r => r.orderDate === formattedDate);
       filledResults.push({
