@@ -305,7 +305,7 @@ export class ProductsService {
   }
 
   async _sellerProductOptionCount(sellerId: number, mallId: number) {
-    return this.sellerProductOptionRepository
+    return await this.sellerProductOptionRepository
       .createQueryBuilder("productOption")
       .leftJoin('productOption.sellerProduct', 'product')
       .where("productOption.sellerId = :sellerId", { sellerId })
@@ -315,7 +315,7 @@ export class ProductsService {
   }
 
   async _sellerProductOptionSoldoutCount(sellerId: number, mallId: number) {
-    return this.sellerProductOptionRepository
+    return await this.sellerProductOptionRepository
       .createQueryBuilder("productOption")
       .leftJoin('productOption.sellerProduct', 'product')
       .where("productOption.sellerId = :sellerId", { sellerId })
@@ -326,7 +326,7 @@ export class ProductsService {
   }
 
   async _sellerProductOptionQuantity(sellerId: number, mallId: number) {
-    return this.sellerProductOptionRepository
+    const result = await this.sellerProductOptionRepository
       .createQueryBuilder("productOption")
       .leftJoin('productOption.sellerProduct', 'product')
       .select("SUM(productOption.quantity)", "totalQuantity")
@@ -334,6 +334,8 @@ export class ProductsService {
       .andWhere("product.mallId = :mallId", { mallId })
       .andWhere("productOption.isMatching = true")
       .getRawOne();
+
+    return Number(result.totalQuantity);
   }
 
   async sellerProductSummary(sellerId: number, mallId: number) {
