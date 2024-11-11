@@ -33,7 +33,7 @@ export class SellerProductsService {
       .getCount();
   }
 
-  async summarySellerProduct(sellerId: number, mallId: number) {
+  async _summarySellerProduct(sellerId: number, mallId: number) {
     const result = {
       totalProduct: await this._totalProductCount(sellerId, mallId),
       soldoutProduct: 10,
