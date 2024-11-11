@@ -79,7 +79,7 @@ export class ProductMatchingsService {
   }
 
   async productMatching(sellerProductOptionId: number, productMatchingDto: ProductMatchingDto) {
-    const { sellerProductId, wholesalerId, wholesalerProductId, wholesalerProductPrice, wholesalerProductOptionId } = productMatchingDto;
+    const { sellerProductId, wholesalerId, wholesalerProductId, wholesalerProductOptionId } = productMatchingDto;
     const sellerProduct = await this._findOneSellerProductById(sellerProductId);
     if (sellerProduct.wholesalerProductId && sellerProduct.wholesalerProductId != wholesalerProductId) {
       throw new ConflictException('이미 매칭된 도매처 상품 ID와 다릅니다.');
@@ -97,7 +97,6 @@ export class ProductMatchingsService {
         {
           wholesalerId,
           wholesalerProductId,
-          wholesalerProductPrice,
           isMatching: true
         }
       );
