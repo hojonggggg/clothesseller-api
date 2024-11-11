@@ -280,30 +280,6 @@ export class WholesalerProductsService {
     );
   }
   //////////////////////
-  async findAllWholesalerProduct(wholesalerId: number, query: string) {
-    const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
-      .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId })
-      .select([
-        'wholesalerProduct.id',
-        'wholesalerProduct.code',
-        'wholesalerProduct.name',
-        'wholesalerProduct.price',
-      ]);
-    
-    if (query) {
-      queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
-    }
-
-    const products = await queryBuilder
-      .orderBy('wholesalerProduct.id', 'DESC')
-      .getMany();
-    
-    for (const product of products) {
-      product.price = formatCurrency(product.price);
-    }
-    
-    return products;
-  }
 
   async _findAllWholesalerProductOptionWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;

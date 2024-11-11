@@ -111,7 +111,8 @@ export class SellerProductsController {
     @Query('query') query: string,
     @Request() req
   ) {
-    const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
+    //const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
+    const result = await this.productsService.findAllWholesalerProduct(wholesalerId, query);
     return {
       statusCode: 200,
       data: result

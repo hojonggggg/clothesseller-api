@@ -1,6 +1,7 @@
 import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { ProductsService } from 'src/commons/shared/products/products.service';
 import { WholesalerProductsService } from './products.service';
 import { WholesalerProduct } from './entities/wholesaler-product.entity';
 import { WholesalerProductOption } from './entities/wholesaler-product-option.entity';
@@ -13,6 +14,7 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('wholesaler')
 export class WholesalerProductsController {
   constructor(
+    private productsService: ProductsService,
     private wholesalerProductsService: WholesalerProductsService
   ) {}
 
@@ -50,7 +52,8 @@ export class WholesalerProductsController {
   ) {
     const wholesalerId = req.user.uid;
     //const result = await this.wholesalerProductsService.findAllWholesalerProductWithPagination(wholesalerId, query, paginationQuery);
-    const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
+    //const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
+    const result = await this.productsService.findAllWholesalerProduct(wholesalerId, query);
     return {
       statusCode: 200,
       data: result

@@ -136,6 +136,31 @@ export class ProductsService {
     };
   }
 
+  async findAllWholesalerProduct(wholesalerId: number, query: string) {
+    const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
+      .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId })
+      .select([
+        'wholesalerProduct.id',
+        'wholesalerProduct.code',
+        'wholesalerProduct.name',
+        'wholesalerProduct.price',
+      ]);
+    
+    if (query) {
+      queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
+    }
+
+    const products = await queryBuilder
+      .orderBy('wholesalerProduct.name', 'ASC')
+      .getMany();
+    
+    for (const product of products) {
+      product.price = formatCurrency(product.price);
+    }
+    
+    return products;
+  }
+
   async findAllWholesalerProductOption(query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
@@ -306,33 +331,33 @@ export class ProductsService {
 
   async _sellerProductOptionCount(sellerId: number, mallId: number) {
     return await this.sellerProductOptionRepository
-      .createQueryBuilder("productOption")
-      .leftJoin('productOption.sellerProduct', 'product')
-      .where("productOption.sellerId = :sellerId", { sellerId })
-      .andWhere("product.mallId = :mallId", { mallId })
-      .andWhere("productOption.isMatching = true")
+      .createQueryBuilder("sellerProductOption")
+      .leftJoin('sellerProductOption.sellerProduct', 'sellerProduct')
+      .where("sellerProductOption.sellerId = :sellerId", { sellerId })
+      .andWhere("sellerProduct.mallId = :mallId", { mallId })
+      .andWhere("sellerProductOption.isMatching = true")
       .getCount();
   }
 
   async _sellerProductOptionSoldoutCount(sellerId: number, mallId: number) {
     return await this.sellerProductOptionRepository
-      .createQueryBuilder("productOption")
-      .leftJoin('productOption.sellerProduct', 'product')
-      .where("productOption.sellerId = :sellerId", { sellerId })
-      .andWhere("product.mallId = :mallId", { mallId })
-      .andWhere("productOption.isMatching = true")
-      .andWhere("productOption.isSoldout = true")
+      .createQueryBuilder("sellerProductOption")
+      .leftJoin('sellerProductOption.sellerProduct', 'sellerProduct')
+      .where("sellerProductOption.sellerId = :sellerId", { sellerId })
+      .andWhere("sellerProduct.mallId = :mallId", { mallId })
+      .andWhere("sellerProductOption.isMatching = true")
+      .andWhere("sellerProductOption.isSoldout = true")
       .getCount();
   }
 
   async _sellerProductOptionQuantity(sellerId: number, mallId: number) {
     const result = await this.sellerProductOptionRepository
-      .createQueryBuilder("productOption")
-      .leftJoin('productOption.sellerProduct', 'product')
+      .createQueryBuilder("sellerProductOption")
+      .leftJoin('sellerProductOption.sellerProduct', 'sellerProduct')
       .select("SUM(productOption.quantity)", "totalQuantity")
-      .where("productOption.sellerId = :sellerId", { sellerId })
-      .andWhere("product.mallId = :mallId", { mallId })
-      .andWhere("productOption.isMatching = true")
+      .where("sellerProductOption.sellerId = :sellerId", { sellerId })
+      .andWhere("sellerProduct.mallId = :mallId", { mallId })
+      .andWhere("sellerProductOption.isMatching = true")
       .getRawOne();
 
     return Number(result.totalQuantity);
@@ -342,7 +367,7 @@ export class ProductsService {
     const result = {
       totalProduct: await this._sellerProductOptionCount(sellerId, mallId),
       soldoutProduct: await this._sellerProductOptionSoldoutCount(sellerId, mallId),
-      needOrderProduct: 5,
+      needOrderProduct: 0,
       totalProductQuantity: await this._sellerProductOptionQuantity(sellerId, mallId),
     };
 

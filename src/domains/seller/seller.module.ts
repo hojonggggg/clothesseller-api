@@ -26,7 +26,6 @@ import { SellerProductMachingsModule } from './product-matchings/product-maching
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile]),
-    //UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -49,7 +48,6 @@ import { SellerProductMachingsModule } from './product-matchings/product-maching
     SellerProductMachingsModule,
   ],
   providers: [AuthService, SellerAuthService, UsersService],
-  controllers: [SellerAuthController],
-  //exports: [SellerModule]
+  controllers: [SellerAuthController]
 })
 export class SellerModule {}

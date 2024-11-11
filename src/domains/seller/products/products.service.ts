@@ -24,25 +24,6 @@ export class SellerProductsService {
     private returnRepository: Repository<Return>,
   ) {}
 
-  async _totalProductCount(sellerId: number, mallId: number) {
-    return this.sellerProductRepository
-      .createQueryBuilder("product")
-      .where("product.sellerId = :sellerId", { sellerId })
-      .andWhere("product.mallId = :mallId", { mallId })
-      .andWhere("product.wholesalerProductId IS NOT NULL")
-      .getCount();
-  }
-
-  async _summarySellerProduct(sellerId: number, mallId: number) {
-    const result = {
-      totalProduct: await this._totalProductCount(sellerId, mallId),
-      soldoutProduct: 10,
-      needOrderProduct: 5,
-      totalProductQuantity: 500
-    };
-    return result;
-  }
-
   async createSellerProduct(sellerId: number, createSellerProductDto: CreateSellerProductDto): Promise<SellerProduct> {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -80,7 +61,7 @@ export class SellerProductsService {
     return this.sellerProductRepository.findOne({ where: { sellerId, mallId, wholesalerProductId } });
   }
 
-  async findAllSellerProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async _findAllSellerProductBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     /*
     const [products, total] = await this.sellerProductOptionRepository.findAndCount({
