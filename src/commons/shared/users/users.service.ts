@@ -107,7 +107,7 @@ export class UsersService {
     }
 
     const [users, total] = await queryBuilder
-      .orderBy('user.id', 'DESC')
+      .orderBy('user.uid', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
@@ -192,7 +192,7 @@ export class UsersService {
     }
 
     const [users, total] = await queryBuilder
-      .orderBy('user.id', 'DESC')
+      .orderBy('user.uid', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();

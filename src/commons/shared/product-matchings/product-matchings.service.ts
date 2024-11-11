@@ -57,6 +57,7 @@ export class ProductMatchingsService {
       delete(option.wholesalerOptionPrice);
       delete(option.quantity);
       delete(option.status);
+      delete(option.isMatching);
       delete(option.isShow);
       delete(option.isReturned);
       delete(option.isDeleted);
