@@ -53,13 +53,15 @@ export class WeekProductsService {
       const { options } = wholesalerProduct;
       for (const option of options) {
         const { color, size } = option;
-        colors.push(color);
-        sizes.push(size);
+        if (!colors.includes(color)) {
+          colors.push(color);
+        }
+        //sizes.push(size);
       }
       weekProduct.name = wholesalerProduct.name;
       weekProduct.price = formatCurrency(wholesalerProduct.price);
       weekProduct.colors = colors;
-      weekProduct.sizes = sizes;
+      //eekProduct.sizes = sizes;
 
       delete(weekProduct.id);
       delete(weekProduct.wholesalerProduct);

@@ -29,7 +29,6 @@ export class SellerProductsController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    //const result = await this.sellerProductsService.summarySellerProduct(sellerId, mallId);
     const result = await this.productsService.sellerProductSummary(sellerId, mallId);
     return {
       statusCode: 200,
