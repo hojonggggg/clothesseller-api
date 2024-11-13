@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
+import { WholesalerProduct } from '../../products/entities/wholesaler-product.entity';
 
 @Entity('week_product')
 export class WeekProduct {
@@ -24,4 +24,5 @@ export class WeekProduct {
   price: number;
   colors: any[];
   sizes: any[];
+  wholesalerName: string;
 }

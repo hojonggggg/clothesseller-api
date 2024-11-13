@@ -40,7 +40,8 @@ export class WeekProductsService {
   async findAllWeekProduct() {
     const queryBuilder = this.weekProductRepository.createQueryBuilder('weekProduct')
       .leftJoinAndSelect('weekProduct.wholesalerProduct', 'wholesalerProduct')
-      .leftJoinAndSelect('wholesalerProduct.options', 'options');
+      .leftJoinAndSelect('wholesalerProduct.options', 'options')
+      .leftJoinAndSelect('wholesalerProduct.wholesalerProfile', 'wholesalerProfile');
 
     const weekProducts = await queryBuilder
       .orderBy('weekProduct.seq', 'ASC')
@@ -50,7 +51,7 @@ export class WeekProductsService {
       const colors = [];
       const sizes = [];
       const { wholesalerProduct } = weekProduct;
-      const { options } = wholesalerProduct;
+      const { options, wholesalerProfile } = wholesalerProduct;
       for (const option of options) {
         const { color, size } = option;
         if (!colors.includes(color)) {
@@ -62,6 +63,7 @@ export class WeekProductsService {
       weekProduct.price = formatCurrency(wholesalerProduct.price);
       weekProduct.colors = colors;
       //eekProduct.sizes = sizes;
+      weekProduct.wholesalerName = wholesalerProfile.name;
 
       delete(weekProduct.id);
       delete(weekProduct.wholesalerProduct);
