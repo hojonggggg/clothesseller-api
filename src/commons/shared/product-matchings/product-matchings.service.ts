@@ -133,7 +133,8 @@ export class ProductMatchingsService {
         {
           wholesalerId,
           wholesalerProductId,
-          wholesalerProductOptionId
+          wholesalerProductOptionId,
+          isMatching: true
         }
       );
 

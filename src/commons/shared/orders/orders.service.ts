@@ -418,7 +418,7 @@ export class OrdersService {
       .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.wholesalerId IS NOT NULL');
+      .andWhere('order.isMatching = 1');
 
     if (query) {
       queryBuilder.andWhere(
@@ -614,7 +614,7 @@ export class OrdersService {
       .where("seller_id = :sellerId", { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate: startOfToday, endDate: endOfToday })
-      .andWhere("sellerOrder.wholesaler_product_option_id IS NULL");
+      .andWhere("sellerOrder.isMatching = 0");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
@@ -630,7 +630,7 @@ export class OrdersService {
       .where("seller_id = :sellerId", { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate: startOfToday, endDate: endOfToday })
-      .andWhere("sellerOrder.wholesaler_product_option_id IS NOT NULL");
+      .andWhere("sellerOrder.isMatching = 1");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);

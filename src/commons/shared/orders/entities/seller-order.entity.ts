@@ -49,6 +49,14 @@ export class SellerOrder {
   @Column()
   status: string;
 
+  @ApiProperty({ example: false, description: '매칭 여부' })
+  @Column({ name: 'is_matching', default: true })
+  isMatching: boolean;
+
+  @ApiProperty({ example: false, description: '발주 여부' })
+  @Column({ name: 'is_ordering', default: true })
+  isOrdering: boolean;
+
   @ApiProperty({ example: false, description: '삭제 여부' })
   @Column({ name: 'is_deleted', default: true })
   isDeleted: boolean;
