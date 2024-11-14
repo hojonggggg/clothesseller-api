@@ -138,13 +138,13 @@ export class ProductsService {
 
   async findAllWholesalerProductByWholesalerId(wholesalerId: number, query: string) {
     const queryBuilder = this.wholesalerProductRepository.createQueryBuilder('wholesalerProduct')
-      .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId })
       .select([
         'wholesalerProduct.id',
         'wholesalerProduct.code',
         'wholesalerProduct.name',
         'wholesalerProduct.price',
-      ]);
+      ])
+      .where('wholesalerProduct.wholesalerId = :wholesalerId', { wholesalerId });
     
     if (query) {
       queryBuilder.andWhere('wholesalerProduct.name LIKE :query', { query: `%${query}%` });
@@ -166,6 +166,44 @@ export class ProductsService {
 
     const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wholesalerProductOption')
       .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct');
+    
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :wholesalerProductName', { wholesalerProductName: `%${query}%` });
+        })
+      );
+    }
+
+    const [options, total] = await queryBuilder
+      .orderBy('wholesalerProductOption.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+    for (const option of options) {
+      const { wholesalerProduct } = option;
+      option.name = wholesalerProduct.name;
+      option.price = formatCurrency(wholesalerProduct.price);
+      delete(option.wholesalerProduct);
+      delete(option.isSoldout);
+      delete(option.isDeleted);
+    }
+    
+    return {
+      list: options,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findAllWholesalerProductOptionByWholesalerId(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wholesalerProductOption')
+      .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct')
+      .where('wholesalerProductOption.wholesalerId = :wholesalerId', { wholesalerId });
     
     if (query) {
       queryBuilder.andWhere(

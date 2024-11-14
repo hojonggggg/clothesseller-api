@@ -110,7 +110,6 @@ export class SellerProductsController {
     @Query('query') query: string,
     @Request() req
   ) {
-    //const result = await this.wholesalerProductsService.findAllWholesalerProduct(wholesalerId, query);
     const result = await this.productsService.findAllWholesalerProductByWholesalerId(wholesalerId, query);
     return {
       statusCode: 200,
@@ -130,7 +129,8 @@ export class SellerProductsController {
     @Query() paginationQuery: PaginationQueryDto, 
     @Request() req
   ) {
-    const result = await this.wholesalerProductsService.findAllWholesalerProductOptionWithPagination(wholesalerId, query, paginationQuery);
+    //const result = await this.wholesalerProductsService.findAllWholesalerProductOptionWithPagination(wholesalerId, query, paginationQuery);
+    const result = await this.productsService.findAllWholesalerProductOptionByWholesalerId(wholesalerId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result
