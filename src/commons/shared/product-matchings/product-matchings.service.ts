@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { ProductsService } from '../products/products.service';
+import { WholesalerProduct } from '../products/entities/wholesaler-product.entity';
 import { SellerProduct } from '../products/entities/seller-product.entity';
 import { SellerProductOption } from '../products/entities/seller-product-option.entity';
 import { SellerOrder } from '../orders/entities/seller-order.entity';
@@ -15,6 +16,8 @@ export class ProductMatchingsService {
     private readonly dataSource: DataSource,
     private readonly productsService: ProductsService,
 
+    @InjectRepository(WholesalerProduct)
+    private wholesalerProductRepository: Repository<WholesalerProduct>,
     @InjectRepository(SellerProduct)
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
@@ -74,6 +77,10 @@ export class ProductMatchingsService {
     };
   }
 
+  async _findOneWholesalerProductById(id: number) {
+    return await this.wholesalerProductRepository.findOne({ where: { id } });
+  }
+
   async _findOneSellerProductById(id: number) {
     return await this.sellerProductRepository.findOne({ where: { id } });
   }
@@ -89,6 +96,9 @@ export class ProductMatchingsService {
       throw new ConflictException('이미 매칭된 도매처 상품 ID와 다릅니다.');
     }
 
+    const wholesalerProduct = await this._findOneWholesalerProductById(wholesalerProductId);
+    const wholesalerProductPrice = wholesalerProduct.price;
+
     const queryRunner = this.dataSource.createQueryRunner();
     try {
       await queryRunner.connect();
@@ -101,6 +111,7 @@ export class ProductMatchingsService {
         {
           wholesalerId,
           wholesalerProductId,
+          wholesalerProductPrice,
           isMatching: true
         }
       );
