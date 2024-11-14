@@ -115,7 +115,8 @@ export class SellerOrdersService {
       .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
       .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
-      .where('order.sellerId = :sellerId', { sellerId });
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.wholesalerId IS NOT NULL');
 
     if (query) {
       queryBuilder.andWhere(
