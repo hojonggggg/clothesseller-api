@@ -680,6 +680,7 @@ export class WholesalerOrdersService {
     const ordering = this.wholesalerOrderRepository.create({
       ...createManualOrderingDto,
       sellerId,
+      quantityTotal: createManualOrderingDto.quantity,
       orderType: '수동',
       status: '발주요청',
     });
