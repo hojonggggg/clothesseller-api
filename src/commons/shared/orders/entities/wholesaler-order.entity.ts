@@ -81,17 +81,21 @@ export class WholesalerOrder {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @ApiProperty({ example: false, description: '삭제 여부' })
-  @Column({ name: 'is_deleted', default: true })
-  isDeleted: boolean;
+  @ApiProperty({ example: false, description: '확인 여부' })
+  @Column({ name: 'is_confirm', default: true })
+  isConfirm: boolean;
 
-  @ApiProperty({ example: false, description: '삭제 여부' })
+  @ApiProperty({ example: false, description: '미송 여부' })
   @Column({ name: 'is_prepayment', default: true })
   isPrepayment: boolean;
 
   @ApiProperty({ example: false, description: '품절 여부' })
   @Column({ name: 'is_soldout', default: true })
   isSoldout: boolean;
+
+  @ApiProperty({ example: false, description: '삭제 여부' })
+  @Column({ name: 'is_deleted', default: true })
+  isDeleted: boolean;
 
   /*
   @ManyToOne(() => WholesalerProductOption, (productOption) => productOption.orders)

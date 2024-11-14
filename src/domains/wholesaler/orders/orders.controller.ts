@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { OrdersService } from 'src/commons/shared/orders/orders.service';
 import { WholesalerOrdersService } from './orders.service';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerPrepaymentOrderDto } from './dto/wholesaler-prepayment-order.dto';
@@ -15,8 +16,26 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('wholesaler')
 export class WholesalerOrdersController {
   constructor(
+    private ordersService: OrdersService,
     private wholesalerOrdersService: WholesalerOrdersService
   ) {}
+
+  @Get('summary')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '주문 현황' })
+  @ApiResponse({ status: 200 })
+  async summarySellerProduct(
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    //const result = await this.sellerOrdersService.summarySellerOrder(sellerId);
+    const result = await this.ordersService.wholesalerOrderSummary(wholesalerId);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 
   @Get('orders')
   @UseGuards(JwtAuthGuard)

@@ -304,6 +304,7 @@ export class ProductsService {
       console.log({products});
 
     for (const product of products) {
+      console.log({product});
       product.price = formatCurrency(product.price);
       product.wholesalerProductPrice = formatCurrency(product.wholesalerProductPrice);
       product.sellerName = product.sellerProfile.name;

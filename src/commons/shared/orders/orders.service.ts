@@ -297,6 +297,33 @@ export class OrdersService {
     return filledResults.reverse();
   }
 
+  async _newOrderCountForWholesaler(wholesalerId: number, startDate: Date, endDate: Date) {
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("wholesaler_id = :wholesalerId", { wholesalerId })
+      .andWhere("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async wholesalerOrderSummary(wholesalerId: number) {
+    const {startOfToday, endOfToday} = getStartAndEndOfToday();
+
+    const result = {
+      newOrder: await this._newOrderCountForWholesaler(wholesalerId, startOfToday, endOfToday),
+      matchingPending: await this._productMachingPendingCountForSeller(wholesalerId, startOfToday, endOfToday),
+      matchingCompleted: await this._productMachingCompleteCountForSeller(wholesalerId, startOfToday, endOfToday),
+      orderPending: await this._orderingPendingCountForSeller(wholesalerId, startOfToday, endOfToday),
+      orderCompleted: await this._orderingCompleteCountForSeller(wholesalerId, startOfToday, endOfToday),
+    };
+
+    return result;
+  }
+
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
