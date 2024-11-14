@@ -4,6 +4,7 @@ import { DataSource, Repository, Brackets } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { SellerProduct } from '../products/entities/seller-product.entity';
 import { SellerProductOption } from '../products/entities/seller-product-option.entity';
+import { SellerOrder } from '../orders/entities/seller-order.entity';
 import { ProductMatchingDto } from './dto/product-matching.dto';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { formatCurrency } from '../functions/format';
@@ -18,6 +19,8 @@ export class ProductMatchingsService {
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
     private sellerProductOptionRepository: Repository<SellerProductOption>,
+    @InjectRepository(SellerOrder)
+    private sellerOrderRepository: Repository<SellerOrder>,
   ) {}
 
 
@@ -109,6 +112,17 @@ export class ProductMatchingsService {
         {
           wholesalerProductOptionId,
           isMatching: true
+        }
+      );
+
+      await this.sellerOrderRepository.update(
+        {
+          sellerProductOptionId
+        }, 
+        {
+          wholesalerId,
+          wholesalerProductId,
+          wholesalerProductOptionId
         }
       );
 
