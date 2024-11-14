@@ -66,7 +66,9 @@ export class SellerOrdersService {
       order.name = order.sellerProduct.name;
       order.color = order.sellerProductOption.color;
       order.size = order.sellerProductOption.size;
-      order.wholesalerProductName = order.wholesalerProduct.name;
+      if (order.wholesalerProduct) {
+        order.wholesalerProductName = order.wholesalerProduct.name;
+      }
       order.mallName = order.mall.name;
       
       delete(order.sellerId);
