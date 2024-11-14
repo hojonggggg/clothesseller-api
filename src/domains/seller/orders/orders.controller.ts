@@ -100,7 +100,7 @@ export class SellerOrdersController {
   ) {
     const sellerrId = req.user.uid;
     //return await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
-    const result = await this.sellerOrdersService.findAllSellerOrderWaitBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.ordersService.findAllSellerOrderWaitBySellerId(sellerrId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

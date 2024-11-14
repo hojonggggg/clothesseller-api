@@ -8,8 +8,8 @@ import { SellerProfile } from './entities/seller-profile.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      User, 
-      WholesalerProfile, 
+      User,
+      WholesalerProfile,
       SellerProfile,
     ])
   ],

@@ -409,6 +409,61 @@ export class OrdersService {
     return sellerOrder;
   }
 
+  async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.wholesalerId IS NOT NULL');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+    
+    for (const order of orders) {
+      order.name = order.sellerProduct.name;
+      order.color = order.sellerProductOption.color;
+      order.size = order.sellerProductOption.size;
+      order.wholesalerName = order.wholesalerProfile.name;
+      order.wholesalerStoreName = order.wholesalerProfile.store.name;
+      order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
+      order.wholesalerMobile = order.wholesalerProfile.mobile;
+      
+      delete(order.sellerId);
+      delete(order.mallId);
+      delete(order.sellerProductId);
+      delete(order.sellerProduct);
+      delete(order.sellerProductOptionId);
+      delete(order.sellerProductOption);
+      delete(order.wholesalerId);
+      delete(order.wholesalerProfile);
+      delete(order.wholesalerProductId);
+      delete(order.wholesalerProductOptionId);
+      
+    }
+    
+    return {
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
   async _sellerOrderTotalCount(startDate: string, endDate: string) {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([

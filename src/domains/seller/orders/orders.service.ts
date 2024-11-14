@@ -106,8 +106,8 @@ export class SellerOrdersService {
       }
     );
   }
-
-  async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  /*
+  async __findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
@@ -161,7 +161,7 @@ export class SellerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  */
   async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
