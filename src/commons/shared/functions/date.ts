@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 export const getStartAndEndDate = (monthString) => {
   const [year, month] = monthString.split('/').map(Number);
   
@@ -37,4 +39,11 @@ export const getToday = () => {
   const day = ("0" + date.getDate()).slice(-2);
 
   return year + "/" + month + "/" + day;
+}
+
+export const getStartAndEndOfToday = () => {
+  const startOfToday = moment().startOf('day').toDate(); // today's 00:00:00
+  const endOfToday = moment().endOf('day').toDate();
+
+  return {startOfToday, endOfToday};
 }

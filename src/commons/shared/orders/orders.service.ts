@@ -5,6 +5,7 @@ import { ProductsService } from '../products/products.service';
 import { WholesalerOrder } from '../orders/entities/wholesaler-order.entity';
 import { SellerOrder } from './entities/seller-order.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
+import { getStartAndEndOfToday } from '../functions/date';
 import { formatCurrency, formatHyphenDay } from '../functions/format';
 
 @Injectable()
@@ -534,7 +535,50 @@ export class OrdersService {
   }
 
   async _sellerOrderNewCount(sellerId: number) {
-    return 0;
+    const {startOfToday, endOfToday} = getStartAndEndOfToday();
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("seller_id = :sellerId", { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: startOfToday, endDate: endOfToday });
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async _sellerOrderProductMachingPendingCount(sellerId: number) {
+    const {startOfToday, endOfToday} = getStartAndEndOfToday();
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("seller_id = :sellerId", { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: startOfToday, endDate: endOfToday })
+      .andWhere("sellerOrder.wholesaler_product_option_id IS NULL");
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
+  }
+
+  async _sellerOrderProductMachingCompleteCount(sellerId: number) {
+    const {startOfToday, endOfToday} = getStartAndEndOfToday();
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("seller_id = :sellerId", { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate: startOfToday, endDate: endOfToday })
+      .andWhere("sellerOrder.wholesaler_product_option_id IS NOT NULL");
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
   }
 
   async _sellerOrderPendingCount(sellerId: number) {
@@ -548,8 +592,8 @@ export class OrdersService {
   async sellerOrderSummary(sellerId: number) {
     const result = {
       newOrder: await this._sellerOrderNewCount(sellerId),
-      matchingPending: await this.productsService._sellerProductMathcingPendingCount(sellerId),
-      matchingCompleted: await this.productsService._sellerProductMathcingCompletedCount(sellerId),
+      matchingPending: await this._sellerOrderProductMachingPendingCount(sellerId),
+      matchingCompleted: await this._sellerOrderProductMachingCompleteCount(sellerId),
       orderPending: await this._sellerOrderPendingCount(sellerId),
       orderCompleted: await this._sellerOrderCompletedCount(sellerId),
     };
