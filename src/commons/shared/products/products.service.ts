@@ -185,7 +185,7 @@ export class ProductsService {
       const { wholesalerProduct } = option;
       option.name = wholesalerProduct.name;
       option.price = formatCurrency(wholesalerProduct.price);
-      //delete(option.wholesalerProduct);
+      delete(option.wholesalerProduct);
       delete(option.isSoldout);
       delete(option.isDeleted);
     }
@@ -223,7 +223,7 @@ export class ProductsService {
       const { wholesalerProduct } = option;
       option.name = wholesalerProduct.name;
       option.price = formatCurrency(wholesalerProduct.price);
-      delete(option.wholesalerProduct);
+      //delete(option.wholesalerProduct);
       delete(option.isSoldout);
       delete(option.isDeleted);
     }
