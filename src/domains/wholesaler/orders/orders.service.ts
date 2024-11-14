@@ -682,7 +682,7 @@ export class WholesalerOrdersService {
       sellerId,
       quantityTotal: createManualOrderingDto.quantity,
       orderType: '수동',
-      status: '발주요청',
+      //status: '발주요청',
     });
     return await this.wholesalerOrderRepository.save(ordering);
   }

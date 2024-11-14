@@ -589,68 +589,85 @@ export class OrdersService {
     return volumes;
   }
 
-  async _sellerOrderNewCount(sellerId: number) {
-    const {startOfToday, endOfToday} = getStartAndEndOfToday();
-
+  async _newOrderCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([
         'COUNT(*) AS count'
       ])
       .where("seller_id = :sellerId", { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
-        { startDate: startOfToday, endDate: endOfToday });
+        { startDate, endDate });
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
-  async _sellerOrderProductMachingPendingCount(sellerId: number) {
-    const {startOfToday, endOfToday} = getStartAndEndOfToday();
-
+  async _productMachingPendingCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([
         'COUNT(*) AS count'
       ])
       .where("seller_id = :sellerId", { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
-        { startDate: startOfToday, endDate: endOfToday })
+        { startDate, endDate })
       .andWhere("sellerOrder.isMatching = 0");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
-  async _sellerOrderProductMachingCompleteCount(sellerId: number) {
-    const {startOfToday, endOfToday} = getStartAndEndOfToday();
-
+  async _productMachingCompleteCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([
         'COUNT(*) AS count'
       ])
       .where("seller_id = :sellerId", { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
-        { startDate: startOfToday, endDate: endOfToday })
+        { startDate, endDate })
       .andWhere("sellerOrder.isMatching = 1");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
-  async _sellerOrderPendingCount(sellerId: number) {
-    return 0;
+  async _orderingPendingCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("seller_id = :sellerId", { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate })
+      .andWhere("sellerOrder.isMatching = 1")
+      .andWhere("sellerOrder.isOrdering = 0");
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
   }
 
-  async _sellerOrderCompletedCount(sellerId: number) {
-    return 0;
+  async _orderingCompleteCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'COUNT(*) AS count'
+      ])
+      .where("seller_id = :sellerId", { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+        { startDate, endDate })
+      .andWhere("sellerOrder.isOrdering = 1");
+
+    const result = await queryBuilder.getRawOne();
+    return Number(result.count);
   }
 
   async sellerOrderSummary(sellerId: number) {
+    const {startOfToday, endOfToday} = getStartAndEndOfToday();
+
     const result = {
-      newOrder: await this._sellerOrderNewCount(sellerId),
-      matchingPending: await this._sellerOrderProductMachingPendingCount(sellerId),
-      matchingCompleted: await this._sellerOrderProductMachingCompleteCount(sellerId),
-      orderPending: await this._sellerOrderPendingCount(sellerId),
-      orderCompleted: await this._sellerOrderCompletedCount(sellerId),
+      newOrder: await this._newOrderCountForSeller(sellerId, startOfToday, endOfToday),
+      matchingPending: await this._productMachingPendingCountForSeller(sellerId, startOfToday, endOfToday),
+      matchingCompleted: await this._productMachingCompleteCountForSeller(sellerId, startOfToday, endOfToday),
+      orderPending: await this._orderingPendingCountForSeller(sellerId, startOfToday, endOfToday),
+      orderCompleted: await this._orderingCompleteCountForSeller(sellerId, startOfToday, endOfToday),
     };
 
     return result;
