@@ -71,7 +71,7 @@ export class WholesalerSamplesService {
       await queryRunner.release();
     }
   }
-
+  /*
   async findAllSample(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
@@ -79,6 +79,7 @@ export class WholesalerSamplesService {
       .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('sample.sellerProfile', 'sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
       .andWhere('sample.isDeleted = 0');
 
@@ -130,7 +131,7 @@ export class WholesalerSamplesService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  */
   async findAllSampleOfMonthly(wholesalerId: number, month: string) {
     const { startDate, endDate } = getStartAndEndDate(month);
     

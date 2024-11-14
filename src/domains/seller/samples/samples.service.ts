@@ -31,6 +31,7 @@ export class SellerSamplesService {
       const { options } = sellerCreateSampleDto;
       for (const option of options) {
         const sample = this.sampleRepository.create({
+          sellerType: 'AUTO',
           sellerId, 
           ...sellerCreateSampleDto, 
           wholesalerProductOptionId: option.wholesalerProductOptionId,

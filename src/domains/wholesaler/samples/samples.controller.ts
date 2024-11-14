@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
+import { SamplesService } from 'src/commons/shared/samples/samples.service';
 import { WholesalerSamplesService } from './samples.service';
 import { WholesalerCreateSampleAutoDto } from './dto/wholesaler-create-sample-auto.dto';
 import { WholesalerCreateSampleManualDto } from './dto/wholesaler-create-sample-manual.dto';
@@ -12,6 +13,7 @@ import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto'
 @Controller('wholesaler')
 export class WholesalerSamplesController {
   constructor(
+    private samplesService: SamplesService,
     private wholesalerSamplesService: WholesalerSamplesService
   ) {}
 
@@ -61,7 +63,8 @@ export class WholesalerSamplesController {
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.wholesalerSamplesService.findAllSample(wholesalerId, query, paginationQueryDto);
+    //const result = await this.wholesalerSamplesService.findAllSample(wholesalerId, query, paginationQueryDto);
+    const result = await this.samplesService.findAllSampleByWholesalerId(wholesalerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
