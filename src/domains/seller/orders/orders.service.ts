@@ -68,6 +68,8 @@ export class SellerOrdersService {
       order.size = order.sellerProductOption.size;
       if (order.wholesalerProduct) {
         order.wholesalerProductName = order.wholesalerProduct.name;
+      } else {
+        order.status = '매칭필요';
       }
       order.mallName = order.mall.name;
       
