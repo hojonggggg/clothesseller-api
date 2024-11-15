@@ -290,9 +290,9 @@ export class SellerOrdersService {
       .getManyAndCount();
     
     for (const order of orders) {
-      order.sellerProductName = order.sellerProduct.name;
-      order.sellerProductColor = order.sellerProductOption.color;
-      order.sellerProductSize = order.sellerProductOption.size;
+      order.sellerProductName = order.sellerProduct?.name ?? "수동발주 상품";
+      order.sellerProductColor = order.sellerProductOption?.color ?? null;
+      order.sellerProductSize = order.sellerProductOption?.size ?? null;
       order.wholesalerName = order.wholesalerProfile.name;
       order.wholesalerStoreName = order.wholesalerProfile.store.name;
       order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
