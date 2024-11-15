@@ -321,6 +321,7 @@ export class WholesalerOrdersService {
       if (order.status != '출고완료' && order.status != '출고지연') {
         order.status = '미출고';
       }
+      order.quantity = order.quantityOfPrepayment;
       delete(order.wholesalerId);
       delete(order.wholesalerProductId);
       delete(order.wholesalerProduct);
@@ -330,6 +331,9 @@ export class WholesalerOrdersService {
       delete(order.sellerProductId);
       delete(order.sellerProductOptionId);
       delete(order.orderType);
+      delete(order.quantityOfDelivery);
+      delete(order.quantityOfPrepayment);
+      delete(order.quantityTotal);
       delete(order.isDeleted);
       delete(order.isPrepayment);
       delete(order.prepaymentDate);
