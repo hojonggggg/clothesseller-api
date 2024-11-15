@@ -30,12 +30,6 @@ export class WholesalerOrdersService {
   ) {}
 
   async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(startOfDay.getHours() + 9);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-    endOfDay.setHours(endOfDay.getHours() + 9);
-
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -43,6 +37,7 @@ export class WholesalerOrdersService {
       .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('order.sellerProfile', 'sellerProfile')
       .where('order.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere("DATE(order.createdAt) = :date", { date })
       .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false });
 
