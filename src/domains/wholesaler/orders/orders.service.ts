@@ -288,6 +288,7 @@ export class WholesalerOrdersService {
       .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('order.sellerProfile', 'sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('order.wholesalerId = :wholesalerId', { wholesalerId })
       .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true });
