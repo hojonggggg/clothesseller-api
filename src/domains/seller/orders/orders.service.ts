@@ -268,8 +268,9 @@ export class SellerOrdersService {
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
       .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
-      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true });
@@ -277,8 +278,8 @@ export class SellerOrdersService {
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` })
-            .orWhere('order.prePaymentDate = :date', { date: query });
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('order.prepaymentDate = :date', { date: query });
         })
       );
     }
@@ -290,9 +291,9 @@ export class SellerOrdersService {
       .getManyAndCount();
     
     for (const order of orders) {
-      order.sellerProductName = order.sellerProduct?.name ?? "수동발주 상품";
-      order.sellerProductColor = order.sellerProductOption?.color ?? null;
-      order.sellerProductSize = order.sellerProductOption?.size ?? null;
+      order.sellerProductName = order.wholesalerProduct?.name ?? "수동발주 상품";
+      order.sellerProductColor = order.wholesalerProductOption?.color ?? null;
+      order.sellerProductSize = order.wholesalerProductOption?.size ?? null;
       order.wholesalerName = order.wholesalerProfile.name;
       order.wholesalerStoreName = order.wholesalerProfile.store.name;
       order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
@@ -314,8 +315,9 @@ export class SellerOrdersService {
       delete(order.wholesalerId);
       delete(order.wholesalerProfile);
       delete(order.wholesalerProductId);
-      delete(order.wholesalerProductOptionId);
       delete(order.wholesalerProduct);
+      delete(order.wholesalerProductOptionId);
+      delete(order.wholesalerProductOption);
       delete(order.quantityTotal);
       delete(order.quantityOfDelivery);
       delete(order.quantityOfPrepayment);
@@ -337,9 +339,9 @@ export class SellerOrdersService {
         'order.quantity AS quantity',
         'order.prepaymentDate AS prePaymentDate',
         'order.deliveryDate AS deliveryDate',
-        'sellerProduct.name AS sellerProductName',
+        'wholesalerProduct.name AS sellerProductName',
       ])
-      .leftJoin('order.sellerProduct', 'sellerProduct')
+      .leftJoin('order.wholesalerProduct', 'wholesalerProduct')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true })
       .andWhere('STR_TO_DATE(order.prepaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
@@ -352,7 +354,7 @@ export class SellerOrdersService {
       .getRawMany();
 
     for (const order of rawOrders) {
-      order.sellerProductName = order.sellerProduct?.name ?? "수동발주 상품";
+      order.sellerProductName = order.wholesalerProduct?.name ?? "수동발주 상품";
     }
     
     const orders = rawOrders.reduce((acc, result) => {
@@ -382,27 +384,30 @@ export class SellerOrdersService {
       .select([
         'order.id AS id',
         'order.quantity AS quantity',
-        'order.prePaymentDate AS prePaymentDate',
+        'order.prepaymentDate AS prePaymentDate',
         'order.deliveryDate AS deliveryDate',
-        'sellerProduct.name AS name',
-        'sellerProduct.wholesalerProductPrice AS wholesalerProductPrice',
-        'sellerProductOption.color AS color',
-        'sellerProductOption.size AS size',
+        'wholesalerProduct.name AS name',
+        'wholesalerProduct.price AS price',
+        'wholesalerProductOption.color AS color',
+        'wholesalerProductOption.size AS size',
         'wholesalerProfile.name AS wholesalerName'
       ])
-      .leftJoin('order.sellerProduct', 'sellerProduct')
-      .leftJoin('order.sellerProductOption', 'sellerProductOption')
+      //.leftJoin('order.sellerProduct', 'sellerProduct')
+      //.leftJoin('order.sellerProductOption', 'sellerProductOption')
       .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('order.wholesalerProductOption', 'wholesalerProductOption')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true })
-      .andWhere('order.prePaymentDate = :day', { day });
+      .andWhere('order.prepaymentDate = :day', { day });
 
     const orders = await queryBuilder
       .orderBy('order.id', 'DESC')
       .getRawMany();
 
     for (const order of orders) {
-      order.price = formatCurrency((order.quantity) * (order.wholesalerProductPrice));
+      //order.price = formatCurrency((order.quantity) * (order.wholesalerProductPrice));
+      order.price = formatCurrency((order.quantity) * (order.price))
 
       delete(order.quantity);
       delete(order.wholesalerProductPrice);
