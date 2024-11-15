@@ -40,12 +40,14 @@ export class SellerSamplesController {
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명 or 날짜' })
   async findAllSampleBySellerId(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
     @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.sellerSamplesService.findAllSampleBySellerId(sellerrId, startDate, endDate, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

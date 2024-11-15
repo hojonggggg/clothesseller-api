@@ -51,7 +51,7 @@ export class SellerSamplesService {
     }
   }
 
-  async findAllSampleBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllSampleBySellerId(sellerId: number, startDate: string, endDate: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     /*
     const whereConditions: any = { sellerId };
@@ -74,6 +74,7 @@ export class SellerSamplesService {
       .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
       .where('sample.sellerId = :sellerId', { sellerId })
+      .andWhere('sample.sampleDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('sample.isDeleted = 0');
 
     if (query) {
@@ -81,7 +82,7 @@ export class SellerSamplesService {
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
             .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` })
-            .orWhere('sample.sampleDate = :date', { date: query })
+            //.orWhere('sample.sampleDate = :date', { date: query })
             .orWhere('sample.returnDate = :date', { date: query });
         })
       );
