@@ -51,7 +51,8 @@ export class SellerOrdersController {
   ) {
     const sellerrId = req.user.uid;
     //return await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
-    const result = await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
+    //const result = await this.sellerOrdersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.ordersService.findAllSellerOrderBySellerId(sellerrId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result
@@ -80,7 +81,8 @@ export class SellerOrdersController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.sellerOrdersService.deleteSellerOrder(sellerId, deleteSellerOrderDto.ids);
+    //await this.sellerOrdersService.deleteSellerOrder(sellerId, deleteSellerOrderDto.ids);
+    await this.ordersService.deleteSellerOrder(sellerId, deleteSellerOrderDto.ids);
     return {
       statusCode: 200,
       message: '주문 내역 삭제가 완료되었습니다.'

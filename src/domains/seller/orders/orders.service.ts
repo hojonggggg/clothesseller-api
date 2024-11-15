@@ -16,7 +16,7 @@ export class SellerOrdersService {
     @InjectRepository(WholesalerOrder)
     private wholesalerOrderRepository: Repository<WholesalerOrder>,
   ) {}
-
+  /*
   async summarySellerOrder(sellerId: number) {
     const result = {
       newOrder: 15,
@@ -27,8 +27,9 @@ export class SellerOrdersService {
     };
     return result;
   }
-
-  async findAllSellerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  */
+  /*
+  async _findAllSellerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
@@ -55,7 +56,7 @@ export class SellerOrdersService {
       skip: (page - 1) * limit,
     });
     */
-
+    /*
     const [orders, total] = await queryBuilder
       .orderBy('order.id', 'DESC')
       .take(pageSize)
@@ -94,7 +95,8 @@ export class SellerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  */
+ /*
   async deleteSellerOrder(sellerId: number, ids: number[]): Promise<void> {
     await this.sellerOrderRepository.update(
       {
@@ -106,6 +108,7 @@ export class SellerOrdersService {
       }
     );
   }
+  */
   /*
   async __findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
