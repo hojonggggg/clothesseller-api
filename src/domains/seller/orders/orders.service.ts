@@ -350,6 +350,10 @@ export class SellerOrdersService {
     const rawOrders = await queryBuilder
       .orderBy('order.id', 'DESC')
       .getRawMany();
+
+    for (const order of rawOrders) {
+      order.sellerProductName = order.sellerProduct?.name ?? "수동발주 상품";
+    }
     
     const orders = rawOrders.reduce((acc, result) => {
       console.log({result});
