@@ -4,7 +4,7 @@ import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/wholesaler-order-history.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
-import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
+//import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
 import { WholesalerDeliveryDelayOrderDto } from './dto/wholesaler-delivery-delay-order.dto';
@@ -676,7 +676,7 @@ export class WholesalerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-
+  /*
   async createManualOrdering(sellerId: number, createManualOrderingDto: CreateManualOrderingDto) {
     const ordering = this.wholesalerOrderRepository.create({
       ...createManualOrderingDto,
@@ -687,7 +687,7 @@ export class WholesalerOrdersService {
     });
     return await this.wholesalerOrderRepository.save(ordering);
   }
-
+  */
   async createPrepayment(sellerId: number, createPrepaymentDto: CreatePrepaymentDto) {
     
     const prepayment = this.wholesalerOrderRepository.create({

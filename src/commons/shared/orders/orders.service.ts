@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Brackets, In } from 'typeorm';
+import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { WholesalerOrder } from '../orders/entities/wholesaler-order.entity';
 import { SellerOrder } from './entities/seller-order.entity';
+import { CreateManualOrderDto } from './dto/create-manual-order.dto';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { getStartAndEndOfToday } from '../functions/date';
 import { formatCurrency, formatHyphenDay } from '../functions/format';
@@ -11,6 +12,7 @@ import { formatCurrency, formatHyphenDay } from '../functions/format';
 @Injectable()
 export class OrdersService {
   constructor(
+    private readonly dataSource: DataSource,
     private readonly productsService: ProductsService,
 
     @InjectRepository(WholesalerOrder)
@@ -322,6 +324,41 @@ export class OrdersService {
     };
 
     return result;
+  }
+
+  async _createSellerOrder(sellerId: number, createManualOrderDto: CreateManualOrderDto) {
+    const { wholesalerProductOptionId } = createManualOrderDto;
+    return await this.sellerOrderRepository.save({
+      orderType: 'MANUAL',
+      sellerId,
+      ...createManualOrderDto,
+    });
+  }
+
+  async _createWholesalerOrder(sellerId: number, sellerOrderId: number, createManualOrderDto: CreateManualOrderDto) {
+    await this.wholesalerOrderRepository.save({
+      orderType: 'MANUAL',
+      ...createManualOrderDto,
+      sellerId,
+      quantityTotal: createManualOrderDto.quantity
+    });
+  }
+
+  async createManualOrder(sellerId: number, createManualOrderDto: CreateManualOrderDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      const sellerOrder = await this._createSellerOrder(sellerId, createManualOrderDto);
+      const sellerOrderId = sellerOrder.id;
+      await this._createWholesalerOrder(sellerId, sellerOrderId, createManualOrderDto);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
@@ -819,7 +856,50 @@ export class OrdersService {
     }
   }
 
-  async sellerOrderingProgress(sellerId: number) {
+  async sellerOrderingProgressBySellerId(sellerId: number, date: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
 
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .leftJoinAndSelect('sellerOrder.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('sellerOrder.sellerProductOption', 'sellerProductOption')
+      .where('sellerOrder.sellerId = :sellerId', { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) = :date", { date })
+      .andWhere('sellerOrder.isOrdering = true')
+      .andWhere('sellerOrder.isConfirm = true')
+      .andWhere('sellerOrder.isDeleted = false');
+
+    const [orderings, total] = await queryBuilder
+      .orderBy('sellerOrder.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+      for (const ordering of orderings) {
+        ordering.name = ordering.sellerProduct.name;
+        ordering.color = ordering.sellerProductOption.color ?? null;
+        ordering.size = ordering.sellerProductOption.size ?? null;
+  
+        delete(ordering.sellerId);
+        delete(ordering.sellerProductId);
+        delete(ordering.sellerProduct);
+        delete(ordering.sellerProductOptionId);
+        delete(ordering.sellerProductOption);
+        delete(ordering.wholesalerId);
+        delete(ordering.wholesalerProductId);
+        delete(ordering.wholesalerProductOptionId);
+        delete(ordering.mallId);
+        delete(ordering.status);
+        delete(ordering.isMatching);
+        delete(ordering.isOrdering);
+        delete(ordering.isDeleted);
+        delete(ordering.createdAt);
+      }
+  
+      return {
+        list: orderings,
+        total,
+        page: Number(pageNumber),
+        totalPage: Math.ceil(total / pageSize)
+      }
   }
 }

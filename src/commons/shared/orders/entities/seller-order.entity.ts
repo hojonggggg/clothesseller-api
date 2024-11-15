@@ -13,6 +13,10 @@ export class SellerOrder {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
   
+  @ApiProperty({ example: '자동', description: '발주 유형' })
+  @Column({ name: 'order_type' })
+  orderType: string;
+  
   @ApiProperty({ example: 1, description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;
