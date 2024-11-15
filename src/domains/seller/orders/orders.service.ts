@@ -297,7 +297,10 @@ export class SellerOrdersService {
       order.wholesalerStoreName = order.wholesalerProfile.store.name;
       order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
       order.wholesalerMobile = order.wholesalerProfile.mobile;
-      
+      order.prePaymentDate = order.prepaymentDate;
+      order.quantity = order.quantityOfPrepayment;
+
+
       delete(order.orderType);
       delete(order.memo);
       delete(order.status);
@@ -313,6 +316,9 @@ export class SellerOrdersService {
       delete(order.wholesalerProductId);
       delete(order.wholesalerProductOptionId);
       delete(order.wholesalerProduct);
+      delete(order.quantityTotal);
+      delete(order.quantityOfDelivery);
+      delete(order.quantityOfPrepayment);
     }
     
     return {
