@@ -155,6 +155,7 @@ export class WholesalerOrdersService {
             quantity: orderItem.quantity - quantity,
             quantityOfPrepayment: orderItem.quantityOfPrepayment + quantity,
             status: '미송처리',
+            isPrepayment: true,
             prepaymentDate,
             deliveryDate
           }
