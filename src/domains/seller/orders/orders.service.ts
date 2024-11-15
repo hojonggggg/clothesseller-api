@@ -329,14 +329,14 @@ export class SellerOrdersService {
       .select([
         'order.id AS orderId',
         'order.quantity AS quantity',
-        'order.prePaymentDate AS prePaymentDate',
+        'order.prepaymentDate AS prePaymentDate',
         'order.deliveryDate AS deliveryDate',
         'sellerProduct.name AS sellerProductName',
       ])
       .leftJoin('order.sellerProduct', 'sellerProduct')
       .where('order.sellerId = :sellerId', { sellerId })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true })
-      .andWhere('STR_TO_DATE(order.prePaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
+      .andWhere('STR_TO_DATE(order.prepaymentDate, "%Y/%m/%d") BETWEEN STR_TO_DATE(:startDate, "%Y/%m/%d") AND STR_TO_DATE(:endDate, "%Y/%m/%d")', {
         startDate,
         endDate
       });
@@ -346,6 +346,7 @@ export class SellerOrdersService {
       .getRawMany();
     
     const orders = rawOrders.reduce((acc, result) => {
+      console.log({result});
       const { orderId, price, prePaymentDate, sellerProductName, deliveryDate } = result;
     
       // 이미 그룹이 존재하는지 확인
