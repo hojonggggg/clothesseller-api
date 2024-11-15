@@ -210,6 +210,7 @@ export class SellerProductsController {
     @Body() returnSellerProductDto: ReturnSellerProductDto, 
     @Request() req
   ) {
+  console.log({returnSellerProductDto});
     const sellerId = req.user.uid;
     await this.sellerProductsService.returnSellerProduct(sellerId, returnSellerProductDto.ids);
     return {

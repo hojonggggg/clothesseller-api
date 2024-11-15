@@ -262,7 +262,7 @@ export class SellerOrdersService {
     );
   }
 
-  async findAllPrePaymentOfWholesalerOrderBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllPrePaymentOfWholesalerOrderBySellerId(sellerId: number, startDate: string, endDate: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -273,13 +273,14 @@ export class SellerOrdersService {
       .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.prepaymentDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true });
 
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
-            .orWhere('order.prepaymentDate = :date', { date: query });
+            //.orWhere('order.prepaymentDate = :date', { date: query });
         })
       );
     }
