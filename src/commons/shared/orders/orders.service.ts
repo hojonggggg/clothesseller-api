@@ -700,5 +700,55 @@ export class OrdersService {
     return result;
   }
 
-  //async sellerOrderings()
+  async findSellerOrderingsBySellerId(sellerId: number, date: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .leftJoinAndSelect('sellerOrder.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('sellerOrder.sellerProductOption', 'sellerProductOption')
+      .where('sellerOrder.sellerId = :sellerId', { sellerId })
+      .andWhere("DATE(sellerOrder.createdAt) = :date", { date })
+      .andWhere('sellerOrder.isOrdering = true')
+      .andWhere('sellerOrder.isDeleted = false');
+
+    const [orderings, total] = await queryBuilder
+      .orderBy('sellerOrder.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
+    for (const ordering of orderings) {
+      ordering.name = ordering.sellerProduct.name;
+      ordering.color = ordering.sellerProductOption.color ?? null;
+      ordering.size = ordering.sellerProductOption.size ?? null;
+      ordering.price = formatCurrency(ordering.sellerProduct.wholesalerProductPrice);
+      ordering.totalPrice = formatCurrency((ordering.price) * (ordering.quantity));
+
+      delete(ordering.sellerId);
+      delete(ordering.sellerProductId);
+      delete(ordering.sellerProduct);
+      delete(ordering.sellerProductOptionId);
+      delete(ordering.sellerProductOption);
+      delete(ordering.wholesalerId);
+      delete(ordering.wholesalerProductId);
+      delete(ordering.wholesalerProductOptionId);
+      delete(ordering.mallId);
+      delete(ordering.status);
+      delete(ordering.isMatching);
+      delete(ordering.isOrdering);
+      delete(ordering.isDeleted);
+      delete(ordering.createdAt);
+    }
+
+    return {
+      list: orderings,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize)
+    }
+  }
+
+  async sellerOrderingProgress(sellerId: number) {
+
+  }
 }

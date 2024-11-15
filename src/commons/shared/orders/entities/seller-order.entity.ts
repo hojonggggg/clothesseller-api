@@ -100,4 +100,6 @@ export class SellerOrder {
   wholesalerMobile: string;
   productName: string;
   sellerName: string;
+  price: number;
+  totalPrice: number;
 }
