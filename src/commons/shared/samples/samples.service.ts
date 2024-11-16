@@ -93,7 +93,7 @@ export class SamplesService {
     return sample;
   }
 
-  async findAllSampleByWholesalerId(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllSampleByWholesalerId(wholesalerId: number, startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sampleRepository.createQueryBuilder('sample')
@@ -102,6 +102,7 @@ export class SamplesService {
       .leftJoinAndSelect('sample.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('sample.sampleDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('sample.isDeleted = 0');
 
     if (query) {

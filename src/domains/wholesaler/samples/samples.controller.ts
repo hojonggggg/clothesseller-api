@@ -59,12 +59,14 @@ export class WholesalerSamplesController {
   @ApiQuery({ name: 'query', required: false, description: '검색할 셀러 or 상품명' })
   async findAllSample(
     @Request() req,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
     @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
     //const result = await this.wholesalerSamplesService.findAllSample(wholesalerId, query, paginationQueryDto);
-    const result = await this.samplesService.findAllSampleByWholesalerId(wholesalerId, query, paginationQueryDto);
+    const result = await this.samplesService.findAllSampleByWholesalerId(wholesalerId, startDate, endDate, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

@@ -281,7 +281,7 @@ export class WholesalerOrdersService {
     await this.wholesalerOrderRepository.save(prePayment);
   }
 
-  async findAllPrePayment(wholesalerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllPrePayment(wholesalerId: number, startDate: string, endDate: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -290,6 +290,7 @@ export class WholesalerOrdersService {
       .leftJoinAndSelect('order.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('order.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('order.prepaymentDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: true });
 
