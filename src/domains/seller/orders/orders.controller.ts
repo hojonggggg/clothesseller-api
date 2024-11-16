@@ -217,6 +217,25 @@ export class SellerOrdersController {
     };
   }
 
+  @Get('ordering-progress')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '발주 현황 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'date', required: false, description: '검색할 날짜' })
+  async findSellerOrderingProgressBySellerId(
+    @Query('date') date: string,
+    @Query() paginationQueryDto: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.ordersService.sellerOrderingProgressBySellerId(sellerrId, date, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Post('pre-payment')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
