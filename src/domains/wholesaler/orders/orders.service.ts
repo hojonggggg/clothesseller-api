@@ -689,6 +689,7 @@ export class WholesalerOrdersService {
     return await this.wholesalerOrderRepository.save(ordering);
   }
   */
+ /*
   async createPrepayment(sellerId: number, createPrepaymentDto: CreatePrepaymentDto) {
     const { wholesalerId, wholesalerProductId, wholesalerProductOptionId, quantity } = createPrepaymentDto;
     
@@ -704,7 +705,7 @@ export class WholesalerOrdersService {
     });
     return await this.wholesalerOrderRepository.save(prepayment);
   }
-
+  */
   async createPrePaymentFromWholesaler(wholesalerId: number, wholesalerCreatePrepaymentDto: WholesalerCreatePrepaymentDto) {
 
     const { options } = wholesalerCreatePrepaymentDto;
