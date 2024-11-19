@@ -327,7 +327,6 @@ export class OrdersService {
   }
 
   async _createSellerOrder(sellerId: number, createManualOrderDto: CreateManualOrderDto) {
-    const { wholesalerProductOptionId } = createManualOrderDto;
     return await this.sellerOrderRepository.save({
       orderType: 'MANUAL',
       sellerId,
@@ -336,11 +335,16 @@ export class OrdersService {
   }
 
   async _createWholesalerOrder(sellerId: number, sellerOrderId: number, createManualOrderDto: CreateManualOrderDto) {
+    let quantityOfPrepayment = 0;
+    if (createManualOrderDto.orderNo === '미송') {
+      quantityOfPrepayment = createManualOrderDto.quantity;
+    }
     await this.wholesalerOrderRepository.save({
       orderType: 'MANUAL',
       ...createManualOrderDto,
       sellerId,
-      quantityTotal: createManualOrderDto.quantity
+      quantityTotal: createManualOrderDto.quantity,
+      quantityOfPrepayment
     });
   }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateManualOrderDto {
   @ApiProperty({ example: 1, description: '도매처 ID' })
@@ -17,4 +17,10 @@ export class CreateManualOrderDto {
   @ApiProperty({ example: 10, description: '수량' })
   @IsNumber()
   quantity: number;
+
+  //@IsString()
+  status: string;
+
+  //@IsString()
+  orderNo: string;
 }

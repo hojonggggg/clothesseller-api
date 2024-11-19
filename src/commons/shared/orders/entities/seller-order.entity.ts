@@ -17,6 +17,10 @@ export class SellerOrder {
   @Column({ name: 'order_type' })
   orderType: string;
   
+  @ApiProperty({ example: '2024111844575271', description: '쇼핑몰 주문 번호' })
+  @Column({ name: 'order_no' })
+  orderNo: string;
+  
   @ApiProperty({ example: 1, description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;

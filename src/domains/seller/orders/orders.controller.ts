@@ -190,6 +190,7 @@ export class SellerOrdersController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
+    createManualOrderDto.orderNo = '발주';
     //await this.wholesalerOrdersService.createManualOrdering(sellerId, createManualOrderDto);
     await this.ordersService.createManualOrder(sellerId, createManualOrderDto);
     return {
@@ -242,11 +243,15 @@ export class SellerOrdersController {
   @ApiOperation({ summary: '[완료] 미송 요청' })
   @ApiResponse({ status: 201 })
   async createPrepayment(
-    @Body() createPrepaymentDto: CreatePrepaymentDto, 
+    //@Body() createPrepaymentDto: CreatePrepaymentDto, 
+    @Body() createManualOrderDto: CreateManualOrderDto, 
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    await this.wholesalerOrdersService.createPrepayment(sellerId, createPrepaymentDto);
+    //await this.wholesalerOrdersService.createPrepayment(sellerId, createPrepaymentDto);
+    createManualOrderDto.orderNo = '미송';
+    createManualOrderDto.status = '미송요청';
+    await this.ordersService.createManualOrder(sellerId, createManualOrderDto);
     return {
       statusCode: 201,
       message: '미송 요청이 완료되었습니다.'

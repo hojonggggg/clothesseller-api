@@ -690,11 +690,14 @@ export class WholesalerOrdersService {
   }
   */
   async createPrepayment(sellerId: number, createPrepaymentDto: CreatePrepaymentDto) {
+    const { wholesalerId, wholesalerProductId, wholesalerProductOptionId, quantity } = createPrepaymentDto;
     
     const prepayment = this.wholesalerOrderRepository.create({
-      ...createPrepaymentDto,
       sellerId,
-      orderType: '수동',
+      orderType: 'MANUAL',
+      quantity,
+      quantityTotal: quantity,
+
       status: '미송요청',
       prepaymentDate: getToday(),
       isPrepayment: true
