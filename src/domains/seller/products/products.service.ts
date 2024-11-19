@@ -41,6 +41,7 @@ export class SellerProductsService {
       for (const option of options) {
         const productOption = this.sellerProductOptionRepository.create(option);
         await this.sellerProductOptionRepository.save({
+          mallId: sellerProduct.mallId,
           sellerId, 
           sellerProductId, 
           ...productOption

@@ -418,12 +418,22 @@ export class ProductsService {
       .getCount();
   }
 
+  async _sellerProductOptionMathcingPendingCount(sellerId: number, mallId: number) {
+    return await this.sellerProductOptionRepository
+      .createQueryBuilder("sellerProductOption")
+      .where("sellerProductOption.sellerId = :sellerId", { sellerId })
+      .andWhere("sellerProductOption.mallId = :mallId", { mallId })
+      .andWhere("sellerProductOption.isMatching = false")
+      .getCount();
+  }
+
   async sellerProductSummary(sellerId: number, mallId: number) {
     const result = {
       totalProduct: await this._sellerProductOptionCount(sellerId, mallId),
       soldoutProduct: await this._sellerProductOptionSoldoutCount(sellerId, mallId),
-      needOrderProduct: 0,
+      //needOrderProduct: 0,
       totalProductQuantity: await this._sellerProductOptionQuantity(sellerId, mallId),
+      needMatchingProduct: await this._sellerProductOptionMathcingPendingCount(sellerId, mallId),
     };
 
     return result;

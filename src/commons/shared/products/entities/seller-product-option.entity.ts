@@ -8,6 +8,10 @@ export class SellerProductOption {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
+  @ApiProperty({ example: 1, description: '판매몰 ID' })
+  @Column({ name: 'mall_id' })
+  mallId: number;
+
   @ApiProperty({ example: '1', description: '셀러 ID' })
   @Column({ name: 'seller_id' })
   sellerId: number;
