@@ -20,13 +20,15 @@ export class SellerProductMatchingsController {
   @ApiOperation({ summary: '[완료] 셀러 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '상품명' })
+  @ApiQuery({ name: 'mallId', required: false, description: '상품명' })
   async findAllSellerProduct(
     @Request() req,
     @Query('query') query: string,
+    @Query('mallId') mallId: number,
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const sellerId = req.user.uid;
-    const result = await this.productMatchingsService.findAllSellerProductOptionForSeller(sellerId, query, paginationQueryDto);
+    const result = await this.productMatchingsService.findAllSellerProductOptionForSeller(sellerId, mallId, query, paginationQueryDto);
 
     return {
       statusCode: 200,

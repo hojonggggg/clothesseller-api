@@ -27,13 +27,14 @@ export class ProductMatchingsService {
   ) {}
 
 
-  async findAllSellerProductOptionForSeller(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllSellerProductOptionForSeller(sellerId: number, mallId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
     .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
+      .where('sellerProduct.mallId = :mallId', { mallId })
       .andWhere("sellerProductOption.isMatching = false");
     
     if (query) {
