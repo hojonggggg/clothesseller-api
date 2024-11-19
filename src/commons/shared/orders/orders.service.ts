@@ -346,11 +346,13 @@ export class OrdersService {
 
   async createManualOrder(sellerId: number, createManualOrderDto: CreateManualOrderDto) {
     const queryRunner = this.dataSource.createQueryRunner();
+    
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
     try {
       const sellerOrder = await this._createSellerOrder(sellerId, createManualOrderDto);
-      const sellerOrderId = sellerOrder.id;
-      await this._createWholesalerOrder(sellerId, sellerOrderId, createManualOrderDto);
+      await this._createWholesalerOrder(sellerId, sellerOrder.id, createManualOrderDto);
 
       await queryRunner.commitTransaction();
     } catch (error) {
