@@ -30,8 +30,8 @@ export class SellerReturnsService {
       .leftJoinAndSelect('wholesalerProfile.store', 'store')
       .leftJoinAndSelect('return.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('return.wholesalerProductOption', 'wholesalerProductOption')
-      .where('return.sellerId = :sellerId', { sellerId })
-      .andWhere('return.isCredit = :isCredit', { isCredit: false });
+      .where('return.sellerId = :sellerId', { sellerId });
+      //.andWhere('return.isCredit = :isCredit', { isCredit: false });
 
     if (query) {
       queryBuilder.andWhere('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` });
