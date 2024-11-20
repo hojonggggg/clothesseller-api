@@ -53,7 +53,7 @@ export class SellerReturnsService {
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
       _return.wholesalerMobile = _return.wholesalerProfile.mobile;
      
-      delete(_return.status);
+      //delete(_return.status);
       delete(_return.wholesalerId);
       delete(_return.wholesalerProfile);
       delete(_return.wholesalerProductId);
