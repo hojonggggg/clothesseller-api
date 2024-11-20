@@ -32,10 +32,10 @@ export class WholesalerReturnsController {
     };
   }
   
-  @Patch('returns/return')
+  @Patch('returns/approval')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[개발] 반품 완료' })
+  @ApiOperation({ summary: '[개발] 반품 승인' })
   @ApiResponse({ status: 200 })
   @ApiBody({
     schema: {
@@ -49,15 +49,44 @@ export class WholesalerReturnsController {
       },
     },
   })
-  async updateReturns(
+  async returnsApproval(
     @Body() wholesalerUpdateReturnDto: WholesalerUpdateReturnDto, 
     @Request() req
   ) {
     const wholesalerId = req.user.uid;
-    await this.wholesalerReturnsService.updateReturns(wholesalerId, wholesalerUpdateReturnDto.ids);
+    await this.wholesalerReturnsService.returnsApproval(wholesalerId, wholesalerUpdateReturnDto.ids);
     return {
       statusCode: 200,
-      message: '등록 요청 상품 수정이 완료되었습니다.'
+      message: '반품 승인이 완료되었습니다.'
+    };
+  }
+  
+  @Patch('returns/reject')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[개발] 반품 불가' })
+  @ApiResponse({ status: 200 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'integer' },
+          example: [1, 2],
+        },
+      },
+    },
+  })
+  async returnsReject(
+    @Body() wholesalerUpdateReturnDto: WholesalerUpdateReturnDto, 
+    @Request() req
+  ) {
+    const wholesalerId = req.user.uid;
+    await this.wholesalerReturnsService.returnsReject(wholesalerId, wholesalerUpdateReturnDto.ids);
+    return {
+      statusCode: 200,
+      message: '반품 거절이 완료되었습니다.'
     };
   }
   

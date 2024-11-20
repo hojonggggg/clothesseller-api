@@ -72,14 +72,27 @@ export class WholesalerReturnsService {
     };
   }
 
-  async updateReturns(wholesalerId: number, ids: number[]): Promise<void> {
+  async returnsApproval(wholesalerId: number, ids: number[]): Promise<void> {
     await this.returnRepository.update(
       {
         id: In(ids),
         wholesalerId
       }, {
         isCredit: true,
-        status: '반품완료'
+        isReceive: true,
+        status: '반품승인'
+      }
+    );
+  }
+
+  async returnsReject(wholesalerId: number, ids: number[]): Promise<void> {
+    await this.returnRepository.update(
+      {
+        id: In(ids),
+        wholesalerId
+      }, {
+        isReceive: true,
+        status: '반품불가'
       }
     );
   }
