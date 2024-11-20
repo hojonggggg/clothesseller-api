@@ -61,6 +61,10 @@ export class Return {
   @Column({ name: 'is_credit', default: true })
   isCredit: boolean;
 
+  @ApiProperty({ example: false, description: '수령 여부' })
+  @Column({ name: 'is_receive', default: true })
+  isReceive: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   /*
