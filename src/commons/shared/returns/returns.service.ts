@@ -101,9 +101,9 @@ export class ReturnsService {
         .getManyAndCount();
 
       for (const _return of returns) {
-        _return.productName = _return.wholesalerProduct.name;
-        _return.productColor = _return.wholesalerProductOption.color;
-        _return.productSize = _return.wholesalerProductOption.size;
+        _return.name = _return.wholesalerProduct.name;
+        _return.color = _return.wholesalerProductOption.color;
+        _return.size = _return.wholesalerProductOption.size;
         _return.totalPrice = formatCurrency(_return.price * _return.quantity);
         _return.price = formatCurrency(_return.price);
         _return.wholesalerName = _return.wholesalerProfile.name;
