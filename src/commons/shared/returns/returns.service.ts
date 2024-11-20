@@ -109,7 +109,14 @@ export class ReturnsService {
         _return.wholesalerName = _return.wholesalerProfile.name;
         _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
         _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
-        //extinct
+        if (_return.receivedAt) {
+          const creditExtinctDate = new Date(_return.receivedAt);
+          creditExtinctDate.setDate(creditExtinctDate.getDate() + 30);
+          const formattedDate = `${creditExtinctDate.getFullYear()}/${
+            String(creditExtinctDate.getMonth() + 1).padStart(2, '0')}/${
+            String(creditExtinctDate.getDate()).padStart(2, '0')}`;
+          _return.creditExtinctDate = formattedDate;
+        }
 
         delete(_return.type);
         delete(_return.wholesalerProfile);

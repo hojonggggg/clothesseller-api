@@ -110,4 +110,5 @@ export class Return {
   productColor: string;
   productSize: string;
   totalPrice: any;
+  creditExtinctDate: string;
 }
