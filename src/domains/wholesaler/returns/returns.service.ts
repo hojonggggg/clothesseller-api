@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets, In } from 'typeorm';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
@@ -143,7 +143,8 @@ export class WholesalerReturnsService {
       }, {
         isCredit: true,
         isReceive: true,
-        status: '반품승인'
+        status: '반품승인',
+        receivedAt: new Date()
       }
     );
   }
@@ -155,7 +156,8 @@ export class WholesalerReturnsService {
         wholesalerId
       }, {
         isReceive: true,
-        status: '반품불가'
+        status: '반품불가',
+        receivedAt: new Date()
       }
     );
   }

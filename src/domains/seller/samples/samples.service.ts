@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets, In } from 'typeorm';
 import { Sample } from 'src/commons/shared/samples/entities/sample.entity';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 import { SellerCreateSampleDto } from './dto/seller-create-sample.dto';
 import { SellerDeleteSampleDto } from './dto/seller-delete-sample.dto';
 import { SellerReturnSampleDto } from './dto/seller-return-sample.dto';

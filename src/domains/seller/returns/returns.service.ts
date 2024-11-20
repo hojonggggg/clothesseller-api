@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { formatCurrency } from 'src/commons/shared/functions/format-currency';
 
@@ -80,15 +80,6 @@ export class SellerReturnsService {
 
   async findAllReturnCreditBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
-    /*
-    const [returns, total] = await this.returnRepository.findAndCount({
-      where: { sellerId },
-      //relations: ['sellerProductOption', 'sellerProductOption.sellerProduct', 'wholesalerProfile', 'wholesalerProfile.store'],
-      order: { id: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    */
     const queryBuilder = this.returnRepository.createQueryBuilder('return')
       //.leftJoinAndSelect('return.sellerProduct', 'sellerProduct')
       //.leftJoinAndSelect('return.sellerProductOption', 'sellerProductOption')
@@ -113,7 +104,9 @@ export class SellerReturnsService {
       _return.name = _return.wholesalerProduct.name;
       _return.color = _return.wholesalerProductOption.color;
       _return.size = _return.wholesalerProductOption.size;
-      _return.price = formatCurrency(_return.price);
+      const { quantity, price } = _return;
+      const totalPrice = quantity * price;
+      _return.price = formatCurrency(totalPrice);
       _return.wholesalerName = _return.wholesalerProfile.name;
       _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
@@ -131,6 +124,10 @@ export class SellerReturnsService {
       delete(_return.sellerProductOptionId);
       //delete(_return.sellerProductOption);
       //delete(_return.sellerProduct);
+      delete(_return.quantity);
+      delete(_return.memo);
+      delete(_return.isCredit);
+      delete(_return.isReceive);
     }
     
     return {

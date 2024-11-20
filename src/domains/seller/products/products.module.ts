@@ -8,7 +8,7 @@ import { SellerProductOption } from 'src/commons/shared/products/entities/seller
 import { WholesalerProductsService } from 'src/domains/wholesaler/products/products.service';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SellerProduct, SellerProductOption, Return, WholesalerProduct, WholesalerProductOption])],

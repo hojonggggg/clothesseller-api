@@ -6,7 +6,7 @@ import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/whol
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/commons/shared/products/entities/seller-product-option.entity';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 
 @Module({
   imports: [

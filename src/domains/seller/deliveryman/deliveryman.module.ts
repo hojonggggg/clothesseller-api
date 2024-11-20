@@ -12,7 +12,7 @@ import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/whole
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
 import { SellerReturnsService } from '../returns/returns.service';
-import { Return } from 'src/commons/shared/entities/return.entity';
+import { Return } from 'src/commons/shared/returns/entities/return.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Deliveryman, SellerProduct, SellerProductOption, WholesalerOrder, WholesalerOrderHistory, WholesalerProductOption, Return])],

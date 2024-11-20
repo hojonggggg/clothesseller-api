@@ -2,10 +2,10 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, On
 import { ApiProperty } from '@nestjs/swagger';
 //import { SellerProduct } from 'src/domains/seller/products/entities/seller-product.entity';
 //import { SellerProductOption } from 'src/domains/seller/products/entities/seller-product-option.entity';
-import { WholesalerProfile } from '../users/entities/wholesaler-profile.entity';
+import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
-import { SellerProfile } from '../users/entities/seller-profile.entity';
+import { SellerProfile } from '../../users/entities/seller-profile.entity';
 
 @Entity('return')
 export class Return {
@@ -67,6 +67,9 @@ export class Return {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @CreateDateColumn({ name: 'received_at' })
+  receivedAt: Date;
   /*
   @OneToOne(() => SellerProduct)
   @JoinColumn({ name: 'seller_product_id' })
@@ -103,4 +106,8 @@ export class Return {
   sellerMobile: string;
   deliverymanMobile: string;
   returnDate: string;
+  productName: string;
+  productColor: string;
+  productSize: string;
+  totalPrice: any;
 }
