@@ -82,7 +82,7 @@ export class WholesalerReturnsService {
       .leftJoinAndSelect('return.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('return.wholesalerId = :wholesalerId', { wholesalerId })
-      .andWhere('return.isCredit = :isCredit', { true });
+      .andWhere('return.isCredit = :isCredit', { isCredit: true });
     
     if (query) {
       queryBuilder.andWhere(
