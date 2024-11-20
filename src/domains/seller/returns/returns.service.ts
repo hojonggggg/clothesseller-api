@@ -53,6 +53,9 @@ export class SellerReturnsService {
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
       _return.wholesalerMobile = _return.wholesalerProfile.mobile;
      
+      if (_return.status === '반품신청') {
+        _return.status = '확인중';
+      }
       //delete(_return.status);
       delete(_return.wholesalerId);
       delete(_return.wholesalerProfile);
