@@ -19,8 +19,8 @@ export class WholesalerReturnsService {
       .leftJoinAndSelect('return.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('return.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
-      .where('return.wholesalerId = :wholesalerId', { wholesalerId })
-      .andWhere('return.isReceive = :isReceive', { isReceive });
+      .where('return.wholesalerId = :wholesalerId', { wholesalerId });
+      //.andWhere('return.isReceive = :isReceive', { isReceive });
     
     if (query) {
       queryBuilder.andWhere(
