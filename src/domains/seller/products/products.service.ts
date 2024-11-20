@@ -34,7 +34,7 @@ export class SellerProductsService {
       const sellerProduct = await this.sellerProductRepository.save({
         sellerId,
         ...createSellerProductDto,
-        isMaching: true
+        isMatching: true
       });
 
       const sellerProductId = Number(sellerProduct.id);
@@ -46,7 +46,7 @@ export class SellerProductsService {
           sellerId, 
           sellerProductId, 
           ...productOption,
-          isMaching: true
+          isMatching: true
         });
       }
 
