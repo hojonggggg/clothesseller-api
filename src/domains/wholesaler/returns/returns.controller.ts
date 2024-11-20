@@ -24,8 +24,8 @@ export class WholesalerReturnsController {
     @Query() paginationQueryDto: PaginationQueryDto, 
   ) {
     const wholesalerId = req.user.uid;
-    const isCredit = false;
-    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, isCredit, query, paginationQueryDto);
+    const isReceive = false;
+    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, isReceive, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
