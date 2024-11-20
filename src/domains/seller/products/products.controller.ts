@@ -189,7 +189,7 @@ export class SellerProductsController {
     };
   }
 
-  @Patch('return')  
+  @Post('return')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 반품' })
@@ -215,7 +215,7 @@ export class SellerProductsController {
     await this.sellerProductsService.returnSellerProduct(sellerId, returnSellerProductDto.ids);
     return {
       statusCode: 200,
-      message: '상품 반납 신청이 완료되었습니다.'
+      message: '상품 반품 신청이 완료되었습니다.'
     };
   }
 
