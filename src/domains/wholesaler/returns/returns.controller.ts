@@ -103,7 +103,7 @@ export class WholesalerReturnsController {
   ) {
     const wholesalerId = req.user.uid;
     const isCredit = true;
-    const result = await this.wholesalerReturnsService.findAllReturn(wholesalerId, isCredit, query, paginationQueryDto);
+    const result = await this.wholesalerReturnsService.findAllReturnCredit(wholesalerId, isCredit, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
