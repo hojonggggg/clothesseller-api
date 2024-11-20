@@ -33,7 +33,8 @@ export class SellerProductsService {
 
       const sellerProduct = await this.sellerProductRepository.save({
         sellerId,
-        ...createSellerProductDto
+        ...createSellerProductDto,
+        isMaching: true
       });
 
       const sellerProductId = Number(sellerProduct.id);
@@ -44,7 +45,8 @@ export class SellerProductsService {
           mallId: sellerProduct.mallId,
           sellerId, 
           sellerProductId, 
-          ...productOption
+          ...productOption,
+          isMaching: true
         });
       }
 
