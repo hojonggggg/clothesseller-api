@@ -32,7 +32,7 @@ export class WholesalerReturnsController {
     };
   }
   
-  @Patch('returns/approval')
+  @Patch('returns/approve')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[개발] 반품 승인' })
@@ -86,7 +86,7 @@ export class WholesalerReturnsController {
     await this.wholesalerReturnsService.returnsReject(wholesalerId, wholesalerUpdateReturnDto.ids);
     return {
       statusCode: 200,
-      message: '반품 거절이 완료되었습니다.'
+      message: '반품 불가가 완료되었습니다.'
     };
   }
   
