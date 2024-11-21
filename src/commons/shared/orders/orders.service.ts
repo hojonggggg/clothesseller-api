@@ -871,8 +871,8 @@ export class OrdersService {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
-      .leftJoinAndSelect('sellerOrder.sellerProduct', 'sellerProduct')
-      .leftJoinAndSelect('sellerOrder.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('sellerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('sellerOrder.wholesalerProductOption', 'wholesalerProductOption')
       .where('sellerOrder.sellerId = :sellerId', { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) = :date", { date })
       .andWhere('sellerOrder.isOrdering = true')
@@ -886,9 +886,9 @@ export class OrdersService {
       .getManyAndCount();
 
       for (const ordering of orderings) {
-        ordering.name = ordering.sellerProduct.name;
-        ordering.color = ordering.sellerProductOption.color ?? null;
-        ordering.size = ordering.sellerProductOption.size ?? null;
+        ordering.name = ordering.wholesalerProduct.name;
+        ordering.color = ordering.wholesalerProductOption.color ?? null;
+        ordering.size = ordering.wholesalerProductOption.size ?? null;
   
         delete(ordering.sellerId);
         delete(ordering.sellerProductId);
@@ -897,7 +897,9 @@ export class OrdersService {
         delete(ordering.sellerProductOption);
         delete(ordering.wholesalerId);
         delete(ordering.wholesalerProductId);
+        delete(ordering.wholesalerProduct);
         delete(ordering.wholesalerProductOptionId);
+        delete(ordering.wholesalerProductOption);
         delete(ordering.mallId);
         delete(ordering.status);
         delete(ordering.isMatching);
