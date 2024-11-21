@@ -8,13 +8,19 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 @Injectable()
 export class ImageUploadService {
 
-  async imageUpload(file: Express.Multer.File) {
+  async imageUpload(category: string, file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No file uploaded.');
     }
 
     try {
-      const uploadDir = 'uploads/images';
+      //const uploadDir = 'uploads/images';
+      let uploadDir;
+      if (category === 'board') {
+        uploadDir = 'uploads/images/board'
+      } else if (category === 'product') {
+        uploadDir = 'uploads/images/product'
+      }
 
       await fs.mkdir(uploadDir, { recursive: true }).catch(() => {});
 

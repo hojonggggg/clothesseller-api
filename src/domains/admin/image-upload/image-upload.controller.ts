@@ -1,6 +1,6 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
 import { ImageUploadService } from 'src/commons/shared/image-upload/image-upload.service';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
@@ -52,10 +52,12 @@ export class ImageUploadController {
       },
     },
   })
+  @ApiQuery({ name: 'category', required: true, description: 'board or product' })
   async imageUpload(
+    @Query('category') category: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const result = await this.imageUploadService.imageUpload(file);
+    const result = await this.imageUploadService.imageUpload(category, file);
     return {
       statusCode: 200,
       message: '이미지 등록이 완료되었습니다.',
