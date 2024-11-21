@@ -5,6 +5,7 @@ import { ProductsService } from '../products/products.service';
 import { WholesalerProduct } from '../products/entities/wholesaler-product.entity';
 import { SellerProduct } from '../products/entities/seller-product.entity';
 import { SellerProductOption } from '../products/entities/seller-product-option.entity';
+import { SellerProductPlus } from '../products/entities/seller-product-plus.entity';
 import { SellerOrder } from '../orders/entities/seller-order.entity';
 import { ProductMatchingDto } from './dto/product-matching.dto';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
@@ -22,6 +23,8 @@ export class ProductMatchingsService {
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
     private sellerProductOptionRepository: Repository<SellerProductOption>,
+    @InjectRepository(SellerProductPlus)
+    private sellerProductPlusRepository: Repository<SellerProductPlus>,
     @InjectRepository(SellerOrder)
     private sellerOrderRepository: Repository<SellerOrder>,
   ) {}
@@ -90,20 +93,13 @@ export class ProductMatchingsService {
     return await this.sellerProductOptionRepository.findOne({ where: { id } });
   }
 
-  async productMatching(sellerProductOptionId: number, productMatchingDto: ProductMatchingDto) {
-    const { sellerProductId, wholesalerId, wholesalerProductId, wholesalerProductOptionId } = productMatchingDto;
-    const sellerProduct = await this._findOneSellerProductById(sellerProductId);
-    if (sellerProduct.wholesalerProductId && sellerProduct.wholesalerProductId != wholesalerProductId) {
-      throw new ConflictException('이미 매칭된 도매처 상품 ID와 다릅니다.');
-    }
-
-    const wholesalerProduct = await this._findOneWholesalerProductById(wholesalerProductId);
-    const wholesalerProductPrice = wholesalerProduct.price;
-
+  async productMatching(sellerId: number, sellerProductOptionId: number, productMatchingDto: ProductMatchingDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
+      const { mallId, sellerProductId, wholesalerId, wholesalerProductId, wholesalerProductOptionId, wholesalerProductPrice, options } = productMatchingDto;
 
       await this.sellerProductRepository.update(
         {
@@ -138,6 +134,16 @@ export class ProductMatchingsService {
           isMatching: true
         }
       );
+
+      for (const option of options) {
+        await this.sellerProductPlusRepository.save(
+          {
+            mallId,
+            sellerId,
+            ...option
+          }
+        )
+      }
 
       await queryRunner.commitTransaction();
     } catch (error) {

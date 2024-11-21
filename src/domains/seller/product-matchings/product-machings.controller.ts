@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ProductsService } from 'src/commons/shared/products/products.service';
@@ -54,7 +54,7 @@ export class SellerProductMatchingsController {
     };
   }
   
-  @Patch('product-matching/:sellerProductOptionId')
+  @Post('product-matching/:sellerProductOptionId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 매칭' })
@@ -62,8 +62,10 @@ export class SellerProductMatchingsController {
   async matching(
     @Param('sellerProductOptionId') sellerProductOptionId: number, 
     @Body() productMatchingDto: ProductMatchingDto, 
+    @Request() req,
   ) {
-    const result = await this.productMatchingsService.productMatching(sellerProductOptionId, productMatchingDto);
+    const sellerId = req.user.uid;
+    const result = await this.productMatchingsService.productMatching(sellerId, sellerProductOptionId, productMatchingDto);
 
     return {
       statusCode: 200,

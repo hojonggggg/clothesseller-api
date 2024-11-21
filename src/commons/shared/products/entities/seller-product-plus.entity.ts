@@ -26,11 +26,15 @@ export class SellerProductPlus {
   @Column({ name: 'seller_product_option_id' })
   sellerProductOptionId: number;
 
-  @ApiProperty({ example: 1, description: '추가 상품 ID' })
-  @Column({ name: 'plus_product_id' })
-  plusProductId: number;
+  @ApiProperty({ example: 1, description: '도매처 ID' })
+  @Column({ name: 'wholesaler_id' })
+  wholesalerId: number;
 
-  @ApiProperty({ example: 1, description: '추가 상품 옵션 ID' })
-  @Column({ name: 'plus_product_option_id' })
-  plusProductOptionId: number;
+  @ApiProperty({ example: 1, description: '도매처 상품 ID' })
+  @Column({ name: 'wholesaler_product_id' })
+  wholesalerProductId: number;
+
+  @ApiProperty({ example: 1, description: '도매처 상품 옵션 ID' })
+  @Column({ name: 'wholesaler_product_option_id' })
+  wholesalerProductOptionId: number;
 }

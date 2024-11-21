@@ -35,5 +35,5 @@ export class CreateProductPlusDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateProductPlusDetailDto)
-  details: CreateProductPlusDetailDto[];
+  options: CreateProductPlusDetailDto[];
 }
