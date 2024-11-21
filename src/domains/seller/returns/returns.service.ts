@@ -57,6 +57,7 @@ export class SellerReturnsService {
       _return.wholesalerStoreName = _return.wholesalerProfile.store.name;
       _return.wholesalerStoreRoomNo = _return.wholesalerProfile.roomNo;
       _return.wholesalerMobile = _return.wholesalerProfile.mobile;
+      _return.createdAt = new Date(_return.createdAt).toISOString().split('T')[0].replace(/-/g, '/');
      
       if (_return.status === '반품신청') {
         _return.status = '확인중';
@@ -73,6 +74,10 @@ export class SellerReturnsService {
       delete(_return.sellerProductOptionId);
       //delete(_return.sellerProductOption);
       //delete(_return.sellerProduct);
+      delete(_return.memo);
+      delete(_return.isCredit);
+      delete(_return.isReceive);
+      delete(_return.receivedAt);
     }
     
     return {

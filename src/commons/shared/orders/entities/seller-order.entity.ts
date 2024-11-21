@@ -5,6 +5,7 @@ import { SellerProduct } from '../../products/entities/seller-product.entity';
 import { SellerProductOption } from '../../products/entities/seller-product-option.entity';
 import { WholesalerProfile } from '../../users/entities/wholesaler-profile.entity';
 import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
+import { WholesalerProductOption } from '../../products/entities/wholesaler-product-option.entity';
 import { Mall } from '../../malls/entities/mall.entity';
 
 @Entity('seller_order')
@@ -96,6 +97,10 @@ export class SellerOrder {
   @OneToOne(() => WholesalerProduct)
   @JoinColumn({ name: 'wholesaler_product_id' })
   wholesalerProduct: WholesalerProduct;
+
+  @OneToOne(() => WholesalerProductOption)
+  @JoinColumn({ name: 'wholesaler_product_option_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결
+  wholesalerProductOption: WholesalerProductOption;
 
   @OneToOne(() => Mall)
   @JoinColumn({ name: 'mall_id', referencedColumnName: 'id' }) // store_id를 이용해 store와 연결

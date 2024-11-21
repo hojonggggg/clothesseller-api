@@ -66,7 +66,7 @@ export class Return {
   isReceive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt: string;
 
   @CreateDateColumn({ name: 'received_at' })
   receivedAt: Date;

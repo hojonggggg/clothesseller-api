@@ -817,9 +817,11 @@ export class OrdersService {
   async findSellerOrderingsBySellerId(sellerId: number, date: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
+    console.log({sellerId, date});
+
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
-      .leftJoinAndSelect('sellerOrder.sellerProduct', 'sellerProduct')
-      .leftJoinAndSelect('sellerOrder.sellerProductOption', 'sellerProductOption')
+      .leftJoinAndSelect('sellerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('sellerOrder.wholesalerProductOption', 'wholesalerProductOption')
       .where('sellerOrder.sellerId = :sellerId', { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) = :date", { date })
       .andWhere('sellerOrder.isOrdering = true')
@@ -832,10 +834,10 @@ export class OrdersService {
       .getManyAndCount();
 
     for (const ordering of orderings) {
-      ordering.name = ordering.sellerProduct.name;
-      ordering.color = ordering.sellerProductOption.color ?? null;
-      ordering.size = ordering.sellerProductOption.size ?? null;
-      ordering.price = formatCurrency(ordering.sellerProduct.wholesalerProductPrice);
+      ordering.name = ordering.wholesalerProduct?.name ?? null;
+      ordering.color = ordering.wholesalerProductOption?.color ?? null;
+      ordering.size = ordering.wholesalerProductOption?.size ?? null;
+      ordering.price = formatCurrency(ordering.wholesalerProduct.price);
       ordering.totalPrice = formatCurrency((ordering.price) * (ordering.quantity));
 
       delete(ordering.sellerId);
@@ -871,7 +873,7 @@ export class OrdersService {
       .where('sellerOrder.sellerId = :sellerId', { sellerId })
       .andWhere("DATE(sellerOrder.createdAt) = :date", { date })
       .andWhere('sellerOrder.isOrdering = true')
-      .andWhere('sellerOrder.isConfirm = true')
+      //.andWhere('sellerOrder.isConfirm = true')
       .andWhere('sellerOrder.isDeleted = false');
 
     const [orderings, total] = await queryBuilder
