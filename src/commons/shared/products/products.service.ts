@@ -6,8 +6,10 @@ import { WholesalerProductOption } from './entities/wholesaler-product-option.en
 import { CreateWholesalerProductDtoForAdmin } from './dto/create-wholesaler-product.dto';
 import { SellerProduct } from './entities/seller-product.entity';
 import { SellerProductOption } from './entities/seller-product-option.entity';
+import { SellerProductPlus } from './entities/seller-product-plus.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { formatCurrency } from '../functions/format';
+import { CreateProductPlusDto } from './dto/create-product-plus.dto';
 
 @Injectable()
 export class ProductsService {
@@ -22,6 +24,8 @@ export class ProductsService {
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
     private sellerProductOptionRepository: Repository<SellerProductOption>,
+    @InjectRepository(SellerProductPlus)
+    private sellerProductPlusRepository: Repository<SellerProductPlus>,
   ) {}
 
   async _generateProductCode() {
@@ -437,5 +441,12 @@ export class ProductsService {
     };
 
     return result;
+  }
+
+  async craeteProductPlus(sellerId: number, createProductPlusDto: CreateProductPlusDto) {
+    return await this.sellerProductPlusRepository.save({
+      sellerId,
+      ...createProductPlusDto
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { ReturnsService } from 'src/commons/shared/returns/returns.service';
 import { SellerReturnsService } from './returns.service';
@@ -19,15 +19,17 @@ export class SellerReturnsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 반품 목록 조회' })
   @ApiResponse({ status: 200 })
+  @ApiQuery({name: 'wholesalerId', required: false, description: '도매처 ID'})
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllReturnBySellerId(
+    @Query('wholesalerId') wholesalerId: number, 
     @Query('query') query: string,
     @Query() paginationQuery: PaginationQueryDto,
-    @Request() req
+    @Request() req,
   ) {
     const sellerrId = req.user.uid;
     //return await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, productName, paginationQuery);
-    const result = await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, query, paginationQuery);
+    const result = await this.sellerReturnsService.findAllReturnBySellerId(sellerrId, wholesalerId, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

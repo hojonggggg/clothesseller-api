@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@ne
 import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { UsersService } from 'src/commons/shared/users/users.service';
 import { UpdateUserProfileDto } from 'src/commons/shared/users/dto/update-user-profile.dto';
+import { UpdateUserPasswordDto } from 'src/commons/shared/users/dto/update-user-password.dto';
 
 @ApiTags('wholesaler > users')
 @Controller()
@@ -43,6 +44,23 @@ export class WholesalerUsersController {
     return {
       statusCode: 200,
       message: '내 정보 수정이 완료되었습니다.'
+    };
+  }
+
+  @Patch('wholesaler/me/password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '비밀번호 수정' })
+  @ApiResponse({ status: 200 })
+  async updatePassword(
+    @Request() req,
+    @Body() updateUserPasswordDto: UpdateUserPasswordDto, 
+  ) {
+    const userId = req.user.uid;
+    await this.usersService.updatePassword(userId, updateUserPasswordDto);
+    return {
+      statusCode: 200,
+      message: '비밀번호 수정이 완료되었습니다.'
     };
   }
 

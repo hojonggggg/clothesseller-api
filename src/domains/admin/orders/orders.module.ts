@@ -9,9 +9,10 @@ import { WholesalerProductOption } from 'src/commons/shared/products/entities/wh
 import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.entity';
 import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/commons/shared/products/entities/seller-product-option.entity';
+import { SellerProductPlus } from 'src/commons/shared/products/entities/seller-product-plus.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WholesalerOrder, WholesalerProduct, WholesalerProductOption, SellerOrder, SellerProduct, SellerProductOption])],
+  imports: [TypeOrmModule.forFeature([WholesalerOrder, WholesalerProduct, WholesalerProductOption, SellerOrder, SellerProduct, SellerProductOption, SellerProductPlus])],
   providers: [OrdersService, ProductsService],
   controllers: [AdminOrdersController]
 })

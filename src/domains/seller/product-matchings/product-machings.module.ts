@@ -7,6 +7,7 @@ import { WholesalerProduct } from 'src/commons/shared/products/entities/wholesal
 import { WholesalerProductOption } from 'src/commons/shared/products/entities/wholesaler-product-option.entity';
 import { SellerProduct } from 'src/commons/shared/products/entities/seller-product.entity';
 import { SellerProductOption } from 'src/commons/shared/products/entities/seller-product-option.entity';
+import { SellerProductPlus } from 'src/commons/shared/products/entities/seller-product-plus.entity';
 import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.entity';
 
 @Module({
@@ -16,6 +17,7 @@ import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.ent
       WholesalerProductOption,
       SellerProduct,
       SellerProductOption,
+      SellerProductPlus,
       SellerOrder,
     ])
   ],

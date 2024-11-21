@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -7,6 +7,7 @@ import { SellerProfile } from './entities/seller-profile.entity';
 import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
@@ -95,6 +96,18 @@ export class UsersService {
         { ...updateUserProfileDto }
       );
     }
+  }
+
+  async updatePassword(userId: number, updateUserPasswordDto: UpdateUserPasswordDto) {
+    const { password, confirmPassword } = updateUserPasswordDto;
+    if (password !== confirmPassword) {
+      throw new BadRequestException('비밀번호를 확인해주세요.');
+    }
+
+    await this.userRepository.update(
+      { uid: userId },
+      { password}
+    );
   }
 
   async findOneUserById(id: string): Promise<User | undefined> {

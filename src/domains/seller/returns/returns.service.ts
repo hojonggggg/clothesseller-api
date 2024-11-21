@@ -12,7 +12,7 @@ export class SellerReturnsService {
     private returnRepository: Repository<Return>,
   ) {}
 
-  async findAllReturnBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllReturnBySellerId(sellerId: number, wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
     /*
     const [returns, total] = await this.returnRepository.findAndCount({
@@ -32,6 +32,11 @@ export class SellerReturnsService {
       .leftJoinAndSelect('return.wholesalerProductOption', 'wholesalerProductOption')
       .where('return.sellerId = :sellerId', { sellerId });
       //.andWhere('return.isCredit = :isCredit', { isCredit: false });
+
+    if (wholesalerId) {
+      console.log("123");
+      queryBuilder.andWhere('return.wholesalerId = :wholesalerId', { wholesalerId });
+    }
 
     if (query) {
       queryBuilder.andWhere('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` });

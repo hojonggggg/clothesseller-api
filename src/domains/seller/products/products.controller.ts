@@ -8,6 +8,7 @@ import { CreateSellerProductDto } from './dto/create-seller-product.dto';
 import { UpdateSellerProductDto } from './dto/update-seller-product.dto';
 import { ReturnSellerProductDto } from './dto/return-seller-product.dto';
 import { DeleteSellerProductDto } from './dto/delete-seller-product.dto';
+import { CreateProductPlusDto } from 'src/commons/shared/products/dto/create-product-plus.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('seller > products')
@@ -77,6 +78,24 @@ export class SellerProductsController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Post('plus')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '추가 상품 등록' })
+  @ApiResponse({ status: 200 })
+  async matching(
+    @Body() createProductPlusDto: CreateProductPlusDto, 
+    @Request() req
+  ) {
+    const sellerId = req.user.uid;
+    const result = await this.productsService.craeteProductPlus(sellerId, createProductPlusDto);
+
+    return {
+      statusCode: 200,
+      message: '추가 상품 등록이 완료되었습니다.'
     };
   }
 /*
