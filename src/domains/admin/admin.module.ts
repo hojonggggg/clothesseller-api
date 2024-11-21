@@ -17,6 +17,9 @@ import { AdminPrepaymentsModule } from './prepayments/prepayments.module';
 import { AdminOrdersModule } from './orders/orders.module';
 import { AdminWeekProductsModule } from './week-products/week-products.module';
 import { AdminBoardsModule } from './boards/boards.module';
+import { ImageUploadController } from './image-upload/image-upload.controller';
+import { ImageUploadModule } from './image-upload/image-upload.module';
+import { ImageUploadService } from 'src/commons/shared/image-upload/image-upload.service';
 
 @Module({
   imports: [
@@ -43,9 +46,10 @@ import { AdminBoardsModule } from './boards/boards.module';
     AdminPrepaymentsModule,
     AdminWeekProductsModule,
     AdminBoardsModule,
+    ImageUploadModule,
   ],
-  providers: [AuthService, UsersService],
-  controllers: [],
+  providers: [AuthService, UsersService, ImageUploadService],
+  controllers: [ImageUploadController],
   //exports: [AdminModule]
 })
 export class AdminModule {}
