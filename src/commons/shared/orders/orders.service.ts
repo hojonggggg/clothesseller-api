@@ -838,7 +838,8 @@ export class OrdersService {
       ordering.color = ordering.wholesalerProductOption?.color ?? null;
       ordering.size = ordering.wholesalerProductOption?.size ?? null;
       ordering.price = formatCurrency(ordering.wholesalerProduct.price);
-      ordering.totalPrice = formatCurrency((ordering.price) * (ordering.quantity));
+      ordering.price = formatCurrency(ordering.wholesalerProduct.price);
+      ordering.totalPrice = formatCurrency((ordering.wholesalerProduct.price) * (ordering.quantity));
 
       delete(ordering.sellerId);
       delete(ordering.sellerProductId);
@@ -847,7 +848,9 @@ export class OrdersService {
       delete(ordering.sellerProductOption);
       delete(ordering.wholesalerId);
       delete(ordering.wholesalerProductId);
+      delete(ordering.wholesalerProduct);
       delete(ordering.wholesalerProductOptionId);
+      delete(ordering.wholesalerProductOption);
       delete(ordering.mallId);
       delete(ordering.status);
       delete(ordering.isMatching);
