@@ -266,13 +266,14 @@ export class OrdersService {
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
      .select([
-       'DATE(wholesalerOrder.createdAt) AS orderDate',
+       //'DATE(wholesalerOrder.createdAt) AS orderDate',
+       'SUBSTRING(wholesalerOrder.createdAt, 1, 10) AS orderDate',
        'SUM(wholesalerOrder.quantityTotal) AS quantity'
      ])
      .where("DATE(wholesalerOrder.createdAt) BETWEEN :startDate AND :endDate", 
        { startDate: formatSevenDaysAgo, endDate: formatToday })
-     .groupBy("orderDate")
-     .orderBy("orderDate", "DESC");
+     .groupBy("SUBSTRING(wholesalerOrder.createdAt, 1, 10)")
+     .orderBy("SUBSTRING(wholesalerOrder.createdAt, 1, 10)", "DESC");
    
     const results = await queryBuilder.getRawMany();
 
@@ -281,7 +282,11 @@ export class OrdersService {
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const formattedDate = formatHyphenDay(date.toISOString().split('T')[0]).substring(5);
+      //const formattedDate = formatHyphenDay(date.toISOString().split('T')[0]).substring(5);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
       
       const existingData = results.find(r => r.orderDate === formattedDate);
       filledResults.push({
