@@ -17,6 +17,7 @@ export class AdminWeekProductsController {
   @Post('week-product')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  /*
   @UseInterceptors(FileInterceptor('thumbnailImage', {
     storage: memoryStorage(), // 메모리 스토리지 사용
     limits: {
@@ -30,13 +31,15 @@ export class AdminWeekProductsController {
     }
   }))
   @ApiConsumes('multipart/form-data')
+  */
   @ApiOperation({ summary: '[완료] 금주의 상품 등록' })
   @ApiResponse({ status: 200 })
   async setWeekProduct(
-    @Body() createWeekProductDto: CreateWeekProductDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() setWeekProductDto: SetWeekProductDto,
+    //@UploadedFile() file: Express.Multer.File,
   ) {
-    await this.weekProductsService.createWeekProduct(createWeekProductDto, file);
+    //await this.weekProductsService.createWeekProduct(createWeekProductDto, file);
+    await this.weekProductsService.setWeekProduct(setWeekProductDto);
     return {
       statusCode: 200,
       message: '금주의 상품 등록이 완료되었습니다.'

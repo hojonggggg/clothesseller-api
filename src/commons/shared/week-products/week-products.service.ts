@@ -17,7 +17,7 @@ export class WeekProductsService {
     @InjectRepository(WeekProduct)
     private weekProductRepository: Repository<WeekProduct>,
   ) {}
-
+  /*
   async createWeekProduct(createWeekProductDto: CreateWeekProductDto, file: Express.Multer.File) {
     let thumbnailPath = null;
 
@@ -60,7 +60,8 @@ export class WeekProductsService {
       await queryRunner.release();
     }
   }
-  /*
+  */
+  
   async setWeekProduct(setWeekProductDto: SetWeekProductDto) {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -72,7 +73,11 @@ export class WeekProductsService {
 
       const { products } = setWeekProductDto;
       for (const product of products) {
-        this.weekProductRepository.save(product);
+        console.log({product});
+        this.weekProductRepository.save({
+          ...product,
+          thumbnailImage: product.imagePath
+        });
       }
 
       await queryRunner.commitTransaction();
@@ -83,7 +88,7 @@ export class WeekProductsService {
       await queryRunner.release();
     }
   }
-  */
+  
   async findAllWeekProduct() {
     const queryBuilder = this.weekProductRepository.createQueryBuilder('weekProduct')
       .leftJoinAndSelect('weekProduct.wholesalerProduct', 'wholesalerProduct')
