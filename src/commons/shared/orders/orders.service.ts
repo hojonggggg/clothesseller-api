@@ -522,7 +522,7 @@ export class OrdersService {
       delete(order.wholesalerProductId);
       delete(order.wholesalerProductOptionId);
       delete(order.wholesalerProduct);
-      delete(order.mallId);
+      //delete(order.mallId);
       delete(order.mall);
       delete(order.isMatching);
       delete(order.isOrdering);
