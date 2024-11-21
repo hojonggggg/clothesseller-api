@@ -6,6 +6,7 @@ import { WholesalerProfile } from './entities/wholesaler-profile.entity';
 import { SellerProfile } from './entities/seller-profile.entity';
 import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @Injectable()
@@ -66,6 +67,34 @@ export class UsersService {
       ...createUserDto
     });
     await this.sellerProfileRepository.save(sellerProfile);
+  }
+
+  async me(userId: number, role: string) {
+    if (role === 'WHOLESALER') {
+      return await this.wholesalerProfileRepository.findOne({ 
+        select: ['name', 'mobile'],
+        where: { userId } 
+      });
+    } else if (role === 'SELLER') {
+      return await this.sellerProfileRepository.findOne({ 
+        select: ['name', 'mobile'],
+        where: { userId } 
+      });
+    }
+  }
+
+  async updateMe(userId: number, role: string, updateUserProfileDto: UpdateUserProfileDto) {
+    if (role === 'WHOLESALER') {
+      return await this.wholesalerProfileRepository.update(
+        { userId }, 
+        { ...updateUserProfileDto }
+      );
+    } else if (role === 'SELLER') {
+      return await this.sellerProfileRepository.update(
+        { userId }, 
+        { ...updateUserProfileDto }
+      );
+    }
   }
 
   async findOneUserById(id: string): Promise<User | undefined> {

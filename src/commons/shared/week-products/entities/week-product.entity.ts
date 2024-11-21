@@ -11,6 +11,10 @@ export class WeekProduct {
   @ApiProperty({ example: 1, description: '도매처 상품 ID' })
   @Column({ name: 'wholesaler_product_id' })
   wholesalerProductId: number;
+  
+  @ApiProperty({ type: 'string', format: 'binary', description: '썸네일 이미지' })
+  @Column({ name: 'thumbnail_image' })
+  thumbnailImage: string;
 
   @ApiProperty({ example: 1, description: '노출 순서' })
   @Column()
