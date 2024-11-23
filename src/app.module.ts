@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AuthModule } from './domains/auth/auth.module';
 import { AdminModule } from './domains/admin/admin.module';
 import { WholesalerModule } from './domains/wholesaler/wholesaler.module';
@@ -31,6 +33,10 @@ import * as moment from 'moment-timezone';
         }
       },
       inject: [ConfigService],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // '/uploads' 경로로 정적 파일 제공
+      serveRoot: '/uploads', // URL에서 '/uploads'로 접근 가능
     }),
     AuthModule,
     AdminModule,
