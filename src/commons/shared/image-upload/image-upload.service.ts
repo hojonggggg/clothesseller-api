@@ -31,7 +31,7 @@ export class ImageUploadService {
 
       await fs.writeFile(filePath, file.buffer);
 
-      const imagePath = `uploads/images/${fileName}`;
+      const imagePath = `${uploadDir}/${fileName}`;
       return imagePath;
     } catch (error) {
       console.error('File upload error:', error);
