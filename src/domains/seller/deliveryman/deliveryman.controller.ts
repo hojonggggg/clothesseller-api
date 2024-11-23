@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { DeliverymanService } from './deliveryman.service';
 import { Deliveryman } from './entities/deliveryman.entity';
 import { SellerProductsService } from '../products/products.service';
+import { OrdersService } from 'src/commons/shared/orders/orders.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { SellerReturnsService } from '../returns/returns.service';
 import { Mall } from '../../../commons/shared/malls/entities/mall.entity';
@@ -17,6 +18,7 @@ export class DeliverymanController {
   constructor(
     private readonly deliverymanService: DeliverymanService,
     private readonly sellerProductsService: SellerProductsService,
+    private readonly ordersService: OrdersService,
     private readonly wholesalerOrdersService: WholesalerOrdersService,
     private readonly sellerReturnsService: SellerReturnsService
   ) {}
@@ -97,11 +99,12 @@ export class DeliverymanController {
   @ApiQuery({ name: 'query', required: false, description: '검색할 도매처명' })
   async findAllPickupOfFromWholesalerBySellerId(
     @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto,
+    @Query() paginationQueryDto: PaginationQueryDto,
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    const result = await this.wholesalerOrdersService.findAllPickupOfFromWholesalerBySellerId(sellerId, query, paginationQuery);
+    //const result = await this.wholesalerOrdersService.findAllPickupOfFromWholesalerBySellerId(sellerId, query, paginationQuery);
+    const result = await this.ordersService.findAllPickupBySellerId(sellerId, query, paginationQueryDto)
     return {
       statusCode: 200,
       data: result

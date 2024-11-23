@@ -8,6 +8,7 @@ import { CreateManualOrderDto } from './dto/create-manual-order.dto';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { getStartAndEndOfToday } from '../functions/date';
 import { formatCurrency, formatHyphenDay } from '../functions/format';
+import { getToday } from '../functions/date';
 
 @Injectable()
 export class OrdersService {
@@ -891,34 +892,73 @@ export class OrdersService {
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
 
-      for (const ordering of orderings) {
-        ordering.name = ordering.wholesalerProduct.name;
-        ordering.color = ordering.wholesalerProductOption.color ?? null;
-        ordering.size = ordering.wholesalerProductOption.size ?? null;
-  
-        delete(ordering.sellerId);
-        delete(ordering.sellerProductId);
-        delete(ordering.sellerProduct);
-        delete(ordering.sellerProductOptionId);
-        delete(ordering.sellerProductOption);
-        delete(ordering.wholesalerId);
-        delete(ordering.wholesalerProductId);
-        delete(ordering.wholesalerProduct);
-        delete(ordering.wholesalerProductOptionId);
-        delete(ordering.wholesalerProductOption);
-        delete(ordering.mallId);
-        delete(ordering.status);
-        delete(ordering.isMatching);
-        delete(ordering.isOrdering);
-        delete(ordering.isDeleted);
-        delete(ordering.createdAt);
-      }
-  
-      return {
-        list: orderings,
-        total,
-        page: Number(pageNumber),
-        totalPage: Math.ceil(total / pageSize)
-      }
+    for (const ordering of orderings) {
+      ordering.name = ordering.wholesalerProduct.name;
+      ordering.color = ordering.wholesalerProductOption.color ?? null;
+      ordering.size = ordering.wholesalerProductOption.size ?? null;
+
+      delete(ordering.sellerId);
+      delete(ordering.sellerProductId);
+      delete(ordering.sellerProduct);
+      delete(ordering.sellerProductOptionId);
+      delete(ordering.sellerProductOption);
+      delete(ordering.wholesalerId);
+      delete(ordering.wholesalerProductId);
+      delete(ordering.wholesalerProduct);
+      delete(ordering.wholesalerProductOptionId);
+      delete(ordering.wholesalerProductOption);
+      delete(ordering.mallId);
+      //delete(ordering.status);
+      delete(ordering.isMatching);
+      delete(ordering.isOrdering);
+      delete(ordering.isDeleted);
+      delete(ordering.createdAt);
+    }
+
+    return {
+      list: orderings,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize)
+    }
   }
+
+  async findAllPickupBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const today = getToday().replaceAll('/', '-');
+    console.log({today});
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .select([
+        'order.id AS orderId',
+        'wholesalerProfile.storeId AS wholesalerStoreId',
+        'wholesalerStore.name AS wholesalerStoreName',
+        'wholesalerProfile.id AS wholesalerId',
+        'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
+        'DATE_FORMAT(order.createdAt, "%y/%m/%d/%H:%i") AS orderDate',
+        'IF(order.status = "픽업", "O", "X") AS isPickup'
+      ])
+      .leftJoin('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'wholesalerStore')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false })
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    const pickups = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getRawMany();
+
+  }
+
 }

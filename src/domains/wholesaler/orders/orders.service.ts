@@ -538,6 +538,8 @@ export class WholesalerOrdersService {
       .skip((pageNumber - 1) * pageSize)
       .getRawMany();
 
+      console.log({pickups});
+
     /*
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
       .select([
