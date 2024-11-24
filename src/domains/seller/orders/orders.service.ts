@@ -165,7 +165,49 @@ export class SellerOrdersService {
     };
   }
   */
-  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wholesalerOrder")
+      .select([
+        'sellerProduct.name AS name',
+        'sellerProductOption.color AS color',
+        'sellerProductOption.size AS size',
+        'SUM(wholesalerOrder.quantity) AS quantity',
+        'wholesalerProfile.name AS wholesalerName',
+        'store.name AS wholesalerStoreName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
+        'wholesalerProfile.mobile AS wholesalerMobile'
+      ])
+      .leftJoin('wholesalerOrder.sellerProduct', 'sellerProduct')
+      .leftJoin('wholesalerOrder.sellerProductOption', 'sellerProductOption')
+      .leftJoin('wholesalerOrder.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.orderType = :orderType', { orderType })
+      .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .groupBy("wholesalerOrder.wholesalerProductOptionId");
+
+    if (query) {
+      queryBuilder.andWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+    }
+    
+    // 전체 데이터 가져오기
+    const allData = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+  async _findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
