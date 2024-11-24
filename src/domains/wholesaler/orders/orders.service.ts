@@ -97,11 +97,15 @@ export class WholesalerOrdersService {
     };
   }
 
-  async createOrderHistory(wholesalerOrderId: number, action: string, quantity: number) {
+  async createOrderHistory(wholesalerOrderId: number, action: string, quantity: number, sellerId: number, wholesalerId: number, storeId: number, roomNo: string) {
     const history = this.wholesalerOrderHistoryRepository.create({
       wholesalerOrderId,
       action,
-      quantity
+      quantity,
+      sellerId,
+      wholesalerId,
+      storeId,
+      roomNo
     });
 
     await this.wholesalerOrderHistoryRepository.save(history);
@@ -128,17 +132,12 @@ export class WholesalerOrdersService {
           }
         );
 
-        const wholesaler = await this.wholesalerProfileRepository.createQueryBuilder('wholesalerProfile')
-          .select([
-            'wholesalerProfile.store_id AS storeId',
-            'wholesalerProfile.room_no AS roomNo'
-          ])
-          .where('wholesalerProfile.id = :wholesalerId', { wholesalerId })
-          .getOne();
-          console.log({wholesaler});
+        const wholesaler = await this.wholesalerProfileRepository.findOne({ where: { userId: wholesalerId } });
+        console.log({wholesaler});
 
         //const newQuantity = orderItem.quantity - quantity;
-        await this.createOrderHistory(id, 'confirm', quantity);
+        const { storeId, roomNo } = wholesaler;
+        await this.createOrderHistory(id, 'confirm', quantity, orderItem.sellerId, wholesalerId, storeId, roomNo);
       }
 
       await queryRunner.commitTransaction();
@@ -174,7 +173,7 @@ export class WholesalerOrdersService {
           }
         );
 
-        await this.createOrderHistory(id, 'prepayment', quantity);
+        await this.createOrderHistory(id, 'prepayment', quantity, null, null, null, null);
       }
 
       await queryRunner.commitTransaction();
@@ -206,7 +205,7 @@ export class WholesalerOrdersService {
           }
         );
 
-        await this.createOrderHistory(id, 'reject', quantity);
+        await this.createOrderHistory(id, 'reject', quantity, null, null, null, null);
       }
 
       await queryRunner.commitTransaction();
@@ -240,7 +239,7 @@ export class WholesalerOrdersService {
            }
         );
 
-        await this.createOrderHistory(id, 'soldout', null);
+        await this.createOrderHistory(id, 'soldout', null, null, null, null, null);
 
         const orderItem = await this.wholesalerOrderRepository.findOne({ where: { id } });
         const { wholesalerProductOptionId } = orderItem;
@@ -397,7 +396,7 @@ export class WholesalerOrdersService {
           }
         );
 
-        await this.createOrderHistory(id, 'delivery-delay', quantity);
+        await this.createOrderHistory(id, 'delivery-delay', quantity, null, null, null, null);
       }
 
       await queryRunner.commitTransaction();
