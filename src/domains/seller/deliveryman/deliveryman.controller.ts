@@ -46,8 +46,9 @@ export class DeliverymanController {
     const deliveryman = await this.deliverymanService.findOneDeliverymanBySellerId(sellerId);
     if (deliveryman) {
       await this.deliverymanService.updateDeliveryman(sellerId, createDeliverymanDto);
+    } else {
+      await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
     }
-    await this.deliverymanService.createDeliveryman(sellerId, createDeliverymanDto);
     
     return {
       statusCode: 201,
