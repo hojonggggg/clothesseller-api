@@ -13,6 +13,7 @@ import { OrdersService } from 'src/commons/shared/orders/orders.service';
 import { WholesalerOrdersService } from 'src/domains/wholesaler/orders/orders.service';
 import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/wholesaler-order-history.entity';
+import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 import { SellerOrder } from 'src/commons/shared/orders/entities/seller-order.entity';
 //import { WholesalerProduct } from 'src/domains/wholesaler/products/entities/wholesaler-product.entity';
 import { WholesalerProductOption } from 'src/domains/wholesaler/products/entities/wholesaler-product-option.entity';
@@ -20,7 +21,7 @@ import { SellerReturnsService } from '../returns/returns.service';
 import { Return } from 'src/commons/shared/returns/entities/return.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Deliveryman, SellerProduct, SellerProductOption, SellerProductPlus, WholesalerOrder, WholesalerOrderHistory, WholesalerProduct, WholesalerProductOption, SellerOrder, Return])],
+  imports: [TypeOrmModule.forFeature([Deliveryman, SellerProduct, SellerProductOption, SellerProductPlus, WholesalerOrder, WholesalerOrderHistory, WholesalerProduct, WholesalerProductOption, WholesalerProfile, SellerOrder, Return])],
   providers: [DeliverymanService, ProductsService, SellerProductsService, OrdersService, WholesalerOrdersService, SellerReturnsService],
   controllers: [DeliverymanController]
 })

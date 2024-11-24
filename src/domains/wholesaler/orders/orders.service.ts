@@ -4,6 +4,7 @@ import { DataSource, Repository, Between, Brackets, In } from 'typeorm';
 import { WholesalerOrder } from 'src/commons/shared/orders/entities/wholesaler-order.entity';
 import { WholesalerOrderHistory } from 'src/commons/shared/orders/entities/wholesaler-order-history.entity';
 import { WholesalerProductOption } from '../products/entities/wholesaler-product-option.entity';
+import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-profile.entity';
 //import { CreateManualOrderingDto } from 'src/domains/seller/orders/dto/create-manual-ordering.dto';
 import { CreatePrepaymentDto } from 'src/domains/seller/orders/dto/create-prepayment.dto';
 import { WholesalerConfirmOrderDto } from './dto/wholesaler-confirm-order.dto';
@@ -27,6 +28,8 @@ export class WholesalerOrdersService {
     private wholesalerOrderHistoryRepository: Repository<WholesalerOrderHistory>,
     @InjectRepository(WholesalerProductOption)
     private wholesalerProductOptionRepository: Repository<WholesalerProductOption>,
+    @InjectRepository(WholesalerProfile)
+    private wholesalerProfileRepository: Repository<WholesalerProfile>,
   ) {}
 
   async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
@@ -124,6 +127,15 @@ export class WholesalerOrdersService {
             status: '부분출고'
           }
         );
+
+        const wholesaler = await this.wholesalerProfileRepository.createQueryBuilder('wholesalerProfile')
+          .select([
+            'wholesalerProfile.store_id AS storeId',
+            'wholesalerProfile.room_no AS roomNo'
+          ])
+          .where('wholesalerProfile.id = :wholesalerId', { wholesalerId })
+          .getOne();
+          console.log({wholesaler});
 
         //const newQuantity = orderItem.quantity - quantity;
         await this.createOrderHistory(id, 'confirm', quantity);
