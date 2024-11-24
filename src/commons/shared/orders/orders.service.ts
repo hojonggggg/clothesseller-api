@@ -557,7 +557,52 @@ export class OrdersService {
     );
   }
 
-  async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+      .select([
+        'sellerProduct.name AS name',
+        'sellerProductOption.color AS color',
+        'sellerProductOption.size AS size',
+        'SUM(sellerOrder.quantity) AS quantity',
+        'wholesalerProfile.name AS wholesalerName',
+        'store.name AS wholesalerStoreName',
+        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
+        'wholesalerProfile.mobile AS wholesalerMobile'
+      ])
+      .leftJoin('sellerOrder.sellerProduct', 'sellerProduct')
+      .leftJoin('sellerOrder.sellerProductOption', 'sellerProductOption')
+      .leftJoin('sellerOrder.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('wholesalerProfile.store', 'store')
+      .where('sellerOrder.sellerId = :sellerId', { sellerId })
+      .andWhere('sellerOrder.isMatching = 1')
+      .groupBy("sellerOrder.sellerProductOptionId");
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+    
+    // 전체 데이터 가져오기
+    const allData = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async remove_findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')

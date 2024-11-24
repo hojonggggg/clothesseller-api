@@ -165,6 +165,7 @@ export class SellerOrdersService {
     };
   }
   */
+ /*
   async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
@@ -207,7 +208,8 @@ export class SellerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
-  async _findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+  */
+  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
