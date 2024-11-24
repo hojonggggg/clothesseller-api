@@ -10,6 +10,7 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 import { ResetUserPasswordDto } from './dto/reset-user-password.dto';
+import * as bcrypt from 'bcrypt';
 import { Alimtalk } from './entities/alimtalk.entity';
 
 @Injectable()
@@ -107,10 +108,10 @@ export class UsersService {
     if (password !== confirmPassword) {
       throw new BadRequestException('비밀번호를 확인해주세요.');
     }
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     await this.userRepository.update(
       { uid: userId },
-      { password}
+      { password: hashedPassword}
     );
   }
 
