@@ -20,13 +20,15 @@ import { AdminBoardsModule } from './boards/boards.module';
 import { ImageUploadController } from './image-upload/image-upload.controller';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ImageUploadService } from 'src/commons/shared/image-upload/image-upload.service';
+import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User, 
       WholesalerProfile, 
-      SellerProfile
+      SellerProfile,
+      Alimtalk
     ]),
     PassportModule,
     JwtModule.registerAsync({

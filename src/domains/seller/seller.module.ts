@@ -22,10 +22,11 @@ import { SellerUsersModule } from './users/users.module';
 import { SellerAccountBooksModule } from './account-books/account-books.module';
 import { SellerWeekProductsModule } from './week-products/week-products.module';
 import { SellerProductMachingsModule } from './product-matchings/product-machings.module';
+import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile]),
+    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile, Alimtalk]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

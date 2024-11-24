@@ -20,13 +20,15 @@ import { WholesalerProductRequestsModule } from './product-requests/product-requ
 import { WholesalerReturnsModule } from './returns/returns.module';
 import { WholesalerUsersModule } from './users/users.module';
 import { WholesalerWeekProductsModule } from './week-products/week-products.module';
+import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User, 
       WholesalerProfile, 
-      SellerProfile
+      SellerProfile,
+      Alimtalk
     ]),
     PassportModule,
     JwtModule.registerAsync({

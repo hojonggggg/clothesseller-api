@@ -9,6 +9,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
+import { ResetUserPasswordDto } from './dto/reset-user-password.dto';
+import { Alimtalk } from './entities/alimtalk.entity';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +25,8 @@ export class UsersService {
     private sellerProfileRepository: Repository<SellerProfile>,
     //@InjectRepository(Store)
     //private storeRepository: Repository<Store>,
+    @InjectRepository(Alimtalk)
+    private alimtalkProfileRepository: Repository<Alimtalk>,
   ) {}
 
   async createUser(createUserDto): Promise<User> {
@@ -108,6 +112,35 @@ export class UsersService {
       { uid: userId },
       { password}
     );
+  }
+
+  async resetPasswrod(resetUserPasswordDto: ResetUserPasswordDto) {
+    const { loginId, mobile } = resetUserPasswordDto;
+    let userProfile;
+    const userInfo = await this.userRepository.findOne({ where: { id: loginId } });
+    if (userInfo) {
+      console.log({userInfo});
+      const { uid, role } = userInfo;
+      console.log({uid, role});
+      
+      
+      if (role === 'SELLER') {
+        userProfile = await this.sellerProfileRepository.findOne({ where: { userId: uid, mobile } });
+      } else if (role === 'WHOLESALER') {
+        userProfile = await this.wholesalerProfileRepository.findOne({ where: { userId: uid, mobile } });
+      }
+
+      if (userProfile) {
+        await this.alimtalkProfileRepository.save({
+          loginId,
+          mobile
+        });
+      }
+    } 
+    
+    if (!userInfo || !userProfile) {
+      throw new BadRequestException('입력 정보를 확인해주세요.');
+    }
   }
 
   async findOneUserById(id: string): Promise<User | undefined> {

@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { WholesalerProfile } from './entities/wholesaler-profile.entity';
 import { SellerProfile } from './entities/seller-profile.entity';
+import { Alimtalk } from './entities/alimtalk.entity';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { SellerProfile } from './entities/seller-profile.entity';
       User,
       WholesalerProfile,
       SellerProfile,
+      Alimtalk,
     ])
   ],
   providers: [UsersService],

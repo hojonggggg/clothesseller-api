@@ -31,7 +31,8 @@ export class ImageUploadController {
       fileSize: 5 * 1024 * 1024, // 5MB
     },
     fileFilter: (req, file, cb) => {
-      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      const fileExtension = file.originalname.toLowerCase();
+      if (!fileExtension.match(/\.(jpg|jpeg|png|gif)$/)) {
         return cb(new Error('Only image files are allowed!'), false);
       }
       cb(null, true);

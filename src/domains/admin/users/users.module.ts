@@ -6,9 +6,10 @@ import { WholesalerProfile } from 'src/commons/shared/users/entities/wholesaler-
 import { SellerProfile } from 'src/commons/shared/users/entities/seller-profile.entity';
 import { Store } from 'src/domains/wholesaler/stores/entities/store.entity';
 import { AdminUsersController } from './users.controller';
+import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile])],
+  imports: [TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile, Alimtalk])],
   providers: [UsersService],
   controllers: [AdminUsersController]
 })
