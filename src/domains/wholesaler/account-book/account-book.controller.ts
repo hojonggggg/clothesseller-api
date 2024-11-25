@@ -19,13 +19,15 @@ export class WholesalerAccountBookController {
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'month', required: true, description: '조회하려는 달' })
   @ApiQuery({ name: 'query', required: false, description: '셀러명' })
+  @ApiQuery({ name: 'sellerName', required: false, description: '셀러명' })
   async findAllAccountBookOfMonthly(
     @Request() req,
     @Query('month') month: string,
     @Query('query') query: string,
+    @Query('sellerName') sellerName: string,
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.accountBookService.findAllAccountBookOfMonthly(wholesalerId, month, query);
+    const result = await this.accountBookService.findAllAccountBookOfMonthly(wholesalerId, month, query, sellerName);
     return {
       statusCode: 200,
       list: result.list,

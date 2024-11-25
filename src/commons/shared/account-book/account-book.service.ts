@@ -85,7 +85,7 @@ export class AccountBookService {
     return filledResults;
   }
   */
-  async findAllAccountBookOfMonthly(wholesalerId: number, month: string, query: string) {
+  async findAllAccountBookOfMonthly(wholesalerId: number, month: string, query: string, sellerName: string) {
     let { startDate, endDate } = getStartAndEndDate(month);
 
     const queryBuilder = this.accountBookRepository.createQueryBuilder('ab')
@@ -101,6 +101,14 @@ export class AccountBookService {
       .andWhere('ab.date BETWEEN :startDate AND :endDate', { startDate, endDate })
       .groupBy('ab.date, ab.seller_id')
       .orderBy('ab.date, sp.name');
+
+    if (sellerName) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sp.name = :sellerName', { sellerName: `%${sellerName}%` });
+        })
+      );
+    }
 
     if (query) {
       queryBuilder.andWhere(
