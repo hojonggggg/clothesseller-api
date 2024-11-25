@@ -87,7 +87,7 @@ export class AccountBookService {
   */
   async findAllAccountBookOfMonthly(wholesalerId: number, month: string, query: string, sellerName: string) {
     let { startDate, endDate } = getStartAndEndDate(month);
-
+console.log({sellerName});
     const queryBuilder = this.accountBookRepository.createQueryBuilder('ab')
       .select([
         'ab.id AS id',
@@ -105,7 +105,7 @@ export class AccountBookService {
     if (sellerName) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('sp.name = :sellerName', { sellerName: `%${sellerName}%` });
+          qb.where('sp.name = :sellerName', { sellerName });
         })
       );
     }
