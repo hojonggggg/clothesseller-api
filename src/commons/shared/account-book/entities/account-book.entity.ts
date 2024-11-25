@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'ty
 import { ApiProperty } from '@nestjs/swagger';
 import { SellerProfile } from '../../users/entities/seller-profile.entity';
 
-@Entity('account-book')
+@Entity('account_book')
 export class AccountBook {
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn({ type: 'int' })
