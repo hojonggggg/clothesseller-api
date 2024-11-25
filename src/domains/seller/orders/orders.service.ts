@@ -209,7 +209,8 @@ export class SellerOrdersService {
     };
   }
   */
-  async findAllAutoWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+
+  async _findAllAutoWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -287,6 +288,52 @@ export class SellerOrdersService {
       totalPage: Math.ceil(total / pageSize),
     };
   }
+
+  async findAllAutoWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+        'sp.name AS sellerProductName',
+        'spo.color AS sellerProductColor',
+        'spo.size AS sellerProductSize',
+        'SUM(wo.quantity) AS quantity',
+        'wp.name AS wholesalerName',
+        's.name AS wholesalerStoreName',
+        'wp.roomNo AS wholesalerStoreRoomNo',
+        'wp.mobile AS wholesalerMobile'
+      ])
+      .leftJoin('wo.sellerProduct', 'sp')
+      .leftJoin('wo.sellerProductOption', 'spo')
+      .leftJoin('wo.wholesalerProfile', 'wp')
+      .leftJoin('wp.store', 's')
+      .where('wo.sellerId = :sellerId', { sellerId })
+      .andWhere('wo.orderType = :orderType', { orderType })
+      .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .groupBy('wo.sellerProductOptionId');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const allData = await queryBuilder.getRawMany();
+
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
   async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
