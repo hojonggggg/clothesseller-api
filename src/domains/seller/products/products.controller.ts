@@ -142,15 +142,17 @@ export class SellerProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '도매처 상품 목록 조회' })
   @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'wholesalerId', required: false, description: '도매처 ID' })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllWholesalerProduct(
+    @Query('wholesalerId') wholesalerId: number,
     @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto, 
     @Request() req
   ) {
     //const result = await this.wholesalerProductsService.findAllWholesalerProductOptionWithPagination(wholesalerId, query, paginationQuery);
     //const result = await this.productsService.findAllWholesalerProductOptionByWholesalerId(wholesalerId, query, paginationQuery);
-    const result = await this.productsService.findAllWholesalerProductOption(query, paginationQueryDto);
+    const result = await this.productsService.findAllWholesalerProductOptionForSller(wholesalerId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

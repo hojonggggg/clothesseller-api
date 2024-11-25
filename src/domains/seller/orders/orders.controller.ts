@@ -129,6 +129,27 @@ export class SellerOrdersController {
       data: result
     };
   }
+
+  @Get('ordering')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '발주 내역 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'type', required: false, description: 'AUTO OR MANUAL' })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerOrderBySellerId(
+    @Query('type') type: string,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, type, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
 /*
   @Get('manual-ordering')
   @UseGuards(JwtAuthGuard)
