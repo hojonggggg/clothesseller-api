@@ -301,7 +301,8 @@ export class SellerOrdersService {
         'wp.name AS wholesalerName',
         's.name AS wholesalerStoreName',
         'wp.roomNo AS wholesalerStoreRoomNo',
-        'wp.mobile AS wholesalerMobile'
+        'wp.mobile AS wholesalerMobile',
+        'wo.status AS status'
       ])
       .leftJoin('wo.sellerProduct', 'sp')
       .leftJoin('wo.sellerProductOption', 'spo')
