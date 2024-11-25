@@ -53,4 +53,5 @@ export class WholesalerProductOption {
   wholesalerProductOptionId: number;
   optionId: number;
   optionPrice: string;
+  wholesalerName: string;
 }

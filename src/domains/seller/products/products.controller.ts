@@ -136,20 +136,21 @@ export class SellerProductsController {
     };
   }
 
-  @Get('wholesaler/:wholesalerId/pagination')
+  //@Get('wholesaler/:wholesalerId/pagination')
+  @Get('wholesaler')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 도매처 상품 목록 조회' })
+  @ApiOperation({ summary: '도매처 상품 목록 조회' })
   @ApiResponse({ status: 200 })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
-  async findAllWholesalerProductByWholesalerIdWithPagination(
-    @Param('wholesalerId') wholesalerId: number, 
+  async findAllWholesalerProduct(
     @Query('query') query: string,
-    @Query() paginationQuery: PaginationQueryDto, 
+    @Query() paginationQueryDto: PaginationQueryDto, 
     @Request() req
   ) {
     //const result = await this.wholesalerProductsService.findAllWholesalerProductOptionWithPagination(wholesalerId, query, paginationQuery);
-    const result = await this.productsService.findAllWholesalerProductOptionByWholesalerId(wholesalerId, query, paginationQuery);
+    //const result = await this.productsService.findAllWholesalerProductOptionByWholesalerId(wholesalerId, query, paginationQuery);
+    const result = await this.productsService.findAllWholesalerProductOption(query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

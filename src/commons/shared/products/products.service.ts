@@ -169,7 +169,8 @@ export class ProductsService {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wholesalerProductOption')
-      .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct');
+      .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('wholesalerProduct.wholesalerProfile', 'wholesalerProfile');
     
     if (query) {
       queryBuilder.andWhere(
@@ -189,6 +190,7 @@ export class ProductsService {
       const { wholesalerProduct } = option;
       option.name = wholesalerProduct.name;
       option.price = formatCurrency(wholesalerProduct.price);
+      option.wholesalerName = wholesalerProduct.wholesalerProfile.name;
       delete(option.wholesalerProduct);
       delete(option.isSoldout);
       delete(option.isDeleted);
