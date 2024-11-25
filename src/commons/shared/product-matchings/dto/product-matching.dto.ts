@@ -37,6 +37,10 @@ export class ProductMatchingDto {
   @IsNumber()
   sellerProductId: number;
 
+  @ApiProperty({ example: 1, description: '셀러 상품 옵션 ID' })
+  @IsNumber()
+  sellerProductOptionId: number;
+
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
