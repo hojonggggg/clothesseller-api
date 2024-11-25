@@ -209,7 +209,7 @@ export class SellerOrdersService {
     };
   }
   */
-  async findAllWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllAutoWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -247,9 +247,14 @@ export class SellerOrdersService {
       .getManyAndCount();
     
     for (const order of orders) {
-      order.sellerProductName = order.sellerProduct.name;
-      order.sellerProductColor = order.sellerProductOption.color;
-      order.sellerProductSize = order.sellerProductOption.size;
+      if (order.sellerProduct) {
+        order.sellerProductName = order.sellerProduct.name;
+      }
+      if (order.sellerProductOption) {    
+        order.sellerProductColor = order.sellerProductOption.color;
+        order.sellerProductSize = order.sellerProductOption.size;
+      }
+  
       order.wholesalerName = order.wholesalerProfile.name;
       order.wholesalerStoreName = order.wholesalerProfile.store.name;
       order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
@@ -270,6 +275,84 @@ export class SellerOrdersService {
       delete(order.wholesalerProfile);
       delete(order.wholesalerProductId);
       delete(order.wholesalerProductOptionId);
+      delete(order.wholesalerProduct);
+      //delete(order.mallId);
+      //delete(order.mall);
+    }
+    
+    return {
+      list: orders,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+  async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQuery;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
+      .leftJoinAndSelect('order.wholesalerProductOption', 'wholesalerProductOption')
+      .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
+      .leftJoinAndSelect('wholesalerProfile.store', 'store')
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.orderType = :orderType', { orderType })
+      .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+    /*
+    const [orders, total] = await this.wholesalerOrderRepository.findAndCount({
+      where: { sellerId, orderType },
+      relations: ['sellerProduct', 'sellerProductOption', 'wholesalerProduct', 'wholesalerProfile', 'wholesalerProfile.store'],
+      order: { id: 'DESC' },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
+    });
+    */
+
+    const [orders, total] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+    
+    for (const order of orders) {
+      if (order.wholesalerProduct) {
+        order.wholesalerProductName = order.wholesalerProduct.name;
+      }
+      if (order.wholesalerProductOption) {    
+        order.wholesalerProductColor = order.wholesalerProductOption.color;
+        order.wholesalerProductSize = order.wholesalerProductOption.size;
+      }
+  
+      order.wholesalerName = order.wholesalerProfile.name;
+      order.wholesalerStoreName = order.wholesalerProfile.store.name;
+      order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
+      order.wholesalerMobile = order.wholesalerProfile.mobile;
+
+      delete(order.orderType);
+      delete(order.memo);
+      delete(order.prepaymentDate);
+      delete(order.deliveryDate);
+      delete(order.createdAt);
+      delete(order.sellerOrderId);
+      delete(order.sellerId);
+      delete(order.sellerProductId);
+      delete(order.sellerProduct);
+      delete(order.sellerProductOptionId);
+      delete(order.sellerProductOption);
+      delete(order.wholesalerId);
+      delete(order.wholesalerProfile);
+      delete(order.wholesalerProductId);
+      delete(order.wholesalerProductOptionId);
+      delete(order.wholesalerProductOption);
       delete(order.wholesalerProduct);
       //delete(order.mallId);
       //delete(order.mall);

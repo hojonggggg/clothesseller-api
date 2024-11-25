@@ -150,6 +150,9 @@ export class WholesalerOrder {
   sellerMobile: string;
   deliverymanMobile: string;
   prePaymentDate: string;
+  wholesalerProductName: string;
+  wholesalerProductColor: string;
+  wholesalerProductSize: string;
   /*
   @ManyToOne(() => Deliveryman, (deliveryman) => deliveryman.orders)
   @JoinColumn({ name: 'seller_id' })

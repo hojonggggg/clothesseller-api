@@ -110,6 +110,32 @@ export class SellerOrdersController {
     };
   }
 
+  @Get('ordering')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '발주 내역 조회' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'orderType', required: true, description: 'AUTO OR MANUAL' })
+  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
+  async findAllWholesalerOrderBySellerId(
+    @Query('orderType') orderType: string,
+    @Query('query') query: string,
+    @Query() paginationQuery: PaginationQueryDto,
+    @Request() req
+  ) {
+    const sellerrId = req.user.uid;
+    let result;
+    if (orderType === "AUTO") {
+      result = await this.sellerOrdersService.findAllAutoWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    } else if (orderType === "MANUAL") {
+      result = await this.sellerOrdersService.findAllManualWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    }
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Get('auto-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -122,35 +148,14 @@ export class SellerOrdersController {
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    const orderType = '자동';
-    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    const orderType = 'AUTO';
+    const result = await this.sellerOrdersService.findAllAutoWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
     return {
       statusCode: 200,
       data: result
     };
   }
 
-  @Get('ordering')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '발주 내역 조회' })
-  @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'type', required: false, description: 'AUTO OR MANUAL' })
-  @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
-  async findAllWholesalerOrderBySellerId(
-    @Query('type') type: string,
-    @Query('query') query: string,
-    @Query() paginationQueryDto: PaginationQueryDto,
-    @Request() req
-  ) {
-    const sellerrId = req.user.uid;
-    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, type, query, paginationQueryDto);
-    return {
-      statusCode: 200,
-      data: result
-    };
-  }
-/*
   @Get('manual-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -163,14 +168,14 @@ export class SellerOrdersController {
     @Request() req
   ) {
     const sellerrId = req.user.uid;
-    const orderType = '수동';
-    const result = await this.sellerOrdersService.findAllWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    const orderType = 'MANUAL';
+    const result = await this.sellerOrdersService.findAllManualWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
     return {
       statusCode: 200,
       data: result
     };
   }
-*/
+
   @Delete('ordering/delete')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
