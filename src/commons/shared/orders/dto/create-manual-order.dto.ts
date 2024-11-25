@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-export class CreateManualOrderDto {
+class CreateManualOrderDetailDto {
   @ApiProperty({ example: 1, description: '도매처 ID' })
   @IsNumber()
   wholesalerId: number;
@@ -23,4 +24,17 @@ export class CreateManualOrderDto {
 
   //@IsString()
   orderNo: string;
+}
+
+export class CreateManualOrderDto {
+  @ApiProperty({ 
+    example: [
+      { wholesalerId: 1, wholesalerProductId: 1, wholesalerProductOptionId: 1, quantity: 20 },
+      { wholesalerId: 1, wholesalerProductId: 1, wholesalerProductOptionId: 1, quantity: 20 },
+    ]
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateManualOrderDetailDto)
+  orders: CreateManualOrderDetailDto[];
 }

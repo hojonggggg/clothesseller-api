@@ -182,7 +182,7 @@ export class SellerOrdersController {
   @Post('manual-ordering')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[완료] 수등 발주 요청' })
+  @ApiOperation({ summary: '[완료] 수동 발주 요청' })
   @ApiResponse({ status: 201 })
   async createManualOrdering(
     //@Body() createManualOrderingDto: CreateManualOrderingDto, 
@@ -190,8 +190,9 @@ export class SellerOrdersController {
     @Request() req
   ) {
     const sellerId = req.user.uid;
-    createManualOrderDto.orderNo = '발주';
-    //await this.wholesalerOrdersService.createManualOrdering(sellerId, createManualOrderDto);
+    for (const order of createManualOrderDto.orders) {
+      order.orderNo = '발주';
+    }
     await this.ordersService.createManualOrder(sellerId, createManualOrderDto);
     return {
       statusCode: 201,
@@ -249,8 +250,12 @@ export class SellerOrdersController {
   ) {
     const sellerId = req.user.uid;
     //await this.wholesalerOrdersService.createPrepayment(sellerId, createPrepaymentDto);
-    createManualOrderDto.orderNo = '미송';
-    createManualOrderDto.status = '미송요청';
+    //createManualOrderDto.orderNo = '미송';
+    //createManualOrderDto.status = '미송요청';
+    for (const order of createManualOrderDto.orders) {
+      order.orderNo = '미송';
+      order.status = '미송요청';
+    }
     await this.ordersService.createManualOrder(sellerId, createManualOrderDto);
     return {
       statusCode: 201,

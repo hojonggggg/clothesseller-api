@@ -333,24 +333,24 @@ export class OrdersService {
     return result;
   }
 
-  async _createSellerOrder(sellerId: number, createManualOrderDto: CreateManualOrderDto) {
+  async _createSellerOrder(sellerId: number, createManualOrder: any) {
     return await this.sellerOrderRepository.save({
       orderType: 'MANUAL',
       sellerId,
-      ...createManualOrderDto,
+      ...createManualOrder,
     });
   }
 
-  async _createWholesalerOrder(sellerId: number, sellerOrderId: number, createManualOrderDto: CreateManualOrderDto) {
+  async _createWholesalerOrder(sellerId: number, sellerOrderId: number, createManualOrder: any) {
     let quantityOfPrepayment = 0;
-    if (createManualOrderDto.orderNo === '미송') {
-      quantityOfPrepayment = createManualOrderDto.quantity;
+    if (createManualOrder.orderNo === '미송') {
+      quantityOfPrepayment = createManualOrder.quantity;
     }
     await this.wholesalerOrderRepository.save({
       orderType: 'MANUAL',
-      ...createManualOrderDto,
+      ...createManualOrder,
       sellerId,
-      quantityTotal: createManualOrderDto.quantity,
+      quantityTotal: createManualOrder.quantity,
       quantityOfPrepayment
     });
   }
@@ -362,8 +362,10 @@ export class OrdersService {
     await queryRunner.startTransaction();
 
     try {
-      const sellerOrder = await this._createSellerOrder(sellerId, createManualOrderDto);
-      await this._createWholesalerOrder(sellerId, sellerOrder.id, createManualOrderDto);
+      for (const order of createManualOrderDto.orders) {
+        const sellerOrder = await this._createSellerOrder(sellerId, order);
+        await this._createWholesalerOrder(sellerId, sellerOrder.id, order);
+      }
 
       await queryRunner.commitTransaction();
     } catch (error) {

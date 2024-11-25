@@ -21,6 +21,7 @@ import { WholesalerReturnsModule } from './returns/returns.module';
 import { WholesalerUsersModule } from './users/users.module';
 import { WholesalerWeekProductsModule } from './week-products/week-products.module';
 import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
+import { WholesalerLedgerModule } from './account-book/account-book.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
     WholesalerReturnsModule,
     WholesalerUsersModule,
     WholesalerWeekProductsModule,
+    WholesalerLedgerModule,
   ],
   providers: [AuthService, UsersService],
   controllers: [],
