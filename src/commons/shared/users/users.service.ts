@@ -77,10 +77,23 @@ export class UsersService {
 
   async me(userId: number, role: string) {
     if (role === 'WHOLESALER') {
+      /*
       return await this.wholesalerProfileRepository.findOne({ 
-        select: ['name', 'mobile'],
+        select: ['name', 'mobile', 'roomNo'],
+        
         where: { userId } 
       });
+      */
+      return await this.wholesalerProfileRepository.createQueryBuilder('wp')
+        .select([
+          'wp.name AS name',
+          'wp.mobile AS mobile',
+          'wp.roomNo AS roomNo',
+          'store.name AS storeName',
+        ])
+        .leftJoin('wp.store', 'store') // storeId를 기준으로 조인
+        .where('wp.userId = :userId', { userId })
+        .getRawOne();
     } else if (role === 'SELLER') {
       return await this.sellerProfileRepository.findOne({ 
         select: ['name', 'mobile'],
