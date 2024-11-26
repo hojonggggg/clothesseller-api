@@ -29,8 +29,70 @@ export class ProductMatchingsService {
     private sellerOrderRepository: Repository<SellerOrder>,
   ) {}
 
-
   async findAllSellerProductOptionForSeller(sellerId: number, mallId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+      const sellerOrders = await this.sellerOrderRepository.find({ where: { sellerId, orderType: "AUTO", isMatching: true }, order: { id: "DESC" } });
+      const priorityIds = Array.from(new Set(sellerOrders.map(order => order.sellerProductOptionId)));
+      console.log({priorityIds});
+
+      const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('spo')
+        .select([
+          'spo.sellerProductId AS sellerProductId',
+          'spo.id AS sellerProductOptionId',
+          'sp.name AS name',
+          'spo.color AS color',
+          'spo.size AS size',
+          'sp.price AS price',
+          'mall.id AS mallId',
+          'mall.name AS mallName',
+          `IF(spo.id IN (3744, 207, 208, 203, 204), 0, 1) AS priority`
+          //`CASE WHEN spo.id IN (:...priorityIds) THEN 0 ELSE 1 END AS priority`,
+        ])
+        .leftJoin('spo.sellerProduct', 'sp')
+        .leftJoin('sp.mall', 'mall')
+        .where('spo.sellerId = :sellerId', { sellerId })
+        .andWhere('sp.mallId = :mallId', { mallId })
+        .andWhere('spo.isMatching= :isMatching', { isMatching: false })
+        //.andWhere('CASE WHEN spo.id IN (:...priorityIds) THEN 0 ELSE 1 END = 0', { priorityIds })  // priority가 0인 데이터만 필터링
+        //.setParameters({ priorityIds: priorityIds.length > 0 ? priorityIds : [-1] });
+
+      if (query) {
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            qb.where('sp.name LIKE :sellerProductName', { sellerProductName: `%${query}%` });
+          })
+        );
+      }
+
+      queryBuilder
+        .setParameters({ priorityIds })
+        .orderBy('priority', 'ASC')
+        .addOrderBy('spo.id', 'DESC');
+      
+      const allOptions = await queryBuilder.getRawMany();
+
+      const total = await allOptions.length;
+      const options = allOptions.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+      
+    /*
+    const [ options, total ] = await queryBuilder
+      .setParameters({ priorityIds })
+      .orderBy('priority', 'ASC')
+      .addOrderBy('spo.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+      */
+      return {
+        list: options,
+        total,
+        page: Number(pageNumber),
+        totalPage: Math.ceil(total / pageSize),
+      };
+  }
+
+  async _findAllSellerProductOptionForSeller(sellerId: number, mallId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
@@ -53,10 +115,10 @@ export class ProductMatchingsService {
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
-/*
-      console.log(options.length);
-      console.log({options});
-      console.log({total});
+
+    const allOptions = await queryBuilder
+      .orderBy('sellerProductOption.id', 'DESC')
+      .getRawMany();
 
     const sellerOrders = await this.sellerOrderRepository.find({ where: { sellerId, orderType: "AUTO", isMatching: true }, order: { id: "DESC" } });
 //console.log({sellerOrders});
@@ -64,18 +126,18 @@ export class ProductMatchingsService {
     console.log("Priority IDs:", priorityIds); // 디버깅용
 
     // `options` 정렬
-    const sortedOptions = [...options].sort((a, b) => {
+    const sortedOptions = [...allOptions].sort((a, b) => {
       const aPriority = priorityIds.includes(a.id) ? 0 : 1;
       const bPriority = priorityIds.includes(b.id) ? 0 : 1;
       return aPriority - bPriority || b.id - a.id;
     });
-    
+    console.log({sortedOptions});
     // 디버깅 출력
-    console.log("Priority IDs:", priorityIds);
-    console.log("Original Options Length:", options.length);
-    console.log("Sorted Options Length:", sortedOptions.length);
-    console.log("Options without Priority:", sortedOptions.filter(opt => !priorityIds.includes(opt.id)));
-*/
+    //console.log("Priority IDs:", priorityIds);
+    //console.log("Original Options Length:", options.length);
+    //console.log("Sorted Options Length:", sortedOptions.length);
+    //console.log("Options without Priority:", sortedOptions.filter(opt => !priorityIds.includes(opt.id)));
+
     for (const option of options) {
       const { sellerProduct } = option;
       option.sellerProductOptionId = option.id;

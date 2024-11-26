@@ -129,7 +129,9 @@ export class SellerProductsService {
     for (const sellerProductOption of sellerProductOptions) {
       sellerProductOption.optionId = sellerProductOption.id;
       sellerProductOption.price = formatCurrency(sellerProductOption.price);
-      sellerProductOption.wholesalerOptionPrice = formatCurrency(sellerProductOption.wholesalerOptionPrice);
+      if (sellerProductOption.wholesalerOptionPrice) {
+        sellerProductOption.wholesalerOptionPrice = formatCurrency(sellerProductOption.wholesalerOptionPrice);
+      }
       delete(sellerProductOption.sellerId);
       delete(sellerProductOption.sellerProductId);
       delete(sellerProductOption.isShow);
