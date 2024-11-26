@@ -175,7 +175,7 @@ export class ProductsService {
     if (wholesalerId) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('wholesalerProductOption.wholesalerId = :wholesalerId', { wholesalerId: `%${wholesalerId}%` });
+          qb.where('wholesalerProductOption.wholesalerId = :wholesalerId', { wholesalerId });
         })
       );
     }

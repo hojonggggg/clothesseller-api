@@ -32,6 +32,16 @@ export class WholesalerOrdersService {
     private wholesalerProfileRepository: Repository<WholesalerProfile>,
   ) {}
 
+  async _findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+
+      ])
+      //.leftJoin()
+  } 
+
   async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
