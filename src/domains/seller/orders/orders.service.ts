@@ -295,6 +295,7 @@ export class SellerOrdersService {
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
       .select([
+        'wo.id AS id',
         'sp.name AS sellerProductName',
         'spo.color AS sellerProductColor',
         'spo.size AS sellerProductSize',
