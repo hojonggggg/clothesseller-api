@@ -153,6 +153,7 @@ export class WholesalerOrder {
   wholesalerProductName: string;
   wholesalerProductColor: string;
   wholesalerProductSize: string;
+  orderDate: string;
   /*
   @ManyToOne(() => Deliveryman, (deliveryman) => deliveryman.orders)
   @JoinColumn({ name: 'seller_id' })

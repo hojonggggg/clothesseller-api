@@ -260,6 +260,7 @@ export class SellerOrdersService {
       order.wholesalerStoreName = order.wholesalerProfile.store.name;
       order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
       order.wholesalerMobile = order.wholesalerProfile.mobile;
+      order.orderDate = order.createdAt.toString().substring(0, 10);
 
       delete(order.orderType);
       delete(order.memo);
@@ -301,7 +302,8 @@ export class SellerOrdersService {
         'wp.name AS wholesalerName',
         's.name AS wholesalerStoreName',
         'wp.roomNo AS wholesalerStoreRoomNo',
-        'wp.mobile AS wholesalerMobile'
+        'wp.mobile AS wholesalerMobile',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate'
       ])
       .leftJoin('wo.sellerProduct', 'sp')
       .leftJoin('wo.sellerProductOption', 'spo')
