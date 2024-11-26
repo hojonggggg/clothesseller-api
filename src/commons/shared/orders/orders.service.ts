@@ -433,8 +433,61 @@ export class OrdersService {
   async findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder('so')
+      .select([
+        'sp.name AS productName',
+        'spo.color AS color',
+        'spo.size AS size',
+        'SUM(so.quantity) AS quantity',
+        'sp2.name AS sellerName',
+        'mall.name AS mallName',
+        'DATE_FORMAT(so.createdAt, "%Y.%m.%d") AS orderDate'
+      ])
+      .leftJoin('so.sellerProduct', 'sp')
+      .leftJoin('so.sellerProductOption', 'spo')
+      .leftJoin('so.sellerProfile', 'sp2')
+      .leftJoin('sp.mall', 'mall')
+      .where('so.orderType = :orderType', { orderType: 'AUTO' })
+      .andWhere('so.isDeleted = :isDeleted', { isDeleted: 'false' });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sp2.name LIKE :sellerName', { sellerName: `%${query}%` })
+            .orWhere('sp.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    queryBuilder
+      .groupBy('DATE(so.createdAt)')
+      .addGroupBy('so.sellerProductOptionId')
+      .orderBy('DATE(so.createdAt)', 'DESC');
+    
+    // 전체 데이터 가져오기
+    const allVolumes = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allVolumes.length;
+    const volumes = allVolumes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    for (const volume of volumes) {
+      //delete(volume)
+    }
+
+    return {
+      list: volumes,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async _findAllSellerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder('sellerOrder')
-    .leftJoinAndSelect('sellerOrder.mall', 'mall')
+      .leftJoinAndSelect('sellerOrder.mall', 'mall')
       .leftJoinAndSelect('sellerOrder.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('sellerOrder.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerOrder.sellerProduct', 'sellerProduct')
