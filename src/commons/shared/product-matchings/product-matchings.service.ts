@@ -53,7 +53,7 @@ export class ProductMatchingsService {
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
-
+/*
       console.log(options.length);
       console.log({options});
       console.log({total});
@@ -75,8 +75,8 @@ export class ProductMatchingsService {
     console.log("Original Options Length:", options.length);
     console.log("Sorted Options Length:", sortedOptions.length);
     console.log("Options without Priority:", sortedOptions.filter(opt => !priorityIds.includes(opt.id)));
-
-    for (const option of sortedOptions) {
+*/
+    for (const option of options) {
       const { sellerProduct } = option;
       option.sellerProductOptionId = option.id;
       option.name = sellerProduct.name;
@@ -96,7 +96,7 @@ export class ProductMatchingsService {
     }
     
     return {
-      list: sortedOptions,
+      list: options,
       total,
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
