@@ -86,9 +86,11 @@ export class UsersService {
       */
       return await this.wholesalerProfileRepository.createQueryBuilder('wp')
         .select([
+          'wp.licenseNumber AS licenseNumber',
           'wp.name AS name',
           'wp.mobile AS mobile',
           'wp.roomNo AS roomNo',
+          'store.id AS storeId',
           'store.name AS storeName',
         ])
         .leftJoin('wp.store', 'store') // storeId를 기준으로 조인
@@ -96,7 +98,7 @@ export class UsersService {
         .getRawOne();
     } else if (role === 'SELLER') {
       return await this.sellerProfileRepository.findOne({ 
-        select: ['name', 'mobile'],
+        select: ['licenseNumber', 'name', 'mobile', 'address1', 'address2'],
         where: { userId } 
       });
     }
