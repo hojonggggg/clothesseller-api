@@ -683,6 +683,9 @@ export class OrdersService {
         'sellerProductOption.size AS size',
         'SUM(sellerOrder.quantity) AS quantity',
         'wholesalerProfile.name AS wholesalerName',
+        'wholesalerProduct.name AS wholesalerProductName',
+        'wholesalerProductOption.color AS wholesalerProductColor',
+        'wholesalerProductOption.size AS wholesalerProductSize',
         'store.name AS wholesalerStoreName',
         'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
         'wholesalerProfile.mobile AS wholesalerMobile',
@@ -691,6 +694,8 @@ export class OrdersService {
       .leftJoin('sellerOrder.sellerProduct', 'sellerProduct')
       .leftJoin('sellerOrder.sellerProductOption', 'sellerProductOption')
       .leftJoin('sellerOrder.wholesalerProfile', 'wholesalerProfile')
+      .leftJoin('sellerOrder.wholesalerProduct', 'wholesalerProduct')
+      .leftJoin('sellerOrder.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoin('wholesalerProfile.store', 'store')
       .where('sellerOrder.sellerId = :sellerId', { sellerId })
       //.andWhere('sellerOrder.isMatching = 1')
@@ -719,7 +724,9 @@ export class OrdersService {
 
     for (const item of data) {
       if (item.orderType === "MANUAL") {
-        item.name = "[수동발주]";
+        item.name = "[수동발주] " + item.wholesalerProductName;
+        item.color = item.wholesalerProductColor;
+        item.size = item.wholesalerProductSize;
       }
       delete(item.orderType);
     }
