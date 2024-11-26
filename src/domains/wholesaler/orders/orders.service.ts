@@ -32,17 +32,52 @@ export class WholesalerOrdersService {
     private wholesalerProfileRepository: Repository<WholesalerProfile>,
   ) {}
 
-  async _findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
       .select([
-
+        'wp.name AS name',
+        'wpo.color AS color',
+        'wpo.size AS size',
+        'SUM(wo.quantity) AS quantity',
+        'sp.name AS sellerName',
+        'sp.mobile AS sellerMobile',
+        'spd.mobile AS deliverymanMobile',
       ])
-      //.leftJoin()
+      .leftJoin('wo.wholesalerProduct', 'wp')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
+      .leftJoin('wo.sellerProfile', 'sp')
+      .leftJoin('sp.deliveryman', 'spd')
+      .where('wo.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('DATE(wo.createdAt) = :date', { date })
+      .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .groupBy('wo.wholesalerProductOptionId');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const allData = await queryBuilder.getRawMany();
+
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+
   } 
 
-  async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  async _findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
