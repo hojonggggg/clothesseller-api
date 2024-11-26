@@ -571,14 +571,21 @@ export class OrdersService {
         'wholesalerProfile.name AS wholesalerName',
         'store.name AS wholesalerStoreName',
         'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
-        'wholesalerProfile.mobile AS wholesalerMobile'
+        'wholesalerProfile.mobile AS wholesalerMobile',
+        'sellerOrder.orderType AS orderType'
       ])
       .leftJoin('sellerOrder.sellerProduct', 'sellerProduct')
       .leftJoin('sellerOrder.sellerProductOption', 'sellerProductOption')
       .leftJoin('sellerOrder.wholesalerProfile', 'wholesalerProfile')
       .leftJoin('wholesalerProfile.store', 'store')
       .where('sellerOrder.sellerId = :sellerId', { sellerId })
-      .andWhere('sellerOrder.isMatching = 1')
+      //.andWhere('sellerOrder.isMatching = 1')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('sellerOrder.orderType = :orderType AND sellerOrder.isMatching = 1', { orderType: 'AUTO' })
+            .orWhere('sellerOrder.orderType = :orderType', { orderType: 'MANUAL' });
+        })
+      )
       .groupBy("sellerOrder.sellerProductOptionId");
 
     if (query) {
@@ -595,6 +602,13 @@ export class OrdersService {
     // JavaScript로 페이징 처리
     const total = allData.length;
     const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    for (const item of data) {
+      if (item.orderType === "MANUAL") {
+        item.name = "[수동발주]";
+      }
+      delete(item.orderType);
+    }
 
     return {
       list: data,
