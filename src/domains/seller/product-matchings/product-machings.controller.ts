@@ -19,8 +19,8 @@ export class SellerProductMatchingsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 셀러 상품 목록 조회' })
   @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'mallId', required: true, description: '판매몰 ID' })
   @ApiQuery({ name: 'query', required: false, description: '상품명' })
-  @ApiQuery({ name: 'mallId', required: false, description: '상품명' })
   async findAllSellerProduct(
     @Request() req,
     @Query('query') query: string,

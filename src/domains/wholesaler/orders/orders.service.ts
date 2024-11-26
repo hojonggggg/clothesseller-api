@@ -31,7 +31,7 @@ export class WholesalerOrdersService {
     @InjectRepository(WholesalerProfile)
     private wholesalerProfileRepository: Repository<WholesalerProfile>,
   ) {}
-
+  /*
   async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
@@ -76,8 +76,8 @@ export class WholesalerOrdersService {
     };
 
   } 
-
-  async _findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  */
+  async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')

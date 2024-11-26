@@ -34,10 +34,10 @@ export class ProductMatchingsService {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
-    .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
+      .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
-      .where('sellerProduct.mallId = :mallId', { mallId })
+      .andWhere('sellerProduct.mallId = :mallId', { mallId })
       .andWhere("sellerProductOption.isMatching = false");
     
     if (query) {
@@ -54,7 +54,29 @@ export class ProductMatchingsService {
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
 
-    for (const option of options) {
+      console.log(options.length);
+      console.log({options});
+      console.log({total});
+
+    const sellerOrders = await this.sellerOrderRepository.find({ where: { sellerId, orderType: "AUTO", isMatching: true }, order: { id: "DESC" } });
+//console.log({sellerOrders});
+    const priorityIds = sellerOrders.map(order => order.sellerProductOptionId);
+    console.log("Priority IDs:", priorityIds); // 디버깅용
+
+    // `options` 정렬
+    const sortedOptions = [...options].sort((a, b) => {
+      const aPriority = priorityIds.includes(a.id) ? 0 : 1;
+      const bPriority = priorityIds.includes(b.id) ? 0 : 1;
+      return aPriority - bPriority || b.id - a.id;
+    });
+    
+    // 디버깅 출력
+    console.log("Priority IDs:", priorityIds);
+    console.log("Original Options Length:", options.length);
+    console.log("Sorted Options Length:", sortedOptions.length);
+    console.log("Options without Priority:", sortedOptions.filter(opt => !priorityIds.includes(opt.id)));
+
+    for (const option of sortedOptions) {
       const { sellerProduct } = option;
       option.sellerProductOptionId = option.id;
       option.name = sellerProduct.name;
@@ -74,7 +96,7 @@ export class ProductMatchingsService {
     }
     
     return {
-      list: options,
+      list: sortedOptions,
       total,
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
