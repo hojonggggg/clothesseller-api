@@ -19,4 +19,19 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsString()
   roomNo: string;
+
+  @ApiProperty({ example: '123-456-789',  description: '사업자 등록번호'})
+  @IsOptional()
+  @IsString()
+  licenseNumber: string;
+
+  @ApiProperty({ example: '동대문구',  description: '구'})
+  @IsOptional()
+  @IsString()
+  address1: string;
+
+  @ApiProperty({ example: '장안동',  description: '동'})
+  @IsOptional()
+  @IsString()
+  address2: string;
 }
