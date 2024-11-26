@@ -496,7 +496,8 @@ export class OrdersService {
       .leftJoinAndSelect('order.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
-      .where('order.sellerId = :sellerId', { sellerId });
+      .where('order.sellerId = :sellerId', { sellerId })
+      .andWhere('order.orderType = :orderType', {  orderType: "AUTO" });
 
     if (query) {
       queryBuilder.andWhere(
@@ -514,15 +515,21 @@ export class OrdersService {
       .getManyAndCount();
     
     for (const order of orders) {
-      order.name = order.sellerProduct.name;
-      order.color = order.sellerProductOption.color;
-      order.size = order.sellerProductOption.size;
+      if (order.sellerProduct) {
+        order.name = order.sellerProduct.name;
+      }
+      if (order.sellerProductOption) {
+        order.color = order.sellerProductOption.color;
+        order.size = order.sellerProductOption.size;
+      }
       if (order.wholesalerProduct) {
         order.wholesalerProductName = order.wholesalerProduct.name;
       } else {
         order.status = '매칭필요';
       }
-      order.mallName = order.mall.name;
+      if (order.mall) {
+        order.mallName = order.mall.name;
+      }
       
       delete(order.sellerId);
       delete(order.sellerProduct);
