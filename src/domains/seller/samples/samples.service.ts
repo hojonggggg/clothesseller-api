@@ -251,7 +251,8 @@ export class SellerSamplesService {
         .leftJoin('sample.wholesalerProduct', 'wholesalerProduct')
         .leftJoin('sample.wholesalerProfile', 'wholesalerProfile')
         .where('sample.sellerId = :sellerId', { sellerId })
-        .andWhere('sample.sampleDate = :day', { day });
+        //.andWhere('sample.sampleDate = :day', { day });
+        .andWhere('sample.returnDate = :day', { day });
 
     const samples = await queryBuilder
       .orderBy('sample.id', 'DESC')
