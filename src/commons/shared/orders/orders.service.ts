@@ -25,6 +25,60 @@ export class OrdersService {
   async findAllWholesalerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+        'wp.name AS productName',
+        'wpo.color AS color',
+        'wpo.size AS size',
+        'SUM(wo.quantity) AS quantity',
+        'wp2.name AS wholesalerName',
+        'store.name AS wholesalerStoreName',
+        'wp2.roomNo AS wholesalerStoreroomNo',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate'
+      ])
+      .leftJoin('wo.wholesalerProduct', 'wp')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
+      .leftJoin('wo.wholesalerProfile', 'wp2')
+      .leftJoin('wp2.store', 'store')
+      .where('wo.isDeleted = :isDeleted', { isDeleted: 'false' })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: 'false' });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp2.name LIKE :wholesalerName', { wholesalerName: `%${query}%` })
+            .orWhere('wp.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    queryBuilder
+      .groupBy('DATE(wo.createdAt)')
+      .addGroupBy('wo.wholesalerProductOptionId')
+      .orderBy('DATE(wo.createdAt)', 'DESC');
+    
+    // 전체 데이터 가져오기
+    const allVolumes = await queryBuilder.getRawMany();
+
+    // JavaScript로 페이징 처리
+    const total = allVolumes.length;
+    const volumes = allVolumes.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    for (const volume of volumes) {
+      //delete(volume)
+    }
+
+    return {
+      list: volumes,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async remove_findAllWholesalerOrderForAdmin(query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wholesalerOrder')
       .leftJoinAndSelect('wholesalerOrder.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('wholesalerOrder.sellerProfile', 'sellerProfile')
