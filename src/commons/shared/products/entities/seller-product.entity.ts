@@ -45,6 +45,10 @@ export class SellerProduct {
   @Column({ name: 'wholesaler_product_price' })
   wholesalerProductPrice: number;
 
+  @ApiProperty({ example: '2024/11/25', description: '쇼핑몰 상품 등록일' })
+  @Column({ name: 'reg_date' })
+  regDate: string;
+
   @OneToOne(() => Mall)
   @JoinColumn({ name: 'mall_id' })
   mall: Mall;

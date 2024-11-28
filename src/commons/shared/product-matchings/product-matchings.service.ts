@@ -68,6 +68,7 @@ export class ProductMatchingsService {
       queryBuilder
         .setParameters({ priorityIds })
         .orderBy('priority', 'ASC')
+        .addOrderBy('sp.regDate', 'DESC')
         .addOrderBy('spo.id', 'DESC');
       
       const allOptions = await queryBuilder.getRawMany();
@@ -111,7 +112,8 @@ export class ProductMatchingsService {
     }
 
     const [options, total] = await queryBuilder
-      .orderBy('sellerProductOption.id', 'DESC')
+      .orderBy('sellerProduct.regDate', 'DESC')
+      .addOrderBy('sellerProductOption.id', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
@@ -146,7 +148,7 @@ export class ProductMatchingsService {
       option.mallName = sellerProduct.mall.name;
       delete(option.id);
       delete(option.sellerId);
-      delete(option.sellerProduct);
+      //delete(option.sellerProduct);
       delete(option.wholesalerProductOptionId);
       delete(option.wholesalerOptionPrice);
       delete(option.quantity);
