@@ -418,7 +418,7 @@ export class OrdersService {
     try {
       for (const order of createManualOrderDto.orders) {
         const sellerOrder = await this._createSellerOrder(sellerId, order);
-        await this._createWholesalerOrder(sellerId, sellerOrder.id, order);
+        //await this._createWholesalerOrder(sellerId, sellerOrder.id, order);
       }
 
       await queryRunner.commitTransaction();
