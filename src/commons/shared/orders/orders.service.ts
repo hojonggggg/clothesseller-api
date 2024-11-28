@@ -684,11 +684,12 @@ export class OrdersService {
         'SUM(wo.quantity) AS quantity',
         'wp1.name AS wholesalerName',
         'wp2.name AS wholesalerProductName',
-        'wp2.color AS wholesalerProductColor',
-        'wp2.size AS wholesalerProductSize',
+        'wpo.color AS wholesalerProductColor',
+        'wpo.size AS wholesalerProductSize',
         'store.name AS wholesalerStoreName',
         'wp1.roomNo AS wholesalerStoreRoomNo',
         'wp1.mobile AS wholesalerMobile',
+        'wo.memo AS memo',
         'wo.orderType AS orderType',
         'CASE WHEN wo.sellerProductOptionId IS NOT NULL THEN wo.sellerProductOptionId ELSE wo.wholesalerProductOptionId END AS groupId'
       ])
@@ -696,6 +697,7 @@ export class OrdersService {
       .leftJoin('wo.sellerProductOption', 'spo')
       .leftJoin('wo.wholesalerProfile', 'wp1')
       .leftJoin('wo.wholesalerProduct', 'wp2')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
       .leftJoin('wp1.store', 'store')
       .where('wo.sellerId = :sellerId', { sellerId })
       .groupBy('groupId');
