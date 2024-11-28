@@ -46,8 +46,9 @@ export class ProductMatchingsService {
           'sp.price AS price',
           'mall.id AS mallId',
           'mall.name AS mallName',
-          `IF(spo.id IN (3744, 207, 208, 203, 204), 0, 1) AS priority`
-          //`CASE WHEN spo.id IN (:...priorityIds) THEN 0 ELSE 1 END AS priority`,
+          //`IF(spo.id IN (3744, 207, 208, 203, 204), 0, 1) AS priority`
+          //`IF(spo.id IN (:...priorityIds), 0, 1) AS priority`
+          `CASE WHEN spo.id IN (:...priorityIds) THEN 0 ELSE 1 END AS priority`
         ])
         .leftJoin('spo.sellerProduct', 'sp')
         .leftJoin('sp.mall', 'mall')
@@ -66,7 +67,7 @@ export class ProductMatchingsService {
       }
 
       queryBuilder
-        .setParameters({ priorityIds })
+        .setParameters({ priorityIds: priorityIds.length > 0 ? priorityIds : [-1] })
         .orderBy('priority', 'ASC')
         .addOrderBy('sp.regDate', 'DESC')
         .addOrderBy('spo.id', 'DESC');
