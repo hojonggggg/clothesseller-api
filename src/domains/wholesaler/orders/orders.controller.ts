@@ -42,16 +42,18 @@ export class WholesalerOrdersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 주문 목록 조회' })
   @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'status', required: true, description: '상태' })
   @ApiQuery({ name: 'date', required: true, description: '조회일자(yyyy/mm/dd)' })
   @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
   async findAllOrder(
     @Request() req,
+    @Query('status') status: string,
     @Query('date') date: string,
     @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.wholesalerOrdersService.findAllOrder(wholesalerId, date, query, paginationQueryDto);
+    const result = await this.wholesalerOrdersService.findAllOrder(wholesalerId, status, date, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

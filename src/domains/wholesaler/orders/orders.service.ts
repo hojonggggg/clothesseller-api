@@ -77,7 +77,7 @@ export class WholesalerOrdersService {
 
   } 
   */
-  async findAllOrder(wholesalerId: number, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllOrder(wholesalerId: number, status: string, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
@@ -89,6 +89,23 @@ export class WholesalerOrdersService {
       .andWhere("DATE(order.createdAt) = :date", { date })
       .andWhere('order.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('order.isPrepayment = :isPrepayment', { isPrepayment: false });
+    
+    if (status) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          if (status === '발주미확인') {
+            qb.where('order.status = :status', { status: '발주요청' });
+          } else if (status === '발주확인') {
+            qb.where('order.status = :status', { status: '발주요청' });
+          } else if (status === '발주불가') {
+            qb.where('order.status = :status', { status: '품절' })
+              .orWhere('order.status = :status', { status: '발주불가' });
+          } else if (status === '발주완료') {
+            
+          }
+        })
+      );
+    }
 
 
     if (query) {

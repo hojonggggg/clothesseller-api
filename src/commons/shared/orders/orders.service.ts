@@ -676,6 +676,63 @@ export class OrdersService {
   async findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder("wo")
+      .select([
+        'sp.name AS name',
+        'spo.color AS color',
+        'spo.size AS size',
+        'SUM(wo.quantity) AS quantity',
+        'wp1.name AS wholesalerName',
+        'wp2.name AS wholesalerProductName',
+        'wp2.color AS wholesalerProductColor',
+        'wp2.size AS wholesalerProductSize',
+        'store.name AS wholesalerStoreName',
+        'wp1.roomNo AS wholesalerStoreRoomNo',
+        'wp1.mobile AS wholesalerMobile',
+        'wo.orderType AS orderType',
+        'CASE WHEN wo.sellerProductOptionId IS NOT NULL THEN wo.sellerProductOptionId ELSE wo.wholesalerProductOptionId END AS groupId'
+      ])
+      .leftJoin('wo.sellerProduct', 'sp')
+      .leftJoin('wo.sellerProductOption', 'spo')
+      .leftJoin('wo.wholesalerProfile', 'wp1')
+      .leftJoin('wo.wholesalerProduct', 'wp2')
+      .leftJoin('wp1.store', 'store')
+      .where('wo.sellerId = :sellerId', { sellerId })
+      .groupBy('groupId');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('sp.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('wp1.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
+        })
+      );
+    }
+    
+    const allData = await queryBuilder.getRawMany();
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    for (const item of data) {
+      if (!item.sellerProductOptionId) {
+        item.name = "[매칭필요] " + item.wholesalerProductName;
+        item.color = item.wholesalerProductColor;
+        item.size = item.wholesalerProductSize;
+      }
+      delete(item.orderType);
+    }
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async remove2_findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([
         'sellerProduct.name AS name',
