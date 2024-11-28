@@ -732,127 +732,6 @@ export class OrdersService {
     };
   }
 
-  async remove2_findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
-    const { pageNumber, pageSize } = paginationQueryDto;
-
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
-      .select([
-        'sellerProduct.name AS name',
-        'sellerProductOption.color AS color',
-        'sellerProductOption.size AS size',
-        'SUM(sellerOrder.quantity) AS quantity',
-        'wholesalerProfile.name AS wholesalerName',
-        'wholesalerProduct.name AS wholesalerProductName',
-        'wholesalerProductOption.color AS wholesalerProductColor',
-        'wholesalerProductOption.size AS wholesalerProductSize',
-        'store.name AS wholesalerStoreName',
-        'wholesalerProfile.roomNo AS wholesalerStoreRoomNo',
-        'wholesalerProfile.mobile AS wholesalerMobile',
-        'sellerOrder.orderType AS orderType'
-      ])
-      .leftJoin('sellerOrder.sellerProduct', 'sellerProduct')
-      .leftJoin('sellerOrder.sellerProductOption', 'sellerProductOption')
-      .leftJoin('sellerOrder.wholesalerProfile', 'wholesalerProfile')
-      .leftJoin('sellerOrder.wholesalerProduct', 'wholesalerProduct')
-      .leftJoin('sellerOrder.wholesalerProductOption', 'wholesalerProductOption')
-      .leftJoin('wholesalerProfile.store', 'store')
-      .where('sellerOrder.sellerId = :sellerId', { sellerId })
-      //.andWhere('sellerOrder.isMatching = 1')
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where('sellerOrder.orderType = :orderType AND sellerOrder.isMatching = 1', { orderType: 'AUTO' })
-            .orWhere('sellerOrder.orderType = :orderType', { orderType: 'MANUAL' });
-        })
-      )
-      .groupBy("sellerOrder.sellerProductOptionId");
-
-    if (query) {
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
-        })
-      );
-    }
-    
-    // 전체 데이터 가져오기
-    const allData = await queryBuilder.getRawMany();
-
-    // JavaScript로 페이징 처리
-    const total = allData.length;
-    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-
-    for (const item of data) {
-      if (item.orderType === "MANUAL") {
-        item.name = "[수동발주] " + item.wholesalerProductName;
-        item.color = item.wholesalerProductColor;
-        item.size = item.wholesalerProductSize;
-      }
-      delete(item.orderType);
-    }
-
-    return {
-      list: data,
-      total,
-      page: Number(pageNumber),
-      totalPage: Math.ceil(total / pageSize),
-    };
-  }
-
-  async remove_findAllSellerOrderWaitBySellerId(sellerId: number, query: string, paginationQuery: PaginationQueryDto) {
-    const { pageNumber, pageSize } = paginationQuery;
-
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder('order')
-      .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
-      .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
-      .leftJoinAndSelect('order.wholesalerProfile', 'wholesalerProfile')
-      .leftJoinAndSelect('wholesalerProfile.store', 'store')
-      .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.isMatching = 1');
-
-    if (query) {
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
-        })
-      );
-    }
-
-    const [orders, total] = await queryBuilder
-      .orderBy('order.id', 'DESC')
-      .take(pageSize)
-      .skip((pageNumber - 1) * pageSize)
-      .getManyAndCount();
-    
-    for (const order of orders) {
-      order.name = order.sellerProduct.name;
-      order.color = order.sellerProductOption.color;
-      order.size = order.sellerProductOption.size;
-      order.wholesalerName = order.wholesalerProfile.name;
-      order.wholesalerStoreName = order.wholesalerProfile.store.name;
-      order.wholesalerStoreRoomNo = order.wholesalerProfile.roomNo;
-      order.wholesalerMobile = order.wholesalerProfile.mobile;
-      
-      delete(order.sellerId);
-      delete(order.mallId);
-      delete(order.sellerProductId);
-      delete(order.sellerProduct);
-      delete(order.sellerProductOptionId);
-      delete(order.sellerProductOption);
-      delete(order.wholesalerId);
-      delete(order.wholesalerProfile);
-      delete(order.wholesalerProductId);
-      delete(order.wholesalerProductOptionId);
-      
-    }
-    
-    return {
-      list: orders,
-      total,
-      page: Number(pageNumber),
-      totalPage: Math.ceil(total / pageSize),
-    };
-  }
-
   async _sellerOrderTotalCount(startDate: string, endDate: string) {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
       .select([
@@ -979,12 +858,13 @@ export class OrdersService {
   }
 
   async _newOrderCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
       .select([
         'COUNT(*) AS count'
       ])
-      .where("seller_id = :sellerId", { sellerId })
-      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+      .where("so.seller_id = :sellerId", { sellerId })
+      .andWhere("so.orderType = :orderType", { orderType: "AUTO" })
+      .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate });
 
     const result = await queryBuilder.getRawOne();
@@ -992,57 +872,63 @@ export class OrdersService {
   }
 
   async _productMachingPendingCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
       .select([
         'COUNT(*) AS count'
       ])
-      .where("seller_id = :sellerId", { sellerId })
-      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+      .where("so.sellerId = :sellerId", { sellerId })
+      .andWhere("so.orderType = :orderType", { orderType: "AUTO" })
+      .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate })
-      .andWhere("sellerOrder.isMatching = 0");
+      .andWhere("so.isMatching = 0");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
   async _productMachingCompleteCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
       .select([
         'COUNT(*) AS count'
       ])
-      .where("seller_id = :sellerId", { sellerId })
-      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+      .where("so.sellerId = :sellerId", { sellerId })
+      .andWhere("so.orderType = :orderType", { orderType: "AUTO" })
+      .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate })
-      .andWhere("sellerOrder.isMatching = 1");
+      .andWhere("so.isMatching = 1");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
   async _orderingPendingCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
       .select([
         'COUNT(*) AS count'
       ])
-      .where("seller_id = :sellerId", { sellerId })
-      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+      .where("so.sellerId = :sellerId", { sellerId })
+      .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate })
-      .andWhere("sellerOrder.isMatching = 1")
-      .andWhere("sellerOrder.isOrdering = 0");
+      .andWhere("so.isOrdering = 0");
+
+    queryBuilder.orWhere(new Brackets(qb => {
+      qb.where("so.orderType = 'AUTO'")
+        .andWhere("so.isMatching = 1");
+    }));
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
   }
 
   async _orderingCompleteCountForSeller(sellerId: number, startDate: Date, endDate: Date) {
-    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("sellerOrder")
+    const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
       .select([
         'COUNT(*) AS count'
       ])
-      .where("seller_id = :sellerId", { sellerId })
-      .andWhere("DATE(sellerOrder.createdAt) BETWEEN :startDate AND :endDate", 
+      .where("so.sellerId = :sellerId", { sellerId })
+      .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate })
-      .andWhere("sellerOrder.isOrdering = 1");
+        .andWhere("so.isOrdering = 1");
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
