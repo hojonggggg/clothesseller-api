@@ -96,17 +96,17 @@ export class WholesalerOrdersService {
           if (status === '발주미확인') {
             qb.where('order.status = :status', { status: '발주요청' });
           } else if (status === '발주확인') {
-            qb.where('order.status = :status', { status: '발주요청' });
+            qb.where('order.status = :status', { status: '미송' })
+              .orWhere('order.status = :status', { status: '발주확인' });
           } else if (status === '발주불가') {
             qb.where('order.status = :status', { status: '품절' })
               .orWhere('order.status = :status', { status: '발주불가' });
           } else if (status === '발주완료') {
-            
+            qb.where('order.status = :status', { status: '발주확인' })
           }
         })
       );
     }
-
 
     if (query) {
       queryBuilder.andWhere(
@@ -190,7 +190,7 @@ export class WholesalerOrdersService {
           { 
             quantity: orderItem.quantity - quantity,
             quantityOfDelivery: orderItem.quantityOfDelivery + quantity,
-            status: '부분출고'
+            status: '발주확인'
           }
         );
 
@@ -228,7 +228,7 @@ export class WholesalerOrdersService {
           { 
             quantity: orderItem.quantity - quantity,
             quantityOfPrepayment: orderItem.quantityOfPrepayment + quantity,
-            status: '미송처리',
+            status: '미송',
             isPrepayment: true,
             prepaymentDate,
             deliveryDate

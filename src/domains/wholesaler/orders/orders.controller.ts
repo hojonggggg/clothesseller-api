@@ -42,13 +42,13 @@ export class WholesalerOrdersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 주문 목록 조회' })
   @ApiResponse({ status: 200 })
-  @ApiQuery({ name: 'status', required: true, description: '상태' })
   @ApiQuery({ name: 'date', required: true, description: '조회일자(yyyy/mm/dd)' })
+  @ApiQuery({ name: 'status', required: false, description: '상태' })
   @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
   async findAllOrder(
     @Request() req,
-    @Query('status') status: string,
     @Query('date') date: string,
+    @Query('status') status: string,
     @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
