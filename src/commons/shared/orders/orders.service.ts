@@ -974,12 +974,14 @@ export class OrdersService {
       .where("so.sellerId = :sellerId", { sellerId })
       .andWhere("DATE(so.createdAt) BETWEEN :startDate AND :endDate", 
         { startDate, endDate })
-      .andWhere("so.isOrdering = 0");
-
-    queryBuilder.orWhere(new Brackets(qb => {
-      qb.where("so.orderType = 'AUTO'")
-        .andWhere("so.isMatching = 1");
-    }));
+      .andWhere("so.isOrdering = 0")
+      .andWhere(new Brackets(qb => {
+        qb.where("so.orderType != 'AUTO'")
+          .orWhere(new Brackets(innerQb => {
+            innerQb.where("so.orderType = 'AUTO'")
+              .andWhere("so.isMatching = 1");
+          }));
+      }));
 
     const result = await queryBuilder.getRawOne();
     return Number(result.count);
