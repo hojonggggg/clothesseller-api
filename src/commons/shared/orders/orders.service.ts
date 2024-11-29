@@ -678,6 +678,7 @@ export class OrdersService {
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
     .select([
+      'so.orderNo AS orderNo',
       'sp.name AS name',
       'spo.color AS color',
       'spo.size AS size',
@@ -776,7 +777,7 @@ export class OrdersService {
 
     for (const item of data) {
       if (!item.sellerProductOptionId) {
-        item.name = "[매칭필요] " + item.wholesalerProductName;
+        item.name = "[매칭필요] " + item.wholesalerProductName?item.wholesalerProductName:item.orderNo;
         item.color = item.wholesalerProductColor;
         item.size = item.wholesalerProductSize;
       }
