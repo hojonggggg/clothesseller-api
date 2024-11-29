@@ -305,8 +305,7 @@ export class SellerOrdersService {
         'wp.roomNo AS wholesalerStoreRoomNo',
         'wp.mobile AS wholesalerMobile',
         'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
-        'wo.memo AS memo',
-        'wo.sellerOrderId AS sellerOrderId'
+        'wo.memo AS memo'
       ])
       .leftJoin('wo.sellerProduct', 'sp')
       .leftJoin('wo.sellerProductOption', 'spo')
@@ -322,7 +321,7 @@ export class SellerOrdersService {
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+          qb.where('sp.name LIKE :productName', { productName: `%${query}%` });
         })
       );
     }
@@ -342,7 +341,62 @@ export class SellerOrdersService {
     };
   }
 
-  async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
+  async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+        'wo.id AS id',
+        'wp.name AS wholesalerProductName',
+        'wpo.color AS wholesalerProductColor',
+        'wpo.size AS wholesalerProductSize',
+        'SUM(wo.quantity) AS quantity',
+        'wp.name AS wholesalerName',
+        's.name AS wholesalerStoreName',
+        'wp.roomNo AS wholesalerStoreRoomNo',
+        'wp.mobile AS wholesalerMobile',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
+        'wo.memo AS memo',
+        'wo.sellerOrderId AS sellerOrderId'
+      ])
+      .leftJoin('wo.wholesalerProduct', 'wp1')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
+      .leftJoin('wo.wholesalerProfile', 'wp2')
+      .leftJoin('wp.store', 's')
+      .where('wo.sellerId = :sellerId', { sellerId })
+      .andWhere('wo.orderType = :orderType', { orderType })
+      .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      //.groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+      //.addGroupBy('wo.wholesalerProductOptionId');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp1.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const allData = await queryBuilder
+      .orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")', 'DESC')
+      .getRawMany();
+
+    for (const data of allData) {
+    }
+
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
+  async _findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('order')
