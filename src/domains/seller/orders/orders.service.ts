@@ -357,7 +357,8 @@ export class SellerOrdersService {
         'wp2.mobile AS wholesalerMobile',
         'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
         'wo.memo AS memo',
-        'wo.sellerOrderId AS sellerOrderId'
+        'wo.sellerOrderId AS sellerOrderId',
+        'wo.status AS status'
       ])
       .leftJoin('wo.wholesalerProduct', 'wp1')
       .leftJoin('wo.wholesalerProductOption', 'wpo')
