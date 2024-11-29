@@ -328,7 +328,7 @@ export class SellerOrdersService {
     }
 
     const allData = await queryBuilder
-      .orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+      .orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")', 'DESC')
       .getRawMany();
 
     const total = allData.length;
