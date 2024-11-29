@@ -316,7 +316,8 @@ export class SellerOrdersService {
       .andWhere('wo.orderType = :orderType', { orderType })
       .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
-      .groupBy('wo.sellerProductOptionId');
+      .groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+      .addGroupBy('wo.sellerProductOptionId');
 
     if (query) {
       queryBuilder.andWhere(
