@@ -717,7 +717,7 @@ export class OrdersService {
 
   for (const item of data) {
     if (!item.sellerProductOptionId) {
-      item.name = "[매칭필요] " + item.wholesalerProductName;
+      item.name = "[매칭필요] " + (item.wholesalerProductName ? item.wholesalerProductName : item.orderNo);
       item.color = item.wholesalerProductColor;
       item.size = item.wholesalerProductSize;
     }
@@ -777,10 +777,10 @@ export class OrdersService {
 
     for (const item of data) {
       if (!item.sellerProductOptionId) {
-        if (item.wholesalerProductName && item.wholesalerProductName.trim() !== '') {
-          item.name = "[매칭필요] " + item.wholesalerProductName;
-        } else {
+        if (!item.wholesalerProductName || item.wholesalerProductName.trim() === '') {
           item.name = "[매칭필요] " + item.orderNo
+        } else {
+          item.name = "[매칭필요] " + item.wholesalerProductName;
         }
         //item.name = "[매칭필요] " + (item.wholesalerProductName ? item.wholesalerProductName : item.orderNo);
         item.color = item.wholesalerProductColor;
