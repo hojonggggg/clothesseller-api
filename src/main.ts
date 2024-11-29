@@ -4,9 +4,16 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './commons/filters/http-exception.filter';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  //const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions: {
+      key: fs.readFileSync('/etc/letsencrypt/live/clothesseller235.cafe24.com/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/clothesseller235.cafe24.com/fullchain.pem'),
+    },
+  });
   const configService = app.get(ConfigService);
 
   app.enableCors({
