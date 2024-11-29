@@ -347,14 +347,14 @@ export class SellerOrdersService {
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
       .select([
         'wo.id AS id',
-        'wp.name AS wholesalerProductName',
+        'wp1.name AS wholesalerProductName',
         'wpo.color AS wholesalerProductColor',
         'wpo.size AS wholesalerProductSize',
         'SUM(wo.quantity) AS quantity',
-        'wp.name AS wholesalerName',
+        'wp2.name AS wholesalerName',
         's.name AS wholesalerStoreName',
-        'wp.roomNo AS wholesalerStoreRoomNo',
-        'wp.mobile AS wholesalerMobile',
+        'wp2.roomNo AS wholesalerStoreRoomNo',
+        'wp2.mobile AS wholesalerMobile',
         'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
         'wo.memo AS memo',
         'wo.sellerOrderId AS sellerOrderId'
@@ -362,7 +362,7 @@ export class SellerOrdersService {
       .leftJoin('wo.wholesalerProduct', 'wp1')
       .leftJoin('wo.wholesalerProductOption', 'wpo')
       .leftJoin('wo.wholesalerProfile', 'wp2')
-      .leftJoin('wp.store', 's')
+      .leftJoin('wp2.store', 's')
       .where('wo.sellerId = :sellerId', { sellerId })
       .andWhere('wo.orderType = :orderType', { orderType })
       .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
@@ -379,7 +379,8 @@ export class SellerOrdersService {
     }
 
     const allData = await queryBuilder
-      .orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")', 'DESC')
+      //.orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")', 'DESC')
+      .orderBy('wo.id', 'DESC')
       .getRawMany();
 
     for (const data of allData) {
