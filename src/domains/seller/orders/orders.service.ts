@@ -384,14 +384,15 @@ export class SellerOrdersService {
       .orderBy('wo.id', 'DESC')
       .getRawMany();
 
-    for (const data of allData) {
-    }
+    const filteredData = allData.filter(item => 
+      Object.values(item).some(value => value !== null && value !== undefined)
+    );
 
-    const total = allData.length;
-    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+    const total = filteredData.length;
+    const data = filteredData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 
     return {
-      list: data,
+      list: filteredData,
       total,
       page: Number(pageNumber),
       totalPage: Math.ceil(total / pageSize),
