@@ -777,7 +777,7 @@ export class OrdersService {
 
     for (const item of data) {
       if (!item.sellerProductOptionId) {
-        item.name = "[매칭필요] " + item.wholesalerProductName?item.wholesalerProductName:item.orderNo;
+        item.name = "[매칭필요] " + (item.wholesalerProductName ? item.wholesalerProductName : item.orderNo);
         item.color = item.wholesalerProductColor;
         item.size = item.wholesalerProductSize;
       }
