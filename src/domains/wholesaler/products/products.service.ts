@@ -239,7 +239,7 @@ export class WholesalerProductsService {
 
   async findAllWholesalerProductOptionWithPagination(wholesalerId: number, query: string, paginationQuery: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQuery;
-    
+    /*
     const [options, total] = await this.wholesalerProductOptionRepository.findAndCount({
       where: { 
         wholesalerId, 
@@ -250,10 +250,31 @@ export class WholesalerProductsService {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
-    
+    */
+    const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wpo')
+      .leftJoinAndSelect('wpo.wholesalerProduct', 'wp')
+      .where('wpo.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere('wpo.isDeleted = :isDeleted', { isDeleted: false });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const [options, total] = await queryBuilder
+      .orderBy('wpo.id', 'DESC')
+      .take(pageSize)
+      .skip((pageNumber - 1) * pageSize)
+      .getManyAndCount();
+
     for (const option of options) {
+      const price = option.price + option.wholesalerProduct.price;
       option.optionPrice = formatCurrency(option.price);
-      option.wholesalerProduct.price = formatCurrency(option.wholesalerProduct.price);
+      //option.wholesalerProduct.price = formatCurrency(option.wholesalerProduct.price);
+      option.wholesalerProduct.price = formatCurrency(price);
       delete(option.wholesalerId);
       delete(option.price);
       delete(option.isDeleted);
