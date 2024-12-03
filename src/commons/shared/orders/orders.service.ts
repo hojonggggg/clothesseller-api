@@ -397,8 +397,16 @@ export class OrdersService {
 
   async _createWholesalerOrder(sellerId: number, sellerOrderId: number, createManualOrder: any) {
     let quantityOfPrepayment = 0;
+    let status = '발주대기';
+    let isPrepayment = 0;
+    const today = getToday();
+    let prepaymentDate = null;
+
     if (createManualOrder.orderNo === '미송') {
       quantityOfPrepayment = createManualOrder.quantity;
+      status = '미송대기';
+      isPrepayment = 1;
+      prepaymentDate = today;
     }
     await this.wholesalerOrderRepository.save({
       orderType: 'MANUAL',
@@ -406,7 +414,9 @@ export class OrdersService {
       sellerId,
       quantityTotal: createManualOrder.quantity,
       quantityOfPrepayment,
-      status: '발주대기'
+      status,
+      isPrepayment,
+      prepaymentDate
     });
   }
 
