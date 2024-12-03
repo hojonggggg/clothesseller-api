@@ -43,7 +43,7 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  //app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('clothesseller API')
@@ -51,7 +51,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('api/docs', app, document);
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
