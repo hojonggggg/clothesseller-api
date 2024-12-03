@@ -1155,4 +1155,65 @@ export class OrdersService {
 
   }
 
+
+  
+  async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+        'wo.id AS id',
+        'wp1.name AS wholesalerProductName',
+        'wpo.color AS wholesalerProductColor',
+        'wpo.size AS wholesalerProductSize',
+        'SUM(wo.quantity) AS quantity',
+        'wp2.name AS wholesalerName',
+        's.name AS wholesalerStoreName',
+        'wp2.roomNo AS wholesalerStoreRoomNo',
+        'wp2.mobile AS wholesalerMobile',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
+        'wo.memo AS memo',
+        'wo.sellerOrderId AS sellerOrderId',
+        'wo.status AS status'
+      ])
+      .leftJoin('wo.wholesalerProduct', 'wp1')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
+      .leftJoin('wo.wholesalerProfile', 'wp2')
+      .leftJoin('wp2.store', 's')
+      .where('wo.sellerId = :sellerId', { sellerId })
+      .andWhere('wo.orderType = :orderType', { orderType })
+      .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .andWhere('wo.isOrdering = :isOrdering', { isOrdering: false })
+      //.groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+      //.addGroupBy('wo.wholesalerProductOptionId');
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp1.name LIKE :productName', { productName: `%${query}%` });
+        })
+      );
+    }
+
+    const allData = await queryBuilder
+      //.orderBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")', 'DESC')
+      .orderBy('wo.id', 'DESC')
+      .getRawMany();
+
+    const filteredData = allData.filter(item => 
+      Object.values(item).some(value => value !== null && value !== undefined)
+    );
+
+    const total = filteredData.length;
+    const data = filteredData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: filteredData,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
 }

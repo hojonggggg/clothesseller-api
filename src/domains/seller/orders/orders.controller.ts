@@ -109,7 +109,7 @@ export class SellerOrdersController {
       data: result
     };
   }
-
+  /*
   @Get('ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -135,7 +135,7 @@ export class SellerOrdersController {
       data: result
     };
   }
-
+  */
   @Get('auto-ordering')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -169,7 +169,7 @@ export class SellerOrdersController {
   ) {
     const sellerrId = req.user.uid;
     const orderType = 'MANUAL';
-    const result = await this.sellerOrdersService.findAllManualWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
+    const result = await this.ordersService.findAllManualWholesalerOrderBySellerId(sellerrId, orderType, query, paginationQuery);
     return {
       statusCode: 200,
       data: result

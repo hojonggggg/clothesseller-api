@@ -341,7 +341,7 @@ export class SellerOrdersService {
     };
   }
 
-  async findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
+  async remove_findAllManualWholesalerOrderBySellerId(sellerId: number, orderType: string, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
@@ -368,6 +368,7 @@ export class SellerOrdersService {
       .andWhere('wo.orderType = :orderType', { orderType })
       .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
       .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .andWhere('wo.isOrdering = :isOrdering', { isOrdering: false })
       //.groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
       //.addGroupBy('wo.wholesalerProductOptionId');
 
