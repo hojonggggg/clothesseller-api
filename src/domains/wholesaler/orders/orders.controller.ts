@@ -53,7 +53,8 @@ export class WholesalerOrdersController {
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const wholesalerId = req.user.uid;
-    const result = await this.wholesalerOrdersService.findAllOrder(wholesalerId, status, date, query, paginationQueryDto);
+    //const result = await this.wholesalerOrdersService.findAllOrder(wholesalerId, status, date, query, paginationQueryDto);
+    const result = await this.ordersService.findAllOrderByWholesalerId(wholesalerId, status, date, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result

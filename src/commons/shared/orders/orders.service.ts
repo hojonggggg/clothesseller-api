@@ -1227,4 +1227,56 @@ export class OrdersService {
     };
   }
 
+  async findAllOrderByWholesalerId(wholesalerId: number, status: string, date: string, query: string, paginationQueryDto: PaginationQueryDto) {
+    const { pageNumber, pageSize } = paginationQueryDto;
+
+    const queryBuilder = this.wholesalerOrderRepository.createQueryBuilder('wo')
+      .select([
+        'wo.id AS id',
+        'wp.name AS name',
+        'wpo.color AS color',
+        'wpo.size AS size',
+        'SUM(wo.quantity) AS quantity',
+        'sp.name AS sellerName',
+        'sp.mobile AS sellerMobile',
+        'dm.mobile AS deliverymanMobile',
+        'wo.memo AS memo',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
+      ])
+      .leftJoin('wo.wholesalerProduct', 'wp')
+      .leftJoin('wo.wholesalerProductOption', 'wpo')
+      .leftJoin('wo.sellerProfile', 'sp')
+      .leftJoin('sp.deliveryman', 'dm')
+      .where('wo.wholesalerId = :wholesalerId', { wholesalerId })
+      .andWhere("DATE_FORMAT(wo.createdAt, '%Y/%m/%d') = :date", { date })
+      .andWhere('wo.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('wo.isPrepayment = :isPrepayment', { isPrepayment: false })
+      .groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+      .addGroupBy('wo.sellerId')
+      .addGroupBy('wo.wholesalerProductOptionId')
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('wp.name LIKE :productName', { productName: `%${query}%` });
+          qb.orWhere('sp.name LIKE :sellerName', { sellerName: `%${query}%` });
+        })
+      );
+    }
+
+    const allData = await queryBuilder
+      .orderBy('DATE_FORMAT(wo.createdAt, "%Y/%m/%d")', 'DESC')
+      .getRawMany();
+
+    const total = allData.length;
+    const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+
+    return {
+      list: data,
+      total,
+      page: Number(pageNumber),
+      totalPage: Math.ceil(total / pageSize),
+    };
+  }
+
 }
