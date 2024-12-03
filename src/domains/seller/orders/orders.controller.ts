@@ -280,7 +280,7 @@ export class SellerOrdersController {
     //createManualOrderDto.status = '미송요청';
     for (const order of createManualOrderDto.orders) {
       order.orderNo = '미송';
-      order.status = '미송요청';
+      order.status = '미송대기';
     }
     await this.ordersService.createManualOrder(sellerId, createManualOrderDto);
     return {
