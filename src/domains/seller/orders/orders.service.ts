@@ -303,7 +303,8 @@ export class SellerOrdersService {
         'wp.name AS wholesalerName',
         's.name AS wholesalerStoreName',
         'wp.roomNo AS wholesalerStoreRoomNo',
-        'wp.mobile AS wholesalerMobile'
+        'wp.mobile AS wholesalerMobile',
+        'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
       ])
       .leftJoin('wo.sellerProduct', 'sp')
       .leftJoin('wo.sellerProductOption', 'spo')
