@@ -405,7 +405,8 @@ export class OrdersService {
       ...createManualOrder,
       sellerId,
       quantityTotal: createManualOrder.quantity,
-      quantityOfPrepayment
+      quantityOfPrepayment,
+      status: '발주대기'
     });
   }
 
