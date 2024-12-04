@@ -522,6 +522,7 @@ export class SellerOrdersService {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` })
             //.orWhere('order.prepaymentDate = :date', { date: query });
         })
       );
