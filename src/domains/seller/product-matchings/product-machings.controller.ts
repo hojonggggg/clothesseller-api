@@ -23,8 +23,8 @@ export class SellerProductMatchingsController {
   @ApiQuery({ name: 'query', required: false, description: '상품명' })
   async findAllSellerProduct(
     @Request() req,
-    @Query('query') query: string,
     @Query('mallId') mallId: number,
+    @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     const sellerId = req.user.uid;

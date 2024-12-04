@@ -377,13 +377,14 @@ export class ProductsService {
     };
   }
 
-  async findAllSellerProductBySellerId(sellerId: number, query: string, paginationQueryDto: PaginationQueryDto) {
+  async findAllSellerProductBySellerId(sellerId: number, mallId: number, query: string, paginationQueryDto: PaginationQueryDto) {
     const { pageNumber, pageSize } = paginationQueryDto;
 
     const queryBuilder = this.sellerProductOptionRepository.createQueryBuilder('sellerProductOption')
       .leftJoinAndSelect('sellerProductOption.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('sellerProduct.mall', 'mall')
       .where('sellerProduct.sellerId = :sellerId', { sellerId })
+      .andWhere('sellerProduct.mallId = :mallId', { mallId })
       .andWhere("sellerProduct.isMatching = true")
       .andWhere('sellerProduct.wholesalerProductId IS NOT NULL')
       .andWhere("sellerProductOption.isMatching = true")

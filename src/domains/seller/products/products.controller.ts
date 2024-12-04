@@ -65,8 +65,10 @@ export class SellerProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[완료] 상품 목록 조회' })
   @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'mallId', required: true, description: '판매몰 ID' })
   @ApiQuery({ name: 'query', required: false, description: '검색할 상품명' })
   async findAllSellerProductBySellerId(
+    @Query('mallId') mallId: number,
     @Query('query') query: string,
     @Query() paginationQueryDto: PaginationQueryDto, 
     @Request() req
@@ -74,7 +76,7 @@ export class SellerProductsController {
     const sellerId = req.user.uid;
     //return await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, productName, paginationQuery);
     //const result = await this.sellerProductsService.findAllSellerProductBySellerId(sellerId, query, paginationQuery);
-    const result = await this.productsService.findAllSellerProductBySellerId(sellerId, query, paginationQueryDto);
+    const result = await this.productsService.findAllSellerProductBySellerId(sellerId, mallId, query, paginationQueryDto);
     return {
       statusCode: 200,
       data: result
