@@ -714,7 +714,7 @@ export class OrdersService {
     .leftJoin('so.wholesalerProductOption', 'wpo')
     .leftJoin('wp1.store', 'store')
     .where('so.sellerId = :sellerId', { sellerId })
-    .groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+    .groupBy('DATE_FORMAT(so.createdAt, "%Y.%m.%d")')
     .addGroupBy('so.wholesalerProductOptionId');
 
   if (query) {
