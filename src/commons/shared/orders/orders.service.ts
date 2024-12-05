@@ -704,6 +704,7 @@ export class OrdersService {
       'wp1.roomNo AS wholesalerStoreRoomNo',
       'wp1.mobile AS wholesalerMobile',
       'so.orderType AS orderType',
+      'DATE_FORMAT(wo.createdAt, "%Y.%m.%d") AS orderDate',
       //'CASE WHEN so.sellerProductOptionId IS NOT NULL THEN so.sellerProductOptionId ELSE so.wholesalerProductOptionId END AS groupId'
     ])
     .leftJoin('so.sellerProduct', 'sp')
@@ -713,7 +714,8 @@ export class OrdersService {
     .leftJoin('so.wholesalerProductOption', 'wpo')
     .leftJoin('wp1.store', 'store')
     .where('so.sellerId = :sellerId', { sellerId })
-    .groupBy('wholesalerProductOptionId');
+    .groupBy('DATE_FORMAT(wo.createdAt, "%Y.%m.%d")')
+    .addGroupBy('so.wholesalerProductOptionId');
 
   if (query) {
     queryBuilder.andWhere(
