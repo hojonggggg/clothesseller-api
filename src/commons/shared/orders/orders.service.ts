@@ -726,7 +726,9 @@ export class OrdersService {
     );
   }
   
-  const allData = await queryBuilder.getRawMany();
+  const allData = await queryBuilder
+    .orderBy('DATE_FORMAT(so.createdAt, "%Y.%m.%d")', 'DESC')
+    .getRawMany();
   const total = allData.length;
   const data = allData.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 
