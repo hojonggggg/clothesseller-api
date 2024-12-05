@@ -689,7 +689,7 @@ export class OrdersService {
 
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
     .select([
-      'so.orderNo AS orderNo',
+      //'so.orderNo AS orderNo',
       'so.sellerProductOptionId AS sellerProductOptionId',
       'so.wholesalerProductOptionId AS wholesalerProductOptionId',
       'sp.name AS name',
@@ -715,6 +715,7 @@ export class OrdersService {
     .leftJoin('wp1.store', 'store')
     .where('so.sellerId = :sellerId', { sellerId })
     .groupBy('DATE_FORMAT(so.createdAt, "%Y.%m.%d")')
+    .addGroupBy('so.sellerProductOptionId')
     .addGroupBy('so.wholesalerProductOptionId');
 
   if (query) {
