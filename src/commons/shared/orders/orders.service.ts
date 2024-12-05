@@ -690,6 +690,7 @@ export class OrdersService {
     const queryBuilder = this.sellerOrderRepository.createQueryBuilder("so")
     .select([
       'so.orderNo AS orderNo',
+      'so.sellerProductOptionId AS sellerProductOptionId',
       'sp.name AS name',
       'spo.color AS color',
       'spo.size AS size',
