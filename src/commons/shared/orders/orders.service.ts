@@ -691,6 +691,7 @@ export class OrdersService {
     .select([
       'so.orderNo AS orderNo',
       'so.sellerProductOptionId AS sellerProductOptionId',
+      'so.wholesalerProductOptionId AS wholesalerProductOptionId',
       'sp.name AS name',
       'spo.color AS color',
       'spo.size AS size',
@@ -703,7 +704,7 @@ export class OrdersService {
       'wp1.roomNo AS wholesalerStoreRoomNo',
       'wp1.mobile AS wholesalerMobile',
       'so.orderType AS orderType',
-      'CASE WHEN so.sellerProductOptionId IS NOT NULL THEN so.sellerProductOptionId ELSE so.wholesalerProductOptionId END AS groupId'
+      //'CASE WHEN so.sellerProductOptionId IS NOT NULL THEN so.sellerProductOptionId ELSE so.wholesalerProductOptionId END AS groupId'
     ])
     .leftJoin('so.sellerProduct', 'sp')
     .leftJoin('so.sellerProductOption', 'spo')
@@ -712,7 +713,7 @@ export class OrdersService {
     .leftJoin('so.wholesalerProductOption', 'wpo')
     .leftJoin('wp1.store', 'store')
     .where('so.sellerId = :sellerId', { sellerId })
-    .groupBy('groupId');
+    .groupBy('wholesalerProductOptionId');
 
   if (query) {
     queryBuilder.andWhere(
