@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, Brackets } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { WholesalerProduct } from '../products/entities/wholesaler-product.entity';
+import { WholesalerOrder } from '../orders/entities/wholesaler-order.entity';
 import { SellerProduct } from '../products/entities/seller-product.entity';
 import { SellerProductOption } from '../products/entities/seller-product-option.entity';
 import { SellerProductPlus } from '../products/entities/seller-product-plus.entity';
@@ -19,6 +20,8 @@ export class ProductMatchingsService {
 
     @InjectRepository(WholesalerProduct)
     private wholesalerProductRepository: Repository<WholesalerProduct>,
+    @InjectRepository(WholesalerOrder)
+    private wholesalerOrderRepository: Repository<WholesalerOrder>,
     @InjectRepository(SellerProduct)
     private sellerProductRepository: Repository<SellerProduct>,
     @InjectRepository(SellerProductOption)
@@ -221,6 +224,31 @@ export class ProductMatchingsService {
           isMatching: true
         }
       );
+      
+      const updatedRows = await this.sellerOrderRepository.find({
+        where: { sellerProductOptionId }, // 동일한 조건
+        select: ['id', 'quantity'], // 필요한 컬럼만 가져오기
+      });
+
+      for (const orderData of updatedRows) {
+        const sellerOrderId = orderData.id;
+        const quantity = orderData.quantity;
+
+        await this.wholesalerOrderRepository.save(
+          {
+            sellerOrderId,
+            wholesalerId,
+            wholesalerProductId,
+            wholesalerProductOptionId,
+            sellerId,
+            sellerProductId,
+            sellerProductOptionId,
+            quantity,
+            quantityTotal: quantity,
+            status: '발주대기'
+          }
+        )
+      }
 
       for (const option of options) {
         await this.sellerProductPlusRepository.save(
