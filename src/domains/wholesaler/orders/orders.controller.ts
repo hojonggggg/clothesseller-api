@@ -61,6 +61,29 @@ export class WholesalerOrdersController {
     };
   }
 
+  @Get('orders/manage')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[완료] 주문 목록 관리' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'date', required: true, description: '조회일자(yyyy/mm/dd)' })
+  @ApiQuery({ name: 'status', required: false, description: '상태' })
+  @ApiQuery({ name: 'query', required: false, description: '상품명 or 셀러명' })
+  async findAllOrderManage(
+    @Request() req,
+    @Query('date') date: string,
+    @Query('status') status: string,
+    @Query('query') query: string,
+    @Query() paginationQueryDto: PaginationQueryDto
+  ) {
+    const wholesalerId = req.user.uid;
+    const result = await this.wholesalerOrdersService.findAllOrder(wholesalerId, status, date, query, paginationQueryDto);
+    return {
+      statusCode: 200,
+      data: result
+    };
+  }
+
   @Patch('orders/confirm')  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
