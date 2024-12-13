@@ -286,7 +286,7 @@ export class SellerProductsService {
           sellerId,
           sellerProductId,
           sellerProductOptionId,
-          quantity,
+          quantity: quantity?quantity : 0,
           price: wholesalerProductPrice
         });
 
