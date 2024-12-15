@@ -23,10 +23,14 @@ import { SellerAccountBooksModule } from './account-books/account-books.module';
 import { SellerWeekProductsModule } from './week-products/week-products.module';
 import { SellerProductMachingsModule } from './product-matchings/product-machings.module';
 import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
+import { MallApiController } from './mall-api/mall-api.controller';
+import { MallApiModule } from 'src/commons/shared/mall-api/mall-api.module';
+import { MallApiService } from 'src/commons/shared/mall-api/mall-api.service';
+import { SellerApi } from 'src/commons/shared/mall-api/entities/seller-api.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile, Alimtalk]),
+    TypeOrmModule.forFeature([User, WholesalerProfile, SellerProfile, Alimtalk, SellerApi]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -47,8 +51,9 @@ import { Alimtalk } from 'src/commons/shared/users/entities/alimtalk.entity';
     SellerAccountBooksModule,
     SellerWeekProductsModule,
     SellerProductMachingsModule,
+    MallApiModule
   ],
-  providers: [AuthService, SellerAuthService, UsersService],
-  controllers: [SellerAuthController]
+  providers: [AuthService, SellerAuthService, UsersService, MallApiService],
+  controllers: [SellerAuthController, MallApiController]
 })
 export class SellerModule {}
