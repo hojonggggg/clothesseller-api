@@ -217,7 +217,8 @@ export class ProductsService {
 
     const queryBuilder = this.wholesalerProductOptionRepository.createQueryBuilder('wholesalerProductOption')
       .leftJoinAndSelect('wholesalerProductOption.wholesalerProduct', 'wholesalerProduct')
-      .leftJoinAndSelect('wholesalerProduct.wholesalerProfile', 'wholesalerProfile');
+      .leftJoinAndSelect('wholesalerProduct.wholesalerProfile', 'wholesalerProfile')
+      .where('wholesalerProductOption.isDeleted = false');
     
     if (query) {
       queryBuilder.andWhere(
