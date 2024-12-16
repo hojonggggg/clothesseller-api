@@ -621,7 +621,8 @@ export class OrdersService {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('wholesalerProduct.name LIKE :productName', { productName: `%${query}%` })
-            .orWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` });
+            .orWhere('sellerProduct.name LIKE :productName', { productName: `%${query}%` })
+            .orWhere('order.orderNo LIKE :orderNo', { orderNo: `%${query}%` });
         })
       );
     }
