@@ -12,7 +12,7 @@ export class SellerSignupDto {
 
   @ApiProperty({ example: true, description: '알람 수신 여부' })
   @IsBoolean()
-  agreeAlarm: string;
+  agreeAlarm: boolean;
 
   @ApiProperty({ example: '123-456-789',  description: '사업자 등록번호'})
   @IsString()
