@@ -75,7 +75,7 @@ export class SellerSamplesService {
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
       .where('sample.sellerId = :sellerId', { sellerId })
       //.andWhere('sample.sampleDate BETWEEN :startDate AND :endDate', { startDate, endDate })
-      .andWhere('sample.returnDate BETWEEN :returnDate AND :endDate', { startDate, endDate })
+      .andWhere('sample.returnDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('sample.isDeleted = 0');
 
     if (query) {
