@@ -615,7 +615,8 @@ export class OrdersService {
       .leftJoinAndSelect('order.sellerProduct', 'sellerProduct')
       .leftJoinAndSelect('order.sellerProductOption', 'sellerProductOption')
       .where('order.sellerId = :sellerId', { sellerId })
-      .andWhere('order.orderType = :orderType', {  orderType: "AUTO" });
+      .andWhere('order.orderType = :orderType', {  orderType: "AUTO" })
+      .andWhere('order.isDeleted = :isDeleted', { isDeleted: false});
 
     if (query) {
       queryBuilder.andWhere(
