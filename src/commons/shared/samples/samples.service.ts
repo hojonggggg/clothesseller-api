@@ -102,7 +102,7 @@ export class SamplesService {
       .leftJoinAndSelect('sample.sellerProfile', 'sellerProfile')
       .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('sample.wholesalerId = :wholesalerId', { wholesalerId })
-      .andWhere('sample.sampleDate BETWEEN :startDate AND :endDate', { startDate, endDate })
+      .andWhere('sample.returnDate BETWEEN :startDate AND :endDate', { startDate, endDate })
       .andWhere('sample.isDeleted = 0');
 
     if (query) {
