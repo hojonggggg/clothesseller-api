@@ -117,7 +117,7 @@ export class WholesalerOrdersService {
     }
 
     const [orders, total] = await queryBuilder
-      .groupBy('DATE_FORMAT(order.createdAt, "%Y.%m.%d")')
+      //.groupBy('DATE_FORMAT(order.createdAt, "%Y.%m.%d")')
       //.addGroupBy('order.sellerId')
       //.addGroupBy('order.wholesalerProductOption.id')
       .orderBy('order.id', 'DESC')
