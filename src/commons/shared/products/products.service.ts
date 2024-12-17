@@ -223,7 +223,8 @@ export class ProductsService {
     if (query) {
       queryBuilder.andWhere(
         new Brackets((qb) => {
-          qb.where('wholesalerProduct.name LIKE :wholesalerProductName', { wholesalerProductName: `%${query}%` });
+          qb.where('wholesalerProduct.name LIKE :wholesalerProductName', { wholesalerProductName: `%${query}%` })
+            .orWhere('wholesalerProfile.name LIKE :wholesalerName', { wholesalerName: `%${query}%` });
         })
       );
     }
