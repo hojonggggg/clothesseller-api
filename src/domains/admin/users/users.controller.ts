@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/domains/auth/guards/jwt-auth.guard';
 import { UsersService } from 'src/commons/shared/users/users.service';
+import { UpdateUserProfileDto } from 'src/commons/shared/users/dto/update-user-profile.dto';
 import { PaginationQueryDto } from 'src/commons/shared/dto/pagination-query.dto';
 
 @ApiTags('admin > users')
@@ -51,6 +53,24 @@ export class AdminUsersController {
     return {
       statusCode: 200,
       data: result
+    };
+  }
+
+  @Patch('user/:userId/update')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '(도매처 or 셀러) 개별 수정' })
+  @ApiResponse({ status: 200 })
+  @ApiQuery({ name: 'role', required: true, description: 'WHOLESALER or SELLER' })
+  async updateUser(
+    @Param('userId') userId: number, 
+    @Query('role') role: string,
+    @Body() updateUserProfileDto: UpdateUserProfileDto, 
+  ) {
+    await this.usersService.updateMe(userId, role, updateUserProfileDto);
+    return {
+      statusCode: 200,
+      message: '계정 정보 수정이 완료되었습니다.'
     };
   }
   /*
