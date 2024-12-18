@@ -19,6 +19,7 @@ export class SamplesService {
       .leftJoinAndSelect('sample.wholesalerProfile', 'wholesalerProfile')
       .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
+      .leftJoinAndSelect('sample.sellerProfile', 'sellerProfile')
       .where('sample.isDeleted = 0');
     
     if (query) {
@@ -38,11 +39,15 @@ export class SamplesService {
       .getManyAndCount();
     
     for (const sample of samples) {
-      const { wholesalerProfile, wholesalerProduct, wholesalerProductOption } = sample;
+      const { wholesalerProfile, wholesalerProduct, wholesalerProductOption, sellerProfile } = sample;
       sample.wholesalerName = wholesalerProfile.name;
       sample.name = wholesalerProduct.name;
       sample.color = wholesalerProductOption.color;
       sample.size = wholesalerProductOption.size;
+      sample.sellerName = sellerProfile.name;
+      sample.sellerAddress = sellerProfile.address1 + " " + sellerProfile.address2;
+      sample.sellerMobile = sellerProfile.mobile;
+      sample.deliverymanMobile = sellerProfile.deliveryman.mobile;
       delete(sample.wholesalerId);
       delete(sample.wholesalerProfile);
       delete(sample.sellerId);
