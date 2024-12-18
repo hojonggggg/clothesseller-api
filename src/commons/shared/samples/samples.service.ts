@@ -20,6 +20,7 @@ export class SamplesService {
       .leftJoinAndSelect('sample.wholesalerProduct', 'wholesalerProduct')
       .leftJoinAndSelect('sample.wholesalerProductOption', 'wholesalerProductOption')
       .leftJoinAndSelect('sample.sellerProfile', 'sellerProfile')
+      .leftJoinAndSelect('sellerProfile.deliveryman', 'deliveryman')
       .where('sample.isDeleted = 0');
     
     if (query) {
