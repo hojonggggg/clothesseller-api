@@ -629,8 +629,7 @@ export class OrdersService {
     }
 
     const [orders, total] = await queryBuilder
-      //.orderBy('order.id', 'DESC')
-      .orderBy('order.orderNo', 'DESC')
+      .orderBy('order.id', 'DESC')
       .take(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .getManyAndCount();
