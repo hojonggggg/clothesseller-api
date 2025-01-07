@@ -232,8 +232,8 @@ export class UsersService {
       .where('wholesalerProfile.userId = :wholesalerId', { wholesalerId });
 
     const wholesaler = await queryBuilder.getOne();
-    wholesaler.storeName = wholesaler.store.name;
-    delete(wholesaler.storeId);
+    //wholesaler.storeName = wholesaler.store.name;
+    //delete(wholesaler.storeId);
     delete(wholesaler.store);
 
     return wholesaler;
