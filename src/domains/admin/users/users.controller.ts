@@ -23,9 +23,9 @@ export class AdminUsersController {
     @Query() paginationQueryDto: PaginationQueryDto
   ) {
     let result;
-    if (type === 'WHOLESALER') {
+    if (type.toUpperCase() === 'WHOLESALER') {
       result = await this.usersService.findAllWholesalerWithPagination(query, paginationQueryDto);
-    } else if (type === 'SELLER') {
+    } else if (type.toUpperCase() === 'SELLER') {
       result = await this.usersService.findAllSellerWithPagination(query, paginationQueryDto);
     }
     
