@@ -67,7 +67,7 @@ export class AdminUsersController {
     @Query('role') role: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto, 
   ) {
-    await this.usersService.updateMe(userId, role, updateUserProfileDto);
+    await this.usersService.updateMe(userId, role.toUpperCase(), updateUserProfileDto);
     return {
       statusCode: 200,
       message: '계정 정보 수정이 완료되었습니다.'
