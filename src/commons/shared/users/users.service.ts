@@ -317,14 +317,14 @@ export class UsersService {
       .where('sellerProfile.userId = :sellerId', { sellerId });
 
     const seller = await queryBuilder.getOne();
-    const { address1, address2 } = seller;
-    seller.address = address1 + " " + address2;
+    //const { address1, address2 } = seller;
+    //seller.address = address1 + " " + address2;
     seller.deliverymanMobile = null;
     if (seller.deliveryman) {
       seller.deliverymanMobile = seller.deliveryman.mobile;
     }
-    delete(seller.address1);
-    delete(seller.address2);
+    //delete(seller.address1);
+    //delete(seller.address2);
     delete(seller.deliveryman);
 
     return seller;
